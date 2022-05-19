@@ -1,0 +1,8 @@
+.ant-card>.ant-card-body>.ant-checkbox-wrapper {
+    color: rgb(236, 235, 233) !important;
+}
+
+#site-content[data-theme="light"] 
+.ant-card>.ant-card-body>.ant-checkbox-wrapper {
+    color: rgb(3, 3, 3) !important;
+}

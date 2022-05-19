@@ -1,0 +1,30 @@
+.headTable{
+    background-color: #b8b9b5;
+    color: #3b3b3b;;
+    /* border-top: 1px solid #8989898f; */
+    /* border-bottom:1px solid #8989898f; */
+    border: 1px solid #ccc;
+}
+.subTitle{
+    border-bottom: 1px solid #dbdbdb;
+}
+.containerDarkLight[data-theme="light"]
+.subTitle{
+    border-bottom: 1px solid #8989898f;
+}
+.head1 th{
+    /* border: '1px solid green'; */
+    border: 1px solid #ccc;
+}
+
+.table-prueba td{
+    border: 1px solid #ccc;
+    padding: 0.3em;
+}
+
+.right.aligned{
+    text-align:right;
+}
+.center.aligned{
+    text-align:center;
+}

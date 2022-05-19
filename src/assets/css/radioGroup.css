@@ -1,0 +1,14 @@
+.ant-card>.ant-card-body>.ant-radio-group>.ant-radio-wrapper {
+    color: rgb(236, 235, 233) !important;
+}
+.ant-radio-disabled + span {
+    color: rgb(236, 235, 233) !important;
+}
+#site-content[data-theme="light"] 
+.ant-card>.ant-card-body>.ant-radio-group>.ant-radio-wrapper {
+    color: rgb(3, 3, 3) !important;
+}
+#site-content[data-theme="light"]
+.ant-radio-disabled + span {
+    color: rgb(3, 3, 3) !important;
+}

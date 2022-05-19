@@ -1,0 +1,32 @@
+.ant-form-item-control-input>
+.ant-form-item-control-input-content>
+.ant-picker>
+.ant-picker-input>
+.ant-picker-suffix{
+    color: rgb(236, 235, 233) !important;
+}
+#site-content[data-theme="light"] 
+.ant-form-item-control-input>
+.ant-form-item-control-input-content>
+.ant-picker>
+.ant-picker-input>
+.ant-picker-suffix{
+    color: rgb(99 98 97) !important;
+}
+.ant-form-item-control-input>.ant-form-item-control-input-content>.ant-picker{
+    background: #37485800 !important;
+}
+.ant-form-item-control-input>
+.ant-form-item-control-input-content>
+.ant-picker>
+.ant-picker-input > input{
+    color: rgb(236, 235, 233) !important;
+}
+#site-content[data-theme="light"] 
+.ant-form-item-control-input>
+.ant-form-item-control-input-content>
+.ant-picker>
+.ant-picker-input > input{
+    color: rgb(99 98 97) !important;
+}
+

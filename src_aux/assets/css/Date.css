@@ -1,0 +1,25 @@
+.MuiInputBase-adornedEnd>.MuiInputBase-inputAdornedEnd{
+    color: rgb(220 220 220);
+    font-size: 13px;
+    padding-left: 5px;
+
+}
+#site-content[data-theme="light"]
+.MuiInputBase-adornedEnd>.MuiInputBase-inputAdornedEnd{
+    color: rgb(86 83 83);
+    font-size: 13px;
+    padding-left: 5px;
+}
+.MuiInputBase-adornedEnd>.MuiInputAdornment-positionEnd>.MuiIconButton-root{
+    color: rgb(220 220 220);
+}
+#site-content[data-theme="light"]
+.MuiInputBase-adornedEnd>.MuiInputAdornment-positionEnd>.MuiIconButton-root{
+    color: rgb(147 147 147);
+}
+.MuiPickersBasePicker-container>.MuiPickersBasePicker-pickerView{
+    background: #eeeeee;
+}
+.MuiPickersCalendarHeader-switchHeader>.MuiPickersCalendarHeader-iconButton{
+    background-color: #eee0;
+}

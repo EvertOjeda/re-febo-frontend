@@ -1,0 +1,25 @@
+.ant-card-type-inner .ant-card-head {
+    background: #fafafa00;
+}
+.ant-typography {
+    color: rgb(198 202 191);
+}
+
+#site-content[data-theme="light"]
+.ant-card-type-inner .ant-card-head {
+    background: #cccccc29;
+}
+
+#site-content[data-theme="light"]
+.ant-typography {
+    color: #727272;
+}
+
+#site-content[data-theme="light"]
+#headerCard >.ant-card-head>.ant-card-head-wrapper {
+    border-bottom: 1px solid #a6a4a4;
+}
+
+#headerCard >.ant-card-head>.ant-card-head-wrapper {
+    border-bottom: 1px solid #7a848d;
+}

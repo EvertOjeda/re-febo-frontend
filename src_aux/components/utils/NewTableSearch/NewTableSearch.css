@@ -1,0 +1,57 @@
+#data-grid-modal .dx-datagrid-headers {
+    color: rgb(76 76 71);
+    background: #c6cabf;
+}
+#data-grid-modal .dx-datagrid-rowsview 
+.dx-row-focused.dx-data-row > td, .dx-datagrid-rowsview 
+.dx-row-focused.dx-data-row > tr:last-child > td {
+    border-bottom: 1px solid #35baf600;
+}
+#data-grid-modal .dx-widget > .dx-datagrid-rowsview 
+.dx-row-focused.dx-data-row .dx-command-edit .dx-link, 
+.dx-datagrid-rowsview .dx-row-focused.dx-data-row > td:not(.dx-focused), 
+.dx-datagrid-rowsview .dx-row-focused.dx-data-row > tr > td:not(.dx-focused){
+    background-color: #c6cabf4f;
+    color: #757574;
+}
+#data-grid-modal .dx-row-focused> .dx-focused {
+    background: #f1f2ef !important;
+}
+#data-grid-modal .dx-gridbase-container > .dx-datagrid-pager {
+    height: 48px;
+    font-size: 11.20px;
+    padding: 13px 0px 0px 0px;
+}
+#data-grid-modal .dx-pager .dx-pages .dx-page {
+    padding: 7px 8px;
+    line-height: 8px;
+}
+#data-grid-modal .dx-pager .dx-page, .dx-pager .dx-page-size {
+    font-size: 11px;
+    border-radius: 4px;
+}
+#data-grid-modal .dx-pager .dx-pages .dx-info {
+    display: inline-block;
+    margin-right: 12px;
+    opacity: 0.6;
+}
+#data-grid-modal .dx-row-focused.dx-data-row > td:not(.dx-focused), 
+.dx-datagrid-rowsview .dx-row-focused.dx-data-row > tr > td:not(.dx-focused) {
+    background-color: #dddedb;
+    color: #4c4c47;
+}
+#data-grid-modal .dx-datagrid-headers .dx-datagrid-table .dx-row > td{
+    padding-top: 0px;
+    padding-bottom: 0px;
+    line-height: 20px;
+    font-size: 12px;
+}
+#data-grid-modal .dx-datagrid .dx-row > td, .dx-datagrid .dx-row > tr > td {
+    padding: 1px;
+    font-size: 10px;
+}
+#data-grid-modal .dx-pager .dx-page-sizes .dx-selection, .dx-pager .dx-pages .dx-selection {
+    font-weight: 500;
+    background-color: #cbd0c5;
+    color: #4c4c4b;
+}

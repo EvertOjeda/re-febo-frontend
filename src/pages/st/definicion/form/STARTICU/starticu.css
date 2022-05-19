@@ -1,0 +1,36 @@
+.ant-picker-dropdown-placement-bottomLeft{
+  top: -932px !important;
+}
+.ant-picker-dropdown-placement-bottomLeft-aux{
+  top: 187.984px !important;
+}
+.ant-picker-dropdown-placement-bottomRight{
+  top: -932px !important;
+}
+
+.checkboxArticulo{
+  padding: 12px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  background: rgb(15 179 148 / 37%);
+}
+#site-content[data-theme="light"]
+.checkboxArticulo{ 
+  background: rgb(204 204 204);
+}
+.radioArticulo{
+  padding: 3.5px;
+  background: rgb(15 179 148 / 37%);
+}
+
+#site-content[data-theme="light"]
+.radioArticulo{
+  background: rgb(204 204 204);
+}
+
+/* .ant-picker-dropdown-placement-bottomLeft{
+  top: -932px !important;
+}
+.ant-picker-dropdown-placement-bottomLeft-aux{
+  top: 366.984px !important;
+} */

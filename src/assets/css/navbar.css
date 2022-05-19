@@ -1,0 +1,15 @@
+.img-Empresa{
+  background-color: #eeeeee;
+  border-width: medium;
+  border-style: solid;
+  border-color: #6b7e93;
+  zoom: 1;
+}
+.site-layout[data-theme="light"]
+.img-Empresa{
+  background-color: #eeeeee;
+  border-width: medium;
+  border-style: solid;
+  border-color: #cccccc;
+  zoom: 1;
+}

@@ -1,0 +1,71 @@
+#site-content[data-theme="light"]
+.hrDevExtreme{
+    border-top: 1px solid rgb(190 191 188);
+    background: #bababa;
+}
+.hrDevExtreme{
+    border-top: 1px solid #a4a5a2a1;
+    width: 100%;
+    background: #283541ad;
+    height: 36px;
+    border-radius: 0px 1px 5px 1px; 
+    box-shadow: 3px 5px 13px 0px rgb(0 0 0 / 40%);   
+}
+#site-content[data-theme="light"]
+.inputArticuloCate{
+    background-color: #eeebeb !important;
+    border: 1px solid #c6c6c7 !important;
+    color: #4c5055 !important;
+}
+.inputArticuloCate{
+    background-color: #4c5b6936 !important;
+    border: 1px solid #697275 !important;
+    color: #c6cabf !important;
+    padding: 1px;
+}
+#site-content[data-theme="light"]
+.labelArt_Categoria{
+    color: #3c3c3d;
+    margin-right: 5px;
+}
+.labelArt_Categoria{
+    color: #9ca6af;
+    margin-right: 5px;
+}
+.inputArticuloCate:focus, .inputArticuloCate-focused{
+    border-color: #2c3e50;
+}
+.inputArticuloCate:hover{
+    border-color: #4c5b69;
+}
+.labelArtCate{
+    color: #eeeeeec2;
+    margin-left: 15px;
+}
+.ArtCateDevExtreme{
+    width: 100%;
+    background: #324455;
+    height: 29px;
+    padding-left: 10px;
+    padding-top: 3px;
+    border-radius: 0px 0px 0px 0px;
+    box-shadow: -2px 1px 10px 0px rgb(0 0 0 / 40%);    
+    /* border-top: 0.1px solid #a4a5a2a1;
+    border-left: 0.1px solid #a4a5a2a1;
+    border-right: 0.1px solid #a4a5a2a1;
+    width: 100%;
+    background: #324455;
+    height: 29px;
+    padding-left: 10px;
+    padding-top: 2px;
+    border-radius: 5px 5px 3px 3px;
+    box-shadow: 3px 6px 10px 0px rgb(0 0 0 / 40%); */
+}
+.ArtCateDevExtreme>.ant-radio-group-outline>.ant-radio-wrapper> span.ant-radio + * {
+    font-size: 14px !important;
+}
+#site-content[data-theme="light"]
+.ArtCateDevExtreme{
+    background: #cccccc;
+    box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 40%);
+}

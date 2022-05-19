@@ -1,0 +1,86 @@
+{
+  "name": "Febo",
+  "homepage": "./",
+  "main": "public/electron.js",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/charts": "^1.2.10",
+    "@ant-design/icons": "^4.6.3",
+    "@date-io/date-fns": "^1.3.13",
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/data-grid": "^4.0.0-alpha.37",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
+    "@sweetalert2/themes": "^5.0.10",
+    "@unicef/material-ui-currency-textfield": "^0.8.6",
+    "antd": "^4.16.13",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.1.3",
+    "chart.js": "^3.5.1",
+    "concurrently": "^6.2.1",
+    "cross-env": "^7.0.3",
+    "currency.js": "^2.0.4",
+    "devextreme": "^20.2.7",
+    "devextreme-react": "^20.2.7",
+    "electron-is-dev": "^2.0.0",
+    "electron-packager": "^15.3.0",
+    "file-saver": "^2.0.5",
+    "jquery": "^3.6.0",
+    "jspdf": "^2.3.1",
+    "jspdf-autotable": "^3.5.20",
+    "ol": "^6.8.1",
+    "react": "^17.0.2",
+    "react-csv": "^2.2.2",
+    "react-dom": "^17.0.2",
+    "react-export-excel": "^0.5.3",
+    "react-helmet": "^6.1.0",
+    "react-hooks": "^1.0.1",
+    "react-hotkeys-hook": "^3.4.0",
+    "react-html-table-to-excel": "^2.0.0",
+    "react-icons": "^4.2.0",
+    "react-idle-timer": "^4.6.4",
+    "react-phone-number-input": "^3.1.52",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "reactstrap": "^9.0.2",
+    "sweetalert": "^2.1.2",
+    "underscore": "^1.13.1",
+    "wait-on": "^6.0.0",
+    "xlsx": "^0.17.5"
+  },
+  "devDependencies": {
+    "electron": "^13.2.1",
+    "electron-builder": "^22.11.7",
+    "electron-winstaller": "^5.0.0"
+  },
+  "scripts": {
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts --max_old_space_size=4096 build",
+    "electron-build": "electron-builder",
+    "release": "npm run react-build && electron-builder --publish=always",
+    "build": "npm run react-build && npm run electron-build",
+    "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\""
+  },
+  "build": {
+    "appId": "com.apolo.app",
+    "productName": "Febo",
+    "win": {
+      "icon": "public/pig.ico"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version",
+      "last 1 edge version"
+    ]
+  }
+}

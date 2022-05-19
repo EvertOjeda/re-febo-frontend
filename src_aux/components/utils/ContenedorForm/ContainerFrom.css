@@ -1,0 +1,7 @@
+.ant-modal-footer>.ButtonModalCancelar {
+    color: #034c9a !important;
+}
+
+.ant-modal-footer>.ButtonModalAceptar{
+    background: #034c9a !important;
+}

@@ -1,0 +1,38 @@
+/* borde del input radio y el color del Border */
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio-checked>.ant-radio-inner {
+    border-radius: 15% !important;
+    border-color: #f6ffe77d !important;
+}
+#site-content[data-theme="light"] 
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio-checked>.ant-radio-inner {
+    border-radius: 15% !important;
+    border-color: #4646447d !important;
+}
+/*---------------- tamaño del label de radio ----------------*/
+.ant-radio-group-outline>.ant-radio-wrapper> span.ant-radio + * {
+    font-size: 12px !important;
+}
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio>.ant-radio-inner {
+    border-radius: 15% !important;
+    border-color: #aaaaa97d !important
+}
+#site-content[data-theme="light"] 
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio>.ant-radio-inner {
+    border-radius: 15% !important;
+    border-color: #4646447d !important;
+}
+/*---------------------------- color del input radio ----------------------------------------- */
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio-checked>.ant-radio-inner::after {
+    background-color: #99a5b5 !important;
+}
+#site-content[data-theme="light"] 
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio-checked>.ant-radio-inner::after {
+    background-color: #727272bd !important;
+}
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio>.ant-radio-inner::after {
+    background-color: #99a5b5 !important;
+}
+.ant-radio-group-outline>.ant-radio-wrapper>.ant-radio>.ant-radio-inner {
+    background-color: #d5deda00 !important;
+}
+

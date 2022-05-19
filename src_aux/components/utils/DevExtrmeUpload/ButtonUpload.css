@@ -1,0 +1,75 @@
+.button-cancelar-ocultar-visible{
+  visibility: collapse;
+}
+.ant-upload{
+  color: rgb(41 54 66);
+}
+.ant-upload.ant-upload-select{
+  background-color: transparent;
+}
+.ant-upload-list-item{
+  margin-top: 0px;
+  margin-bottom: 10px;
+  color: white;
+}
+#site-content[data-theme="light"]
+.ant-upload-list-item{
+  color: #262626;
+  margin-bottom: 8px;
+}
+#site-content[data-theme="light"]
+.ant-upload.ant-upload-select{
+  color: #262626;
+}
+.button-cancelar-upload{
+  margin: 1px;
+  background: #3b4c5c;
+  box-shadow: 0px 1px 1px 1px rgb(0 0 0 / 20%);
+  border: none;
+  color: #eee !important;
+}
+#site-content[data-theme="light"]
+.button-cancelar-upload {
+  background: #e9e9e9;
+}
+.ant-upload-list-item-info .ant-upload-text-icon .anticon{
+  color: rgb(198 202 191) !important;
+}
+#site-content[data-theme="light"]
+.ant-upload-list-item-info .ant-upload-text-icon .anticon{
+  color: rgb(114 114 114) !important;
+}
+.ant-upload-list-item:hover .ant-upload-list-item-info {
+  background-color: #374858 !important;
+}
+#site-content[data-theme="light"]
+.ant-upload-list-item:hover .ant-upload-list-item-info {
+  background-color: #c4c4c4 !important;
+}
+.ant-upload-list-item-card-actions .anticon {
+  color: rgb(221 68 59);
+}
+.ant-upload-list-item:hover .ant-upload-list-item-card-actions-btn {
+  opacity: 1;
+  background: #374858;
+}
+#site-content[data-theme="light"]
+.ant-upload-list-item:hover .ant-upload-list-item-card-actions-btn {
+  background: #afafaf;
+}
+.ant-upload>.ant-btn{
+  background-color: transparent;
+  border-color: #c6cabf52;
+  color: aliceblue;
+}
+#site-content[data-theme="light"]
+.ant-upload>.ant-btn{
+  border-color: #b1b3ab;
+  color: rgb(38 38 38 / 72%);
+}
+.MARC_CATEG_SEG>.ant-upload-select-text>.ant-upload>.ant-btn{
+  width: 200px;
+}
+.RUBRO_FAMILIA>.ant-upload-select-text>.ant-upload>.ant-btn{
+  width: 200px;
+}

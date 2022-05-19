@@ -1,0 +1,33 @@
+.site-footer{
+    position: fixed;
+    left: 200px;
+    bottom: 0;
+    width: calc(100% - 500px);
+    background-color: #374858;
+    height: 10px;
+}
+.site-footer[data-theme="light"]{
+    background-color: #eeeeee;
+}
+.site-footer.toggledLeft{
+    left: 80px;
+    width: calc(100% - 380px);
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+} 
+.site-footer[data-toggle="hide"]{
+    width: calc(100% - 200px);
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+} 
+.site-footer.toggledLeft.toggledRight{
+    width: calc(100% - 80px);
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}

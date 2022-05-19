@@ -1,0 +1,30 @@
+.ESTADO_STMETGB{
+  background: #03595c78;
+}
+
+#site-content[data-theme="light"]
+.ESTADO_STMETGB{
+  background: #13c6cf5e;
+}
+.BUTTOM_STMETGB{
+  width: 225px;
+  height: 35px;
+  background: #00498d24;
+  color: #f9f9f9;
+  border: 0.1px solid #c6cabf7d;
+  border-radius: 6px;
+  margin: 3px 0px 0px 0px;
+}
+
+#site-content[data-theme="light"]
+.BUTTOM_STMETGB{
+  background: #d0d0d0;
+  color: #262626;
+  border: 0.1px solid #2222221f;
+}
+
+.devExtreme_det > .MuiPaper-root >.dx-widget > 
+.dx-datagrid >
+.dx-datagrid-headers .dx-datagrid-table .dx-row > td {
+    line-height: 32px !important;
+}

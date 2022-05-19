@@ -1,0 +1,7 @@
+.ant-modal-content>.ant-modal-footer>.MuiButton-containedSecondary {
+    background-color: #d2081c !important;
+}
+
+.ant-modal-content>.ant-modal-footer>.MuiButton-outlinedPrimary{
+    color: #096dd9 !important;
+}
