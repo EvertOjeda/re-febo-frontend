@@ -387,15 +387,13 @@ const CMPROVEC = memo((props) => {
     const getInfo = async (url, method, data) => {
         var content = [];        
         try {
-            var info = await Main.Request(url, method, data);
-            if (info.data.rows) {
-                content = info.data.rows;
-                
-                // console.log('this is info.data.rows ==> ' , info.data.rows)
-            }
-            return content;
+          var info = await Main.Request(url, method, data);
+          if (info.data.rows) {
+            content = info.data.rows;
+          }
+          return content;
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
     };
     const getData = async()=>{
@@ -423,7 +421,6 @@ const CMPROVEC = memo((props) => {
                 MODIFICA_DIAS_ANT : m_dias_ant.data.outBinds.ret
             }]
         }
-        // console.log('ESTO ES CONTENT ==> ', content)
         const dataSource_Cab = new DataSource({
             store: new ArrayStore({
                 data: content,
@@ -432,7 +429,6 @@ const CMPROVEC = memo((props) => {
         })
         gridCab.current.instance.option('dataSource', dataSource_Cab);
         cancelar_Cab = JSON.stringify(content);
-        console.log(" esto es data => ", data)
         setTimeout(()=>{
             gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1))
         },100)
@@ -526,6 +522,7 @@ const CMPROVEC = memo((props) => {
         var aux_cab             = info_cab.rowsAux;
         var update_insert_cab   = info_cab.updateInsert;
         var delete_cab          = DeleteForm.CMPROVEC_CAB != undefined ? DeleteForm.CMPROVEC_CAB : [];
+        console.log("delete_cab ===> ", delete_cab)
 
         var datosCont = []
         if(gridCont.current != undefined){
@@ -535,6 +532,9 @@ const CMPROVEC = memo((props) => {
         var aux_cont             = info_cont.rowsAux;
         var update_insert_cont   = info_cont.updateInsert;
         var delete_cont          = DeleteForm.CMPROVEC_CONT !== undefined ? DeleteForm.CMPROVEC_CONT : [];
+
+        console.log("delete_cont ===> ", delete_cont)
+
 
         //Formateo de fecha datagrid
         if(update_insert_cab.length > 0){
@@ -549,9 +549,12 @@ const CMPROVEC = memo((props) => {
         let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
         let valorAuxiliar_cont = getCancelar_Cont() !== '' ? JSON.parse(getCancelar_Cont()) : [];
 
+
+        console.log("esta va adentro de data ==> ",update_insert_cab)
         var data = {
             // Cabecera
 			    update_insert_cab,  delete_cab, valorAuxiliar_cab ,
+                
             // Contacto
                 update_insert_cont, delete_cont, valorAuxiliar_cont,
             // Adicional
@@ -563,6 +566,10 @@ const CMPROVEC = memo((props) => {
             try{
                 var method = "POST"
                 await Main.Request( url_abm, method, data).then(async(response) => {
+                    console.log("esto es url_abm ==> ",url_abm)
+                    console.log("esto es method ==> ",method)
+                    console.log("esto es data ==> ",data)
+
                     var resp = response.data;
                     if(resp.ret == 1){
                         Main.message.success({
@@ -665,10 +672,12 @@ const CMPROVEC = memo((props) => {
         const componete = await getComponenteEliminarDet();
         if(componete.delete){
             let indexRow =  await getRowIndex();
-            if(indexRow == -1) indexRow = 0            
+            if(indexRow == -1) indexRow = 0
+            console.log(" esto es componete ==> ",componete)
             let data    = idGrid[componete.id].current.instance.getDataSource()._items
+            // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
             let info    = data[indexRow]
-
+            
             if(_.isUndefined(info) || (_.isUndefined(info.inserted) && _.isUndefined(info.InsertDefault))){
                 modifico();
 
@@ -997,7 +1006,6 @@ const CMPROVEC = memo((props) => {
         }        
     }
     const setInputData = async (data)=>{
-        console.log('setInputData!!!! ======> ', data.DESC_PERSONA)
         form.setFieldsValue({
             ...data,
               ["IND_DIF_PRECIO"]    : data.IND_DIF_PRECIO    == "S" ? true : false,
@@ -1023,7 +1031,6 @@ const CMPROVEC = memo((props) => {
         if(!bandBloqueo){
             if(e.row != undefined){
                 setInputData(e.row.data)
-                console.log('setInputData  ==> ', e.row)
             } 
         }else{
             gridCab.current.instance.option("focusedRowKey", 120);
@@ -1579,7 +1586,7 @@ const CMPROVEC = memo((props) => {
                                                             >
                                                                 <Checkbox ref={refExento} > Exento </Checkbox>
                                                             </Form.Item>
-                                                         </Col>
+                                                        </Col>
                                                         <Col span={12}>
                                                             <Form.Item
                                                                 name="IND_TRANSPORTISTA"

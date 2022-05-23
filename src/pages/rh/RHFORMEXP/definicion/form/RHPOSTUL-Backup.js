@@ -15,6 +15,7 @@ import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , Array
 
 import '../../../../../assets/css/DevExtreme.css';
 import './style.css';
+import TextArea from 'antd/lib/input/TextArea';
 
 const columnsListar = [  
   { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 80     , align:'center'    , requerido:true , Pk:true},
@@ -65,7 +66,13 @@ var DeleteForm = []
 const LimpiarDelete = () =>{
     DeleteForm = [];
 }
-
+var idComponente = 'RHPOSTUL_CONT'
+const setIdComponente = (value)=>{
+    idComponente = value;
+}
+const getIdComponente = ()=>{
+    return idComponente;
+}
 var cancelar_Cab = '';
 const getCancelar_Cab = ()=>{
 	return cancelar_Cab;
@@ -78,8 +85,6 @@ const getCancelar_Cont = ()=>{
 
 const POSTULANTES = memo(() => {
 
-    const defaultOpenKeys     = sessionStorage.getItem("mode") === "vertical" ? [] : DireccionMenu(FormName);
-    const defaultSelectedKeys = sessionStorage.getItem("mode") === "vertical" ? [] : Menu(FormName);
 
     const cod_empresa         = sessionStorage.getItem('cod_empresa');
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
@@ -114,9 +119,11 @@ const POSTULANTES = memo(() => {
     const idGrid = {
         RHPOSTUL_CAB:gridCab,
         RHPOSTUL_DET:gridDet,
+        RHPOSTUL_CONT:gridCont,
         defaultFocus:{
 			RHPOSTUL_CAB:1,
-            RHPOSTUL_DET:0
+            RHPOSTUL_DET:0,
+            RHPOSTUL_CONT:0
         }
     }
     
@@ -832,17 +839,20 @@ const deleteRows = async()=>{
                                         </Card>
                                     </div>
 
+        
 
                                     <div style={{ padding: "1px" }}>
                                         <Card>
                                           
-                                        <Col span={24} style={{paddingLeft:5}}>
+                                            <Col span={24} style={{paddingLeft:5}}>
                                                 <Form.Item 
-                                                    label= "Experiencia Laboral" 
-                                                    name="EXPERIENCIA_LABORAL">
-                                                    <Input onChange={handleInputChange}/>
+                                                    name="EXPERIENCIA_LABORAL"
+                                                    label= "Experiencia Laboral">
+                                                        <TextArea placeholder='Experiencia Laboral' autoSize>
+                                                                <Input onChange={handleInputChange} />
+                                                        </TextArea>
                                                 </Form.Item>
-                                        </Col>
+                                            </Col>
 
                                         </Card>
                                     </div>
@@ -855,6 +865,8 @@ const deleteRows = async()=>{
 
                         </Main.Paper>
                 </div>
+
+
 
             </Main.Layout>
         
