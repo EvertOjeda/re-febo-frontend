@@ -23,6 +23,7 @@ const title                   = 'Formulario de Postulantes';
 const columns = [ 
       { dataField:"NRO_DOCUMENTO"   ,caption:"Nro. de documento"},
       { dataField:"NOMBRE"          ,caption:"Nombre"             },
+      { dataField:"FEC_NACIMIENTO"  ,caption:"Fecha Nacimiento"   },
       { dataField:"SEXO"            ,caption:"Sexo"               },
       { dataField:"ESTADO_CIVIL"    ,caption:"Estado civil"       },
       { dataField:"ZONA_RESIDENCIA" ,caption:"Zona de residencia" },
@@ -32,7 +33,7 @@ const columns = [
   ];
 
 // FUNCION PRINCIPAL 
-const POSTULANTES = memo(() => {
+const POSTULANTESEXC = memo(() => {
 
 
    // ESTADOS
@@ -81,7 +82,7 @@ const POSTULANTES = memo(() => {
     promise.then((d)=>{
 
         setItems(d);
-        // console.log(d);
+        console.log(d);
 
     })
   }
@@ -268,6 +269,6 @@ const getData = async() =>{
 
 
 
-export default POSTULANTES;
+export default POSTULANTESEXC;
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useRef, memo, useEffect } from 'react';
 import Main            from '../../../../../components/utils/Main';
 import _                             from "underscore";
-import { Input, Row, Col, Form, Card, Grid, Typography, Select }  from 'antd';
+import { Input, Row, Col, Form, Card, Grid, Typography, Select, Alert }  from 'antd';
 import Search                        from '../../../../../components/utils/SearchForm/SearchForm';
 import {setModifico,modifico}        from '../../../../../components/utils/SearchForm/Cancelar';
 
@@ -12,39 +12,36 @@ import { v4 as uuidID }              from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
                        getFocusedColumnName   , getRowIndex , getComponenteFocusDet } 
                                                         from '../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+import DateBox from 'devextreme-react/date-box';
 
 import '../../../../../assets/css/DevExtreme.css';
 import './style.css';
-import TextArea from 'antd/lib/input/TextArea';
 
 const columnsListar = [  
-  { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 80     , align:'center'    , requerido:true , Pk:true},
-  { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 90     , align:'left'      , requerido:true},
-  { ID: 'SEXO'                    , label: 'Sexo'                   , width: 50     , align:'center'    },
-  { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , minWidth: 50  , align:'center'    },
-  { ID: 'ZONA_RESIDENCIA'         , label: 'Zona de residencia'     , width: 70     , align:'left'      },
-  { ID: 'CELULAR'                 , label: 'Celular'                , minWidth: 50  , align:'center'    },
+  { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true , Pk:true},
+  { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
+  { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    },
+  { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
+  { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
   { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
   { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    },
-  { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 75     , align:'center'    , requerido:true},
-  { ID: 'ESTADO'                  , label: 'Estado'                 , width: 60     , align:'center'    , isOpcionSelect:true }
+  { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , requerido:true},
+  { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
 ];
 
 const initialRow = [
     { NRO_DOCUMENTO: "NRO_DOCUMENTO" },
 ];
-const sexo    = {
-    SEXO:  [    
-        { ID:'Masculino' , NAME:'MASCULINO' , isNew:true}, 
-        { ID:'Femenino'  , NAME:'FEMENINO'  },
-    ],
-}
+
+var fechaahora = new Date();
+
+let date = fechaahora
 
 const estado    = {
     ESTADO:  [    
-        { ID:'POSTULANTE' , NAME:'Postulante', isNew:true }, 
-        { ID:'ENTREVISTA'  , NAME:'Entrevista' },
-        { ID:'CONTRATADO'  , NAME:'Contratado' },
+        { ID:'POSTULANTE'   , NAME:'Postulante', isNew:true }, 
+        { ID:'ENTREVISTA'   , NAME:'Entrevista' },
+        { ID:'CONTRATADO'   , NAME:'Contratado' },
     ],
 }
 
@@ -54,8 +51,7 @@ const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACION
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const TituloList            = "Lista de postulantes";
-var  defaultOpenKeys        = sessionStorage.getItem("mode") === 'vertical' ? [] : ['RH', 'RH-RH1'];
-var  defaultSelectedKeys    = sessionStorage.getItem("mode") === 'vertical' ? [] : ['RH-RH1-null-RHPOSTUL'];
+
 const FormName              = 'RHPOSTUL';
 const { Title }             = Typography;
 
@@ -66,13 +62,7 @@ var DeleteForm = []
 const LimpiarDelete = () =>{
     DeleteForm = [];
 }
-var idComponente = 'RHPOSTUL_CONT'
-const setIdComponente = (value)=>{
-    idComponente = value;
-}
-const getIdComponente = ()=>{
-    return idComponente;
-}
+
 var cancelar_Cab = '';
 const getCancelar_Cab = ()=>{
 	return cancelar_Cab;
@@ -83,8 +73,10 @@ const getCancelar_Cont = ()=>{
 }
 
 
-const POSTULANTES = memo(() => {
+const POSTULANTES = memo((props) => {
 
+    const defaultOpenKeys     = sessionStorage.getItem("mode") === "vertical" ? [] : DireccionMenu(FormName);
+    const defaultSelectedKeys = sessionStorage.getItem("mode") === "vertical" ? [] : Menu(FormName);
 
     const cod_empresa         = sessionStorage.getItem('cod_empresa');
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
@@ -119,11 +111,9 @@ const POSTULANTES = memo(() => {
     const idGrid = {
         RHPOSTUL_CAB:gridCab,
         RHPOSTUL_DET:gridDet,
-        RHPOSTUL_CONT:gridCont,
         defaultFocus:{
 			RHPOSTUL_CAB:1,
-            RHPOSTUL_DET:0,
-            RHPOSTUL_CONT:0
+            RHPOSTUL_DET:0
         }
     }
     
@@ -149,7 +139,7 @@ const POSTULANTES = memo(() => {
         buttonAddRowRef.current.click();
     },{filterPreventDefault:true,enableOnTags:['INPUT','TEXTAREA']});
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         
     const initialFormData = async(isNew)=>{
@@ -221,6 +211,8 @@ const POSTULANTES = memo(() => {
         valor.insertDefault = true
         form.setFieldsValue(valor);
     };
+
+    
 }
 
 
@@ -278,37 +270,48 @@ const POSTULANTES = memo(() => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const guardar = async(e)=>{
-    // GENERAMOS EL PK AUTOMATICO
+
     setActivarSpinner(true);
+    // GENERAMOS EL PK AUTOMATICO
     var datosCab    = gridCab.current.instance.getDataSource()._items;
-
-    console.log(datosCab);
-
-    var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],true);
+    console.log("datosCab ====>> ",datosCab);
+    var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
+                                                    // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
 
     var aux_cab             = info_cab.rowsAux;
     var update_insert_cab   = info_cab.updateInsert;
     var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
     // console.log("delete_cab ===> ", delete_cab)
-    console.log("uptadte ===> ", update_insert_cab)
-
-
+    console.log("update ===> ", update_insert_cab)
     let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
-
-
     var data = {
         // Cabecera
             update_insert_cab,  delete_cab, valorAuxiliar_cab ,
-
         // Adicional
-        "cod_usuario": sessionStorage.getItem('cod_usuario')
+        "cod_usuario": sessionStorage.getItem('cod_usuario'),
+        "cod_empresa": sessionStorage.getItem('cod_empresa')
     }
-    
+    console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
+
+    if(update_insert_cab.length > 0){
+        for (let i = 0; i < update_insert_cab.length; i++) {
+            const items = update_insert_cab[i];
+            if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
+                let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
+                if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+            }
+        }
+    }
+
+
+
     if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
           try{
               var method = "POST"
               await Main.Request( url_abm, method, data).then(async(response) => {
                   var resp = response.data;
+                  console.log("ESTO ES RESPONSE ===>>> ",response)
+                //   console.log("ESTO ES RESP ==>> ", resp.ret);
                   if(resp.ret == 1){
                       Main.message.success({
                           content  : `Procesado correctamente!!`,
@@ -345,7 +348,8 @@ const guardar = async(e)=>{
                       },60);
                   }else{
                       setActivarSpinner(false);
-                    //   showModalMensaje('Atencion!','atencion',`${response.data.p_mensaje}`);
+                    //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
+                      console.log("ENTRO EN EL ELSE!!")
                   }
               });
           } catch (error) {
@@ -365,6 +369,7 @@ const guardar = async(e)=>{
           });
       }
 
+      setActivarSpinner(false);
 
 
 }
@@ -537,7 +542,16 @@ const deleteRows = async()=>{
             var comunIndex = idGrid[componete.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
             if (comunIndex == -1) comunIndex = 0;
 
+            if(DeleteForm[componete.id] !== undefined){
+                DeleteForm[componete.id] = _.union(DeleteForm[componete.id], [info]);
+            }else if(DeleteForm.length > 0){
 
+                DeleteForm[componete.id] = [info];
+
+            }else if(DeleteForm.length == 0){
+                
+                DeleteForm[componete.id] = [info];
+            }
             if(indexRow == -1) indexRow = 0
 
             idGrid[componete.id].current.instance.deleteRow(indexRow);
@@ -628,7 +642,52 @@ const deleteRows = async()=>{
                                         <Card>
                                             <Col style={{ paddingTop: "2px"}}>
                                                 <Row gutter={[3, 3]}>
-                                                    <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>    
+
+                                                    <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
+                                                        <Form.Item 
+                                                            name="FEC_NACIMIENTO"
+                                                            label= "Fecha de Nac."
+                                                            labelCol={{ span: 7 }}
+                                                            wrapperCol={{ span: 20 }}>
+                                                                <DateBox defaultValue={date} 
+                                                                type="date" 
+                                                                onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.FEC_NACIMIENTO = e;
+                                                                }}
+                                                                
+                                                                />
+                                                        </Form.Item>
+                                                    </Col>
+
+                                                    <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
+                                                        <Form.Item 
+                                                            name="SEXO"
+                                                            label= "Sexo"
+                                                            labelCol={{ span: 8 }}
+                                                            wrapperCol={{ span: 20 }}>
+                                                               <Select initialvalues="Masculino" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.SEXO = e;
+                                                            }}>
+                                                                <Select.Option value="Masculino">Masculino</Select.Option>
+                                                                <Select.Option value="Femenino">Femenino</Select.Option>
+                                                            </Select>
+                                                        </Form.Item>
+                                                    </Col>
+
+                                                    <Col span={12} xs={{ order: 3 }} style={{ paddingTop: "2px"}}>    
                                                         <Form.Item 
                                                             name="APTITUDES"
                                                             label= "Aptitudes"
@@ -638,7 +697,7 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>
+                                                    <Col span={12} xs={{ order: 4 }} style={{ paddingTop: "2px"}}>
                                                         <Form.Item 
                                                             name="PRETENCION_SALARIAL"
                                                             label= "Pretención"
@@ -648,7 +707,7 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 3 }}>
+                                                    <Col span={12} xs={{ order: 5 }}>
                                                         <Form.Item
                                                             name="NACIONALIDAD"
                                                             label= "Nacionalidad"
@@ -658,20 +717,29 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>                                                
 
-                                                    <Col span={12} xs={{ order: 4 }}>
+                                                    <Col span={12} xs={{ order: 6 }}>
                                                         <Form.Item 
                                                             name="IND_TIENE_HIJO"
                                                             label= "Tiene hijos?"
                                                             labelCol={{ span: 8 }}
                                                             wrapperCol={{ span: 20 }}>
-                                                            <Select onChange={handleInputChange}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_TIENE_HIJO = e;
+                                                            }}>
                                                                 <Select.Option value="NO">No</Select.Option>
                                                                 <Select.Option value="SI">Si</Select.Option>
                                                             </Select>
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 5 }}>
+                                                    <Col span={12} xs={{ order: 7 }}>
                                                         <Form.Item 
                                                             name="DIRECCION"
                                                             label= "Dirección"
@@ -681,7 +749,7 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 6 }}>
+                                                    <Col span={12} xs={{ order: 8 }}>
                                                         <Form.Item 
                                                             name="BARRIO"
                                                             label= "Barrio"
@@ -692,13 +760,44 @@ const deleteRows = async()=>{
                                                     </Col>
 
                                                     
-                                                    <Col span={12} xs={{ order: 7 }}>
+                                                    <Col span={12} xs={{ order: 9 }}>
                                                         <Form.Item 
                                                             name="IND_HORARIO_ROTATIVO"
                                                             label= "Disp. Horario Rotativo?"
                                                             labelCol={{ span: 7 }}
                                                             wrapperCol={{ span: 20 }}>
-                                                            <Select onChange={handleInputChange}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_HORARIO_ROTATIVO = e;
+                                                            }}>
+                                                                <Select.Option value="NO">No</Select.Option>
+                                                                <Select.Option value="SI">Si</Select.Option>
+                                                            </Select>
+                                                        </Form.Item>
+                                                    </Col>
+
+                                                    <Col span={12} xs={{ order: 10 }}>
+                                                        <Form.Item 
+                                                            name="IND_ESTUDIA"
+                                                            label= "Estudiando? "
+                                                            labelCol={{ span: 8 }}
+                                                            wrapperCol={{ span: 20 }}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_ESTUDIA = e;
+                                                            }}>
                                                                 <Select.Option value="NO">No</Select.Option>
                                                                 <Select.Option value="SI">Si</Select.Option>
                                                             </Select>
@@ -706,19 +805,6 @@ const deleteRows = async()=>{
                                                     </Col>
 
                                                     <Col span={12} xs={{ order: 11 }}>
-                                                        <Form.Item 
-                                                            name="IND_ESTUDIA"
-                                                            label= "Estudiando? "
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select onChange={handleInputChange}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
-
-                                                    <Col span={12} xs={{ order: 12 }}>
                                                         <Form.Item 
                                                             name="TELEFONO"
                                                             label= "Teléfono"
@@ -728,7 +814,7 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 13 }}>
+                                                    <Col span={12} xs={{ order: 12 }}>
                                                         <Form.Item 
                                                             name="NIVEL_ESTUDIO"
                                                             label= "Nivel de estudio"
@@ -738,7 +824,7 @@ const deleteRows = async()=>{
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 14 }}>
+                                                    <Col span={12} xs={{ order: 13 }}>
                                                         <Form.Item 
                                                             name="IND_ESTUDIA_HORARIO"
                                                             label= "Hora de clases"
@@ -750,25 +836,34 @@ const deleteRows = async()=>{
 
                                                     
 
-                                                    <Col span={12} xs={{ order: 15 }}>
+                                                    <Col span={12} xs={{ order: 14 }}>
                                                         <Form.Item 
                                                             name="IND_MOVILIDAD_PROPIA"
                                                             label= "Movilidad Propia"
-                                                            labelCol={{ span: 7  }}
+                                                            labelCol={{ span: 8  }}
                                                             wrapperCol={{ span: 20 }}
                                                             >
-                                                            <Select onChange={handleInputChange}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_MOVILIDAD_PROPIA = e;
+                                                            }}>
                                                                 <Select.Option value="NO">No</Select.Option>
                                                                 <Select.Option value="SI">Si</Select.Option>
                                                             </Select>
                                                         </Form.Item>
                                                     </Col>
 
-                                                    <Col span={12} xs={{ order: 14 }}>
+                                                    <Col span={12} xs={{ order: 15 }}>
                                                         <Form.Item 
                                                             name="IND_TIPO_MOVILIDAD"
                                                             label= "Tipo de movilidad"
-                                                            labelCol={{ span: 8  }}
+                                                            labelCol={{ span: 7  }}
                                                             wrapperCol={{ span: 20 }}>
                                                                 <Input onChange={handleInputChange} />
                                                         </Form.Item>
@@ -790,7 +885,16 @@ const deleteRows = async()=>{
                                                             label= "Ex Funcionario?"
                                                             labelCol={{ span: 7 }}
                                                             wrapperCol={{ span: 20 }}>
-                                                            <Select onChange={handleInputChange}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_EX_FUNCIONARIO = e;
+                                                            }}>
                                                                 <Select.Option value="NO">No</Select.Option>
                                                                 <Select.Option value="SI">Si</Select.Option>
                                                             </Select>
@@ -803,7 +907,16 @@ const deleteRows = async()=>{
                                                             label= "Trabaja actualmente?"
                                                             labelCol={{ span: 8 }}
                                                             wrapperCol={{ span: 20 }}>
-                                                            <Select onChange={handleInputChange}>
+                                                            <Select initialvalues="NO" 
+                                                                onChange={ async(e)=>{
+                                                                modifico();
+                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                    if(row.InsertDefault){
+                                                                        row.inserted = true;
+                                                                        row.InsertDefault = false;
+                                                                    }else if(!row.inserted) row.updated = true;
+                                                                        row.IND_TRABAJA = e;
+                                                            }}>
                                                                 <Select.Option value="NO">No</Select.Option>
                                                                 <Select.Option value="SI">Si</Select.Option>
                                                             </Select>
@@ -839,19 +952,16 @@ const deleteRows = async()=>{
                                         </Card>
                                     </div>
 
-        
 
                                     <div style={{ padding: "1px" }}>
                                         <Card>
                                           
                                             <Col span={24} style={{paddingLeft:5}}>
-                                                <Form.Item 
-                                                    name="EXPERIENCIA_LABORAL"
-                                                    label= "Experiencia Laboral">
-                                                        <TextArea placeholder='Experiencia Laboral' autoSize>
-                                                                <Input onChange={handleInputChange} />
-                                                        </TextArea>
-                                                </Form.Item>
+                                                    <Form.Item 
+                                                        label= "Experiencia Laboral" 
+                                                        name="EXPERIENCIA_LABORAL">
+                                                        <Input  onChange={handleInputChange}/>
+                                                    </Form.Item>
                                             </Col>
 
                                         </Card>
@@ -865,8 +975,6 @@ const deleteRows = async()=>{
 
                         </Main.Paper>
                 </div>
-
-
 
             </Main.Layout>
         

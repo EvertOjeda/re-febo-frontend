@@ -1,40 +1,36 @@
 import React, { useState, useRef, memo, useEffect } from 'react';
-import Main            from '../../../../../components/utils/Main';
-import _                             from "underscore";
+import Main            from '../../../../../../components/utils/Main';
+import _, { defaults }                             from "underscore";
 import { Input, Row, Col, Form, Card, Grid, Typography, Select, Alert, DatePicker, Tabs }  from 'antd';
-import Search                        from '../../../../../components/utils/SearchForm/SearchForm';
-import {setModifico,modifico}        from '../../../../../components/utils/SearchForm/Cancelar';
+import Search                        from '../../../../../../components/utils/SearchForm/SearchForm';
+import {setModifico,modifico}        from '../../../../../../components/utils/SearchForm/Cancelar';
 
-import { Menu, DireccionMenu }       from '../../../../../components/utils/FocusDelMenu';
+import { Menu, DireccionMenu }       from '../../../../../../components/utils/FocusDelMenu';
 import DataSource                    from "devextreme/data/data_source";
 import ArrayStore                    from "devextreme/data/array_store";
 import { v4 as uuidID }              from "uuid";
+
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
-                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet
-}                                                      from '../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+                             getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
+                    from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
 
+import '../../../../../../assets/css/DevExtreme.css';
 
-import '../../../../../assets/css/DevExtreme.css';
-import './style.css';
-import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
-import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 
 const columnsListar = [  
-  { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
-  { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
-  { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    },
-  { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
-  { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
-  { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-  { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    },
-  { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , requerido:true},
-  { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
-];
-
-const dateFormat = 'DD/MM/YYYY';
-const dateFormatList = ['DD/MM/YYYY'];
+    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
+    { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
+    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    },
+    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
+    { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
+    { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    },
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , requerido:true},
+    { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
+  ];
 
 
+  
 const estado    = {
     ESTADO:  [    
         { ID:'POSTULANTE'   , NAME:'Postulante', isNew:true }, 
@@ -43,17 +39,16 @@ const estado    = {
     ],
 }
 
+
 const columBuscador_cab     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
 const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
-const title                 = "Lista de postulantes";
+const title            = "Lista de postulantes";
 
 const FormName              = 'RHPOSTUL';
 const { Title }             = Typography;
-
-
 
 
 var DeleteForm = []
@@ -71,23 +66,15 @@ const getCancelar_Cont = ()=>{
 }
 
 
+const LISTAENTREVISTA = memo((props) => {
 
-
-const POSTULANTES = memo((props) => {
-
-    const defaultOpenKeys     = sessionStorage.getItem("mode") === "vertical" ? [] : DireccionMenu(FormName);
-    const defaultSelectedKeys = sessionStorage.getItem("mode") === "vertical" ? [] : Menu(FormName);
     const cod_empresa         = sessionStorage.getItem('cod_empresa');
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
 
-
-
-    ///////////////////////////////////////////////////////////////////////////////
-    //URL CABECERA
-    const url_getcabecera    = '/rh/rhpostul_pos/';
-    //URL ABM
-    const url_abm            = '/rh/rhpostul' ;
-
+        //URL CABECERA
+        const url_getcabecera    = '/rh/rhpostul_ent/';
+        //URL ABM
+        const url_abm            = '/rh/rhpostul' ;
     ///////////////////////////////////////////////////////////////////////////////
     var banSwitch   = false
     var bandBloqueo = false
@@ -98,18 +85,16 @@ const POSTULANTES = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]                = Form.useForm();
-    
-
+    const [form]              = Form.useForm();
     const gridCab             = React.useRef();
     const gridDet             = React.useRef();
     const gridCont            = React.useRef();
 
+
     const [ activarSpinner   , setActivarSpinner   ] = useState(false);
     const [showMessageButton , setShowMessageButton] = React.useState(false)
-    const [ tabKey, setTabKey ] = React.useState("1");
 
-    
+
     const idGrid = {
         RHPOSTUL_CAB:gridCab,
         RHPOSTUL_DET:gridDet,
@@ -118,11 +103,9 @@ const POSTULANTES = memo((props) => {
             RHPOSTUL_DET:0
         }
     }
-    
+       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    useEffect ( () => {
+       useEffect ( () => {
         getData();
 
         setActivarSpinner(false);
@@ -141,86 +124,7 @@ const POSTULANTES = memo((props) => {
         buttonAddRowRef.current.click();
     },{filterPreventDefault:true,enableOnTags:['INPUT','TEXTAREA']});
 
-
-
- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        
-    const initialFormData = async(isNew)=>{
-
-        
-    var valor = {
-
-        ['NRO_DOCUMENTO'                ] : '',
-        ['NOMBRE'                       ] : '',
-        ['SEXO'                         ] : 'Masculino',
-        ['ESTADO_CIVIL'                 ] : '',
-        ['ZONA_RESIDENCIA'              ] : '',
-        ['CELULAR'                      ] : '',
-        ['EMAIL'                        ] : '',
-        ['SUCURSAL'                     ] : '',
-        ['IND_VACANCIA_INTERES'         ] : '',
-        ['ESTADO'                       ] : 'POSTULANTE',
-        ['CONTRATADO'                   ] : 'N',
-        
-        ['APTITUDES'                    ] : '',
-        ['PRETENCION_SALARIAL'          ] : '',
-        ['NACIONALIDAD'                 ] : '',
-        ['IND_TIENE_HIJO'               ] : '',
-        ['DIRECCION'                    ] : '',
-        ['BARRIO'                       ] : '',      
-        ['IND_HORARIO_ROTATIVO'         ] : '',
-        ['TELEFONO'                     ] : '',
-        ['NIVEL_ESTUDIO'                ] : '',
-        ['IND_ESTUDIA'                  ] : '',
-        ['IND_ESTUDIA_HORARIO'          ] : '',
-        ['IND_TIPO_MOVILIDAD'           ] : '',
-        ['IND_MOVILIDAD_PROPIA'         ] : '',
-        ['IND_MOTIVO_SALIDA'            ] : '',
-        ['IND_EX_FUNCIONARIO'           ] : '',
-        ['IND_EX_FUNCIONARIO_MOT_SAL'   ] : '',
-        ['IND_TRABAJA'                  ] : '',
-        ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
-
-        ['EXPERIENCIA_LABORAL'          ] : '',
-        
-    }        
-    if(isNew){
-        valor = 
-         {...valor,
-            ['inserted'                 ] :true,
-            ['APTITUDES'                    ] : '',
-            ['PRETENCION_SALARIAL'          ] : '',
-            ['NACIONALIDAD'                 ] : '',
-            ['IND_TIENE_HIJO'               ] : 'NO',
-            ['DIRECCION'                    ] : '',
-            ['BARRIO'                       ] : '',
-            ['IND_HORARIO_ROTATIVO'         ] : 'NO',
-            ['TELEFONO'                     ] : '',
-            ['NIVEL_ESTUDIO'                ] : '',
-            ['IND_ESTUDIA'                  ] : 'NO',
-            ['IND_ESTUDIA_HORARIO'          ] : '',
-            ['IND_TIPO_MOVILIDAD'           ] : '',
-            ['IND_MOVILIDAD_PROPIA'         ] : 'NO',
-            ['IND_MOTIVO_SALIDA'            ] : '',
-            ['IND_EX_FUNCIONARIO'           ] : 'NO',
-            ['IND_EX_FUNCIONARIO_MOT_SAL'   ] : '',
-            ['IND_TRABAJA'                  ] : 'NO',
-            ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
-
-            ['EXPERIENCIA_LABORAL'          ] : '',
-        }
-        return valor
-    }else{
-        valor.insertDefault = true
-        form.setFieldsValue(valor);
-    };
-
-    
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // GET GENERICO
     const getInfo = async (url, method, data) => {
@@ -235,8 +139,8 @@ const POSTULANTES = memo((props) => {
         }  catch (error) {
             console.log(error);
             }
-        };
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    };
+
     const getData = async()=>{
                 try {
                     setActivarSpinner(true);
@@ -270,7 +174,6 @@ const POSTULANTES = memo((props) => {
                     gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1))
                 },100)
             }
-
             /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
 
             const getDataB = async()=>{
@@ -306,183 +209,9 @@ const POSTULANTES = memo((props) => {
                     gridCab.current.instance.focus(gridCab.current.instance.getCellElement())
                 },100)
             }
-   
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const guardar = async(e)=>{
-
-    setActivarSpinner(true);
-    // GENERAMOS EL PK AUTOMATICO
-    var datosCab    = gridCab.current.instance.getDataSource()._items;
-    console.log("datosCab ====>> ",datosCab);
-    var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
-                                                    // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
-
-    var aux_cab             = info_cab.rowsAux;
-    var update_insert_cab   = info_cab.updateInsert;
-    var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
-    // console.log("delete_cab ===> ", delete_cab)
-    console.log("update ===> ", update_insert_cab)
-    let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
-    var data = {
-        // Cabecera
-            update_insert_cab,  delete_cab, valorAuxiliar_cab ,
-        // Adicional
-        "cod_usuario": sessionStorage.getItem('cod_usuario'),
-        "cod_empresa": sessionStorage.getItem('cod_empresa')
-    }
-    console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
-
-    if(update_insert_cab.length > 0){
-        for (let i = 0; i < update_insert_cab.length; i++) {
-            const items = update_insert_cab[i];
-            if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
-                let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
-                if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
-            }
-        }
-    }
-
-
-
-    if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
-          try{
-              var method = "POST"
-              await Main.Request( url_abm, method, data).then(async(response) => {
-                  var resp = response.data;
-                  console.log("ESTO ES RESPONSE ===>>> ",response)
-                //   console.log("ESTO ES RESP ==>> ", resp.ret);
-                  if(resp.ret == 1){
-                      Main.message.success({
-                          content  : `Procesado correctamente!!`,
-                          className: 'custom-class',
-                          duration : `${2}`,
-                          style    : {
-                          marginTop: '4vh',
-                          },
-                      });
-                      // BOTON MODIFICAR
-                      setModifico();
-
-                      var dataSource = '';
-                      if(gridCab.current != undefined){
-                          dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                          gridCab.current.instance.option('dataSource', dataSource);
-                      }
-                      cancelar_Cab =  JSON.stringify(aux_cab);
-
-                      // ---------------------------------------------
-                      if(gridCont.current != undefined){
-                          dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cont}), key:'ID'})
-                          gridCont.current.instance.option('dataSource', dataSource);
-                      }
-                      cancelar_Cab =  JSON.stringify(aux_cab);
-
-                      setShowMessageButton(false)
-                      banSwitch = false;
-                      setTimeout(()=>{
-                          // RHPOSTUL_CAB
-                          let info = getComponenteFocusDet()
-                          let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
-                          gridCab.current.instance.focus(gridCab.current.instance.getCellElement(fila,1))
-                      },60);
-                  }else{
-                      setActivarSpinner(false);
-                    //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
-                      console.log("ENTRO EN EL ELSE!!")
-                  }
-              });
-          } catch (error) {
-              console.log("Error en la funcion de Guardar!",error);
-          }
-          setActivarSpinner(false);
-      }else{
-          setModifico();
-          setActivarSpinner(false);
-          Main.message.info({
-              content  : `No encontramos cambios para guardar`,
-              className: 'custom-class',
-              duration : `${2}`,
-              style    : {
-                  marginTop: '2vh',
-              },
-          });
-      }
-
-      setActivarSpinner(false);
-
-
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const funcionCancelar =async()=>{
-        setActivarSpinner(true)
-        var e = getFocusGlobalEventDet();
-		if(getCancelar_Cab()){
-            var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
-
-			if(AuxDataCancelCab.length > 0 && gridCab.current){
-				const dataSource_cab = new DataSource({
-					store: new ArrayStore({
-						  keyExpr:"ID",
-						  data: AuxDataCancelCab
-					}),
-					key: 'ID'
-				})
-				gridCab.current.instance.option('dataSource', dataSource_cab);
-				cancelar_Cab = JSON.stringify(AuxDataCancelCab);
-                // setInputData(e.row.data);
-                // console.log('esto es erowdata =>', e.row.data)              
-			}
-		}
-        if(getCancelar_Cont()){
-            var AuxDataCancelCont = await JSON.parse(await getCancelar_Cont());
-			if(AuxDataCancelCont.length > 0 && gridCont.current){
-				const dataSource_cont = new DataSource({
-					store: new ArrayStore({
-						  keyExpr:"ID",
-						  data: AuxDataCancelCont
-					}),
-					key: 'ID'
-				})
-				gridCont.current.instance.option('dataSource', dataSource_cont);
-				cancelar_Cont = JSON.stringify(AuxDataCancelCont);
-			}
-		}
-        // LimpiarDelete();
-        // QuitarClaseRequerido();
-        banSwitch = false;
-        setBandBloqueo(false);
-        setShowMessageButton(false)
-        setTimeout(()=>{
-            setModifico();
-            setActivarSpinner(false)
-            gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1));
-
-        },50);
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //FILA QUE QUEDA EN FOCUS
-    const setRowFocus = async(e,grid,f9)=>{
-        
-        if(e.row){
-
-            console.log(e.row.data);
-            form.setFieldsValue(e.row.data);
-            
-        }else{
-            console.log("Error al seteo de información", error)
-            alert("Error al seteo de información", error);
-        }
-
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const addRow = async()=>{
         if(!bandBloqueo){
@@ -523,8 +252,283 @@ const POSTULANTES = memo((props) => {
         }
 
     }
+     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+     const initialFormData = async(isNew)=>{
+
+        
+        var valor = {
+    
+            ['NRO_DOCUMENTO'                ] : '',
+            ['NOMBRE'                       ] : '',
+            ['SEXO'                         ] : 'Masculino',
+            ['ESTADO_CIVIL'                 ] : '',
+            ['ZONA_RESIDENCIA'              ] : '',
+            ['CELULAR'                      ] : '',
+            ['EMAIL'                        ] : '',
+            ['SUCURSAL'                     ] : '',
+            ['IND_VACANCIA_INTERES'         ] : '',
+            ['ESTADO'                       ] : 'ENTREVISTA',
+            ['CONTRATADO'                   ] : 'N',
+            
+            ['APTITUDES'                    ] : '',
+            ['PRETENCION_SALARIAL'          ] : '',
+            ['NACIONALIDAD'                 ] : '',
+            ['IND_TIENE_HIJO'               ] : '',
+            ['DIRECCION'                    ] : '',
+            ['BARRIO'                       ] : '',      
+            ['IND_HORARIO_ROTATIVO'         ] : '',
+            ['TELEFONO'                     ] : '',
+            ['NIVEL_ESTUDIO'                ] : '',
+            ['IND_ESTUDIA'                  ] : '',
+            ['IND_ESTUDIA_HORARIO'          ] : '',
+            ['IND_TIPO_MOVILIDAD'           ] : '',
+            ['IND_MOVILIDAD_PROPIA'         ] : '',
+            ['IND_MOTIVO_SALIDA'            ] : '',
+            ['IND_EX_FUNCIONARIO'           ] : '',
+            ['IND_EX_FUNCIONARIO_MOT_SAL'   ] : '',
+            ['IND_TRABAJA'                  ] : '',
+            ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
+    
+            ['EXPERIENCIA_LABORAL'          ] : '',
+            
+        }        
+        if(isNew){
+            valor = 
+             {...valor,
+                ['inserted'                 ] :true,
+                ['APTITUDES'                    ] : '',
+                ['PRETENCION_SALARIAL'          ] : '',
+                ['NACIONALIDAD'                 ] : '',
+                ['IND_TIENE_HIJO'               ] : 'NO',
+                ['DIRECCION'                    ] : '',
+                ['BARRIO'                       ] : '',
+                ['IND_HORARIO_ROTATIVO'         ] : 'NO',
+                ['TELEFONO'                     ] : '',
+                ['NIVEL_ESTUDIO'                ] : '',
+                ['IND_ESTUDIA'                  ] : 'NO',
+                ['IND_ESTUDIA_HORARIO'          ] : '',
+                ['IND_TIPO_MOVILIDAD'           ] : '',
+                ['IND_MOVILIDAD_PROPIA'         ] : 'NO',
+                ['IND_MOTIVO_SALIDA'            ] : '',
+                ['IND_EX_FUNCIONARIO'           ] : 'NO',
+                ['IND_EX_FUNCIONARIO_MOT_SAL'   ] : '',
+                ['IND_TRABAJA'                  ] : 'NO',
+                ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
+    
+                ['EXPERIENCIA_LABORAL'          ] : '',
+            }
+            return valor
+        }else{
+            valor.insertDefault = true
+            form.setFieldsValue(valor);
+        };
+    
+        
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const deleteRows = async()=>{
+        const componente = await getComponenteEliminarDet();
+        componente.id = 'RHPOSTUL_CAB';
+        console.log("Componente ==> ",componente)
+        if(componente.delete){
+            let indexRow =  await getRowIndex();
+            if(indexRow == -1) indexRow = 0
+            console.log(" esto es componete ==> ",componente)
+            let data    = idGrid[componente.id].current.instance.getDataSource()._items
+            // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
+            let info    = data[indexRow]
+            
+            if(_.isUndefined(info) || (_.isUndefined(info.inserted) && _.isUndefined(info.InsertDefault))){
+                modifico();
+    
+                var nameColumn = await getFocusedColumnName()
+                var comunIndex = idGrid[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
+                if (comunIndex == -1) comunIndex = 0;
+    
+                if(DeleteForm[componente.id] !== undefined){
+                    DeleteForm[componente.id] = _.union(DeleteForm[componente.id], [info]);
+                }else if(DeleteForm.length > 0){
+    
+                    DeleteForm[componente.id] = [info];
+    
+                }else if(DeleteForm.length == 0){
+                    
+                    DeleteForm[componente.id] = [info];
+                }
+                if(indexRow == -1) indexRow = 0
+    
+                idGrid[componente.id].current.instance.deleteRow(indexRow);
+                idGrid[componente.id].current.instance.repaintRows([indexRow]);
+            }else{
+                idGrid[componente.id].current.instance.deleteRow(indexRow);
+                idGrid[componente.id].current.instance.repaintRows([indexRow]);
+            }
+            setTimeout(()=>{
+                indexRow = indexRow - 1;
+                idGrid[componente.id].current.instance.focus(idGrid[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid.defaultFocus[componente.id]))
+            },50);
+        }
+        }
+
+
+    const funcionCancelar =async()=>{
+            setActivarSpinner(true)
+            var e = getFocusGlobalEventDet();
+            if(getCancelar_Cab()){
+                var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
+    
+                if(AuxDataCancelCab.length > 0 && gridCab.current){
+                    const dataSource_cab = new DataSource({
+                        store: new ArrayStore({
+                              keyExpr:"ID",
+                              data: AuxDataCancelCab
+                        }),
+                        key: 'ID'
+                    })
+                    gridCab.current.instance.option('dataSource', dataSource_cab);
+                    cancelar_Cab = JSON.stringify(AuxDataCancelCab);
+                    // setInputData(e.row.data);
+                    // console.log('esto es erowdata =>', e.row.data)              
+                }
+            }
+            if(getCancelar_Cont()){
+                var AuxDataCancelCont = await JSON.parse(await getCancelar_Cont());
+                if(AuxDataCancelCont.length > 0 && gridCont.current){
+                    const dataSource_cont = new DataSource({
+                        store: new ArrayStore({
+                              keyExpr:"ID",
+                              data: AuxDataCancelCont
+                        }),
+                        key: 'ID'
+                    })
+                    gridCont.current.instance.option('dataSource', dataSource_cont);
+                    cancelar_Cont = JSON.stringify(AuxDataCancelCont);
+                }
+            }
+            // LimpiarDelete();
+            // QuitarClaseRequerido();
+            banSwitch = false;
+            setBandBloqueo(false);
+            setShowMessageButton(false)
+            setTimeout(()=>{
+                setModifico();
+                setActivarSpinner(false)
+                gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1));
+    
+            },50);
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const guardar = async(e)=>{
+
+        setActivarSpinner(true);
+        // GENERAMOS EL PK AUTOMATICO
+        var datosCab    = gridCab.current.instance.getDataSource()._items;
+        console.log("datosCab ====>> ",datosCab);
+        var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
+                                                        // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
+    
+        var aux_cab             = info_cab.rowsAux;
+        var update_insert_cab   = info_cab.updateInsert;
+        var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
+        // console.log("delete_cab ===> ", delete_cab)
+        console.log("update ===> ", update_insert_cab)
+        let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
+        var data = {
+            // Cabecera
+                update_insert_cab,  delete_cab, valorAuxiliar_cab ,
+            // Adicional
+            "cod_usuario": sessionStorage.getItem('cod_usuario'),
+            "cod_empresa": sessionStorage.getItem('cod_empresa')
+        }
+        console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
+    
+        if(update_insert_cab.length > 0){
+            for (let i = 0; i < update_insert_cab.length; i++) {
+                const items = update_insert_cab[i];
+                if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
+                    let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
+                    if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                }
+            }
+        }
+    
+    
+    
+        if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
+              try{
+                  var method = "POST"
+                  await Main.Request( url_abm, method, data).then(async(response) => {
+                      var resp = response.data;
+                      console.log("ESTO ES RESPONSE ===>>> ",response)
+                    //   console.log("ESTO ES RESP ==>> ", resp.ret);
+                      if(resp.ret == 1){
+                          Main.message.success({
+                              content  : `Procesado correctamente!!`,
+                              className: 'custom-class',
+                              duration : `${2}`,
+                              style    : {
+                              marginTop: '4vh',
+                              },
+                          });
+                          // BOTON MODIFICAR
+                          setModifico();
+    
+                          var dataSource = '';
+                          if(gridCab.current != undefined){
+                              dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
+                              gridCab.current.instance.option('dataSource', dataSource);
+                          }
+                          cancelar_Cab =  JSON.stringify(aux_cab);
+    
+                          // ---------------------------------------------
+                          if(gridCont.current != undefined){
+                              dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cont}), key:'ID'})
+                              gridCont.current.instance.option('dataSource', dataSource);
+                          }
+                          cancelar_Cab =  JSON.stringify(aux_cab);
+    
+                          setShowMessageButton(false)
+                          banSwitch = false;
+                          setTimeout(()=>{
+                              // RHPOSTUL_CAB
+                              let info = getComponenteFocusDet()
+                              let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
+                              gridCab.current.instance.focus(gridCab.current.instance.getCellElement(fila,1))
+                          },60);
+                      }else{
+                          setActivarSpinner(false);
+                        //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
+                          console.log("ENTRO EN EL ELSE!!")
+                      }
+                  });
+              } catch (error) {
+                  console.log("Error en la funcion de Guardar!",error);
+              }
+              setActivarSpinner(false);
+          }else{
+              setModifico();
+              setActivarSpinner(false);
+              Main.message.info({
+                  content  : `No encontramos cambios para guardar`,
+                  className: 'custom-class',
+                  duration : `${2}`,
+                  style    : {
+                      marginTop: '2vh',
+                  },
+              });
+          }
+    
+          setActivarSpinner(false);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleChange = async(e)=>{
         var BuscadorRow = []
@@ -562,97 +566,66 @@ const POSTULANTES = memo((props) => {
         }
     }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const deleteRows = async()=>{
-    const componente = await getComponenteEliminarDet();
-    componente.id = 'RHPOSTUL_CAB';
-    console.log("Componente ==> ",componente)
-    if(componente.delete){
-        let indexRow =  await getRowIndex();
-        if(indexRow == -1) indexRow = 0
-        console.log(" esto es componete ==> ",componente)
-        let data    = idGrid[componente.id].current.instance.getDataSource()._items
-        // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
-        let info    = data[indexRow]
-        
-        if(_.isUndefined(info) || (_.isUndefined(info.inserted) && _.isUndefined(info.InsertDefault))){
-            modifico();
-
-            var nameColumn = await getFocusedColumnName()
-            var comunIndex = idGrid[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
-            if (comunIndex == -1) comunIndex = 0;
-
-            if(DeleteForm[componente.id] !== undefined){
-                DeleteForm[componente.id] = _.union(DeleteForm[componente.id], [info]);
-            }else if(DeleteForm.length > 0){
-
-                DeleteForm[componente.id] = [info];
-
-            }else if(DeleteForm.length == 0){
-                
-                DeleteForm[componente.id] = [info];
-            }
-            if(indexRow == -1) indexRow = 0
-
-            idGrid[componente.id].current.instance.deleteRow(indexRow);
-            idGrid[componente.id].current.instance.repaintRows([indexRow]);
-        }else{
-            idGrid[componente.id].current.instance.deleteRow(indexRow);
-            idGrid[componente.id].current.instance.repaintRows([indexRow]);
-        }
-        setTimeout(()=>{
-            indexRow = indexRow - 1;
-            idGrid[componente.id].current.instance.focus(idGrid[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid.defaultFocus[componente.id]))
-        },50);
-    }
-    }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const onKeyDownBuscar = async(e)=>{
-    var BuscadorRow = []
-    var value = e.target.value;
-    // console.log("esto es valueTrim ===>> ",value.trim())
-    if(value.trim() == ''){
-        // value = 'null'
-        getDataB();
-    }
-
-    var url   = '/rh/rhpostul/search'
-    if(e.keyCode == 13){
-
-            const index = await ArrayPushHedSeled.indexOf(undefined);
-            if (index > -1) {
-            ArrayPushHedSeled.splice(index, 1); 
+        var BuscadorRow = []
+        var value = e.target.value;
+        // console.log("esto es valueTrim ===>> ",value.trim())
+        if(value.trim() == ''){
+            // value = 'null'
+            getDataB();
+        }
+    
+        var url   = '/rh/rhpostul/search'
+        if(e.keyCode == 13){
+    
+                const index = await ArrayPushHedSeled.indexOf(undefined);
+                if (index > -1) {
+                ArrayPushHedSeled.splice(index, 1); 
+                }
+    
+                try {
+                    var method         = "POST";
+                    const cod_empresa  = sessionStorage.getItem('cod_empresa');        
+                    await Main.Request(url,method,{'value':value, 'cod_empresa': cod_empresa, filter:ArrayPushHedSeled })
+                        .then( response =>{
+                            if( response.status == 200 ){
+                            BuscadorRow = new DataSource({
+                                store: new ArrayStore({
+                                    data: response.data.rows,
+                                }),
+                                key: 'ID'
+                            }) 
+                            gridCab.current.instance.option('dataSource', BuscadorRow);
+                            cancelar_Cab = JSON.stringify(response.data.rows);
+                            }
+                        setTimeout(()=>{
+                            gridCab.current.instance.option('focusedRowIndex', 0);
+                        },70)
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
             }
+    
+        }
+            //FILA QUE QUEDA EN FOCUS
+    const setRowFocus = async(e,grid,f9)=>{
+        
+        if(e.row){
 
-            try {
-                var method         = "POST";
-                const cod_empresa  = sessionStorage.getItem('cod_empresa');        
-                await Main.Request(url,method,{'value':value, 'cod_empresa': cod_empresa, filter:ArrayPushHedSeled })
-                    .then( response =>{
-                        if( response.status == 200 ){
-                        BuscadorRow = new DataSource({
-                            store: new ArrayStore({
-                                data: response.data.rows,
-                            }),
-                            key: 'ID'
-                        }) 
-                        gridCab.current.instance.option('dataSource', BuscadorRow);
-                        cancelar_Cab = JSON.stringify(response.data.rows);
-                        }
-                    setTimeout(()=>{
-                        gridCab.current.instance.option('focusedRowIndex', 0);
-                    },70)
-                });
-            } catch (error) {
-                console.log(error);
-            }
+            console.log(e.row.data);
+            form.setFieldsValue(e.row.data);
+            
+        }else{
+            console.log("Error al seteo de información", error)
+            alert("Error al seteo de información", error);
         }
 
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleInputChange = async(e)=>{
         modifico();
@@ -673,44 +646,22 @@ const POSTULANTES = memo((props) => {
         }        
     }
 
-    const handleTabChange = (value) => {
-		setTabKey(value);
-	}
 
     return (
-        <>
-            <Main.Layout defaultOpenKeys={defaultOpenKeys} defaultSelectedKeys={defaultSelectedKeys}>
-                <Main.Helmet title={`${process.env.REACT_APP_TITULO} - ${title}` }/>
-                <div className="paper-header">
-                    <Title level={5} className="title-color">
-                        {title}
-                        <div>
-                            <Title level={4} style={{ float: 'right', marginTop: '-16px', marginRight: '5px', fontSize: '10px' }} className="title-color">{FormName}</Title>
-                        </div>
-                    </Title>
-                </div>
+    <>
 
-                <div className='paper-container'>
-                    <Tabs 
-                            activeKey={tabKey}
-                            onChange={handleTabChange}
-                            type="card"
-                            size={"small"}>
-                        <Tabs.TabPane tab="Postulantes" key="1">
-
-                            <Main.Paper className="paper-style">
-                                        <Search
-                                            addRow            = {addRow}
-                                            eliminarRow       = {deleteRows}
-                                            cancelarProceso   = {funcionCancelar}
-                                            formName          = {FormName}
-                                            guardarRow        = {guardar}
-                                            handleChange      = {handleChange}
-                                            onKeyDownBuscar   = {onKeyDownBuscar}
-                                            buttonGuardar     = {buttonSaveRef}
-                                            buttonAddRef      = {buttonAddRowRef}
-                                           
-                                        />
+        <Main.Paper className="paper-style">
+                                <Search
+                                    addRow            = {addRow}
+                                    eliminarRow       = {deleteRows}
+                                    cancelarProceso   = {funcionCancelar}
+                                    formName          = {FormName}
+                                    guardarRow        = {guardar}
+                                    handleChange      = {handleChange}
+                                    onKeyDownBuscar   = {onKeyDownBuscar}
+                                    buttonGuardar     = {buttonSaveRef}
+                                    buttonAddRef      = {buttonAddRowRef} 
+                                 />
 
                                 <div style={{padding:'10px'}}>
                                     <DevExtremeDet
@@ -731,12 +682,13 @@ const POSTULANTES = memo((props) => {
                                         altura              = {'200px'}
                                         doNotsearch         = {doNotsearch}
                                         columBuscador       = {columBuscador_cab}
-                                        nextFocusNew        = {"APTITUDES"}
+                                        // nextFocusNew        = {"APTITUDES"}
 
                                         // initialRow          = {initialRow}
                                     />
 
-                                    <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+
+<Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
                                             <Card>
                                                 <Col style={{ paddingTop: "2px"}}>
@@ -1057,33 +1009,12 @@ const POSTULANTES = memo((props) => {
 
                                     </Form>
                                 </div>
+        </Main.Paper>
 
-
-
-                            </Main.Paper>
-                        </Tabs.TabPane>
-
-                        <Tabs.TabPane tab="Entrevista" key="2">
-                            <Main.Paper className="paper-style">
-                                    <LISTAENTREVISTA/>
-                            </Main.Paper>
-                        </Tabs.TabPane>
-
-                        <Tabs.TabPane tab="Contratado" key="3">
-                               <Main.Paper className="paper-style">
-                                    <LISTACONTRATADO/>
-                            </Main.Paper>
-                        </Tabs.TabPane>
-                    </Tabs>
-
-                </div>
-
-            </Main.Layout>
-        
-        
-        </>
+    </>
+    
     )
 
 });
 
-export default POSTULANTES;
+export default LISTAENTREVISTA;

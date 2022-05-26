@@ -329,7 +329,7 @@ const CMPROVEC = memo((props) => {
         } catch (error) {
             console.log(error)
         }
-        
+
         var valor = {
             ['COD_EMPRESA'          ] : sessionStorage.getItem('cod_empresa'),
             ['COD_USUARIO'          ] : sessionStorage.getItem('cod_usuario'),
@@ -566,6 +566,9 @@ const CMPROVEC = memo((props) => {
             try{
                 var method = "POST"
                 await Main.Request( url_abm, method, data).then(async(response) => {
+                    console.log("esto es response ==> ",response)
+
+
                     console.log("esto es url_abm ==> ",url_abm)
                     console.log("esto es method ==> ",method)
                     console.log("esto es data ==> ",data)
@@ -670,10 +673,12 @@ const CMPROVEC = memo((props) => {
     }
     const deleteRows = async()=>{
         const componete = await getComponenteEliminarDet();
+        console.log("Componete ==> ",componete)
+        console.log(componete);
         if(componete.delete){
             let indexRow =  await getRowIndex();
             if(indexRow == -1) indexRow = 0
-            console.log(" esto es componete ==> ",componete)
+            console.log(" esto es componete segunda vez ==> ",componete)
             let data    = idGrid[componete.id].current.instance.getDataSource()._items
             // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
             let info    = data[indexRow]
@@ -842,8 +847,9 @@ const CMPROVEC = memo((props) => {
         var url   = '/cm/cmprovec/search'
         
         if(e.keyCode == 13){
-
+            
             const index = await ArrayPushHedSeled.indexOf(undefined);
+            console.log("index ===>> ",index)
             if (index > -1) {
              ArrayPushHedSeled.splice(index, 1); 
             }
