@@ -569,10 +569,6 @@ const CMPROVEC = memo((props) => {
                     console.log("esto es response ==> ",response)
 
 
-                    console.log("esto es url_abm ==> ",url_abm)
-                    console.log("esto es method ==> ",method)
-                    console.log("esto es data ==> ",data)
-
                     var resp = response.data;
                     if(resp.ret == 1){
                         Main.message.success({
@@ -610,6 +606,7 @@ const CMPROVEC = memo((props) => {
                             let info = getComponenteFocusDet()
                             let fila = info.CMPROVEC_CAB.rowIndex ? info.CMPROVEC_CAB.rowIndex : 0
                             gridCab.current.instance.focus(gridCab.current.instance.getCellElement(fila,1))
+                            console.log('rowIndex ==> ', rowIndex)
                         },60);
                     }else{
                         setActivarSpinner(false);

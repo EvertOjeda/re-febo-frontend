@@ -1,7 +1,7 @@
-import React, { useState, useRef, memo, useEffect } from 'react';
-import Main            from '../../../../../components/utils/Main';
+import React, { useState, memo, useEffect } from 'react';
+import Main                          from '../../../../../components/utils/Main';
 import _                             from "underscore";
-import { Input, Row, Col, Form, Card, Grid, Typography, Select, Alert }  from 'antd';
+import { Input, Row, Col, Form, Card, Typography, Select, DatePicker, Tabs }  from 'antd';
 import Search                        from '../../../../../components/utils/SearchForm/SearchForm';
 import {setModifico,modifico}        from '../../../../../components/utils/SearchForm/Cancelar';
 
@@ -10,47 +10,69 @@ import DataSource                    from "devextreme/data/data_source";
 import ArrayStore                    from "devextreme/data/array_store";
 import { v4 as uuidID }              from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
-                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet } 
-                                                        from '../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
-import DateBox from 'devextreme-react/date-box';
+                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet
+}                                                      from '../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+import moment from 'moment';
 
 import '../../../../../assets/css/DevExtreme.css';
-import './style.css';
+import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
+import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
+
+
+const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
+const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
+const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
+
 
 const columnsListar = [  
-  { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true , Pk:true},
-  { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
-  { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    },
-  { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
-  { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
-  { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-  { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    },
-  { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , requerido:true},
-  { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
+    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
+    { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
+    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    , isOpcionSelect:true },
+    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
+    { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
+    { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    , isOpcionSelect:true},
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true, requerido:true},
+    { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true}
 ];
 
-const initialRow = [
-    { NRO_DOCUMENTO: "NRO_DOCUMENTO" },
-];
 
-var fechaahora = new Date();
+// operaciones
+var insert   = false;
+var update   = false;
 
-let date = fechaahora
-
-const estado    = {
+const opciones    = {
     ESTADO:  [    
         { ID:'POSTULANTE'   , NAME:'Postulante', isNew:true }, 
         { ID:'ENTREVISTA'   , NAME:'Entrevista' },
         { ID:'CONTRATADO'   , NAME:'Contratado' },
     ],
+    ESTADO_CIVIL:[
+        { ID:'Soltero/a', NAME:'Soltero/a', isNew:true },
+        { ID:'Casado/a' , NAME:'Casado/a'  },
+        { ID:'Otros'    , NAME:'Otros'      },
+    ],
+    SUCURSAL:[
+        { ID:'Matriz'                   , NAME:'Matriz'                 , isNew:true },
+        { ID:'Abasto'                   , NAME:'Abasto'                 },
+        { ID:'Mariano Roque Alonso'     , NAME:'Mariano Roque Alonso'   },
+        { ID:'Capiatá Ruta 1'           , NAME:'Capiatá Ruta 1'         },
+        { ID:'Próxima apertura Capiatá Ruta 2', NAME:'Capiatá Ruta 2'   },
+        { ID:'Luque'                    , NAME:'Luque'                  },
+    ],
+    IND_VACANCIA_INTERES:[
+        { ID:'Cajero/a'                 , NAME:'Cajero/a'               , isNew:true },
+        { ID:'Repositor/a'              , NAME:'Repositor/a'            },
+        { ID:'Agente de prevención'     , NAME:'Agente de prevención'   },
+    ]
 }
 
-const columBuscador_cab     = ['NOMBRE']  // ['NRO_DOCUMENTO'],
+const columBuscador_cab     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
 const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
-const TituloList            = "Lista de postulantes";
+const title                 = "Lista de postulantes";
 
 const FormName              = 'RHPOSTUL';
 const { Title }             = Typography;
@@ -73,17 +95,20 @@ const getCancelar_Cont = ()=>{
 }
 
 
+
+
 const POSTULANTES = memo((props) => {
 
     const defaultOpenKeys     = sessionStorage.getItem("mode") === "vertical" ? [] : DireccionMenu(FormName);
     const defaultSelectedKeys = sessionStorage.getItem("mode") === "vertical" ? [] : Menu(FormName);
-
     const cod_empresa         = sessionStorage.getItem('cod_empresa');
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
 
+
+
     ///////////////////////////////////////////////////////////////////////////////
     //URL CABECERA
-    const url_getcabecera    = '/rh/rhpostul_cab/';
+    const url_getcabecera    = '/rh/rhpostul_pos/';
     //URL ABM
     const url_abm            = '/rh/rhpostul' ;
 
@@ -97,23 +122,22 @@ const POSTULANTES = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]                = Form.useForm();
+    const [form]        = Form.useForm();
     
+    const gridCab       = React.useRef();
 
-    const gridCab             = React.useRef();
-    const gridDet             = React.useRef();
-    const gridCont            = React.useRef();
-
-    const [ activarSpinner   , setActivarSpinner   ] = useState(false);
-    const [showMessageButton , setShowMessageButton] = React.useState(false)
+    const [ activarSpinner   , setActivarSpinner    ] = useState(false);
+    const [showMessageButton , setShowMessageButton ] = React.useState(false)
+    const [openDatePicker1 , setdatePicker	        ] = useState(true);
+    const [ tabKey, setTabKey                       ] = React.useState("1");
 
     
-    const idGrid = {
+    const idGrid_postulante = {
         RHPOSTUL_CAB:gridCab,
-        RHPOSTUL_DET:gridDet,
+
         defaultFocus:{
 			RHPOSTUL_CAB:1,
-            RHPOSTUL_DET:0
+
         }
     }
     
@@ -139,6 +163,8 @@ const POSTULANTES = memo((props) => {
         buttonAddRowRef.current.click();
     },{filterPreventDefault:true,enableOnTags:['INPUT','TEXTAREA']});
 
+
+
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         
@@ -149,19 +175,19 @@ const POSTULANTES = memo((props) => {
 
         ['NRO_DOCUMENTO'                ] : '',
         ['NOMBRE'                       ] : '',
-        ['SEXO'                         ] : '',
-        ['ESTADO_CIVIL'                 ] : '',
+        ['SEXO'                         ] : 'Masculino',
+        ['ESTADO_CIVIL'                 ] : 'Soltero/a',
         ['ZONA_RESIDENCIA'              ] : '',
         ['CELULAR'                      ] : '',
         ['EMAIL'                        ] : '',
         ['SUCURSAL'                     ] : '',
-        ['IND_VACANCIA_INTERES'         ] : '',
+        ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
         ['ESTADO'                       ] : 'POSTULANTE',
-        ['CONTRATADO'                   ] : 'N',
         
+        ['FEC_NACIMIENTO'               ] : '01/01/2000',
         ['APTITUDES'                    ] : '',
         ['PRETENCION_SALARIAL'          ] : '',
-        ['NACIONALIDAD'                 ] : '',
+        ['NACIONALIDAD'                 ] : 'Paraguaya',
         ['IND_TIENE_HIJO'               ] : '',
         ['DIRECCION'                    ] : '',
         ['BARRIO'                       ] : '',      
@@ -267,9 +293,47 @@ const POSTULANTES = memo((props) => {
                 },100)
             }
 
+            /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
+
+            const getDataB = async()=>{
+                try {
+                    setActivarSpinner(true);
+                    var content = await getInfo(url_getcabecera, "GET", []);
+                    if(_.isUndefined(content)) content = []
+                } catch (error) {
+                    console.log(error)
+                }finally{
+                    setActivarSpinner(false);
+                }
+                if(content.length == 0){
+                    var newKey = uuidID();
+                    content = [{
+                        ID	          : newKey,
+                        COD_EMPRESA   : cod_empresa,
+                        InsertDefault : true,
+                        COD_USUARIO   : sessionStorage.getItem('cod_usuario'),
+                        IDCOMPONENTE  : "RHPOSTUL_CAB",
+
+                    }]
+                }
+                const dataSource_Cab = new DataSource({
+                    store: new ArrayStore({
+                        data: content,
+                    }),
+                    key: 'ID'
+                })
+                gridCab.current.instance.option('dataSource', dataSource_Cab);
+                cancelar_Cab = JSON.stringify(content);
+                setTimeout(()=>{
+                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement())
+                },100)
+            }
+   
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const guardar = async(e)=>{
+    const guardar = async(e)=>{
 
     setActivarSpinner(true);
     // GENERAMOS EL PK AUTOMATICO
@@ -332,10 +396,6 @@ const guardar = async(e)=>{
                       cancelar_Cab =  JSON.stringify(aux_cab);
 
                       // ---------------------------------------------
-                      if(gridCont.current != undefined){
-                          dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cont}), key:'ID'})
-                          gridCont.current.instance.option('dataSource', dataSource);
-                      }
                       cancelar_Cab =  JSON.stringify(aux_cab);
 
                       setShowMessageButton(false)
@@ -374,12 +434,11 @@ const guardar = async(e)=>{
 
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const funcionCancelar =async()=>{
         setActivarSpinner(true)
-        var e = getFocusGlobalEventDet();
+        // var e = getFocusGlobalEventDet();
 		if(getCancelar_Cab()){
             var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
 
@@ -397,20 +456,6 @@ const guardar = async(e)=>{
                 // console.log('esto es erowdata =>', e.row.data)              
 			}
 		}
-        if(getCancelar_Cont()){
-            var AuxDataCancelCont = await JSON.parse(await getCancelar_Cont());
-			if(AuxDataCancelCont.length > 0 && gridCont.current){
-				const dataSource_cont = new DataSource({
-					store: new ArrayStore({
-						  keyExpr:"ID",
-						  data: AuxDataCancelCont
-					}),
-					key: 'ID'
-				})
-				gridCont.current.instance.option('dataSource', dataSource_cont);
-				cancelar_Cont = JSON.stringify(AuxDataCancelCont);
-			}
-		}
         // LimpiarDelete();
         // QuitarClaseRequerido();
         banSwitch = false;
@@ -426,12 +471,12 @@ const guardar = async(e)=>{
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
     //FILA QUE QUEDA EN FOCUS
     const setRowFocus = async(e,grid,f9)=>{
         if(e.row){
-          
+
+            var fecnac = e.row.data.FEC_NACIMIENTO;
+            e.row.data.FEC_NACIMIENTO = moment(fecnac,'DD/MM/YYYY')
             console.log(e.row.data);
             form.setFieldsValue(e.row.data);
             
@@ -439,7 +484,6 @@ const guardar = async(e)=>{
             console.log("Error al seteo de información", error)
             alert("Error al seteo de información", error);
         }
-
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -524,14 +568,54 @@ const guardar = async(e)=>{
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const activateButtonCancelar1 = async(e,nameInput)=>{
+        var row  = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+        if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
+        else row[nameInput] = ''
+        
+        if(!row.inserted){ row.updated = true;
+            update = true;
+        } 
+        modifico()
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const deleteRows = async()=>{
-    const componete = await getComponenteEliminarDet();
-    if(componete.delete){
+    const stateOpenDate1 = (e)=>{
+		let res = document.getElementsByClassName('ant-picker-dropdown');
+		if(e){
+			res[0].classList.remove(Ocultar_classDataPiker_1);
+			res[0].classList.remove(Ocultar_classDataPiker_2);
+			res[0].classList.add(mostrar_classDataPiker_3);
+		}else{
+			res[0].classList.add(Ocultar_classDataPiker_1);
+			res[0].classList.add(Ocultar_classDataPiker_2);
+			res[0].classList.remove(mostrar_classDataPiker_3);
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const clickDataPicket1 = async(e)=>{
+        let res   = await document.getElementsByClassName('ant-picker-dropdown');
+        let resul = res[0].classList.value.split(' ');
+        if(resul.indexOf(Ocultar_classDataPiker_2) !== -1){
+            res[0].classList.remove(Ocultar_classDataPiker_1);
+            res[0].classList.remove(Ocultar_classDataPiker_2);
+            res[0].classList.add(mostrar_classDataPiker_3);
+        }
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    const deleteRows = async()=>{
+    const componente = await getComponenteEliminarDet();
+    componente.id = 'RHPOSTUL_CAB';
+    console.log("Componente ==> ",componente)
+    if(componente.delete){
         let indexRow =  await getRowIndex();
         if(indexRow == -1) indexRow = 0
-        console.log(" esto es componete ==> ",componete)
-        let data    = idGrid[componete.id].current.instance.getDataSource()._items
+        console.log(" esto es componete ==> ",componente)
+        let data    = idGrid_postulante[componente.id].current.instance.getDataSource()._items
         // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
         let info    = data[indexRow]
         
@@ -539,37 +623,79 @@ const deleteRows = async()=>{
             modifico();
 
             var nameColumn = await getFocusedColumnName()
-            var comunIndex = idGrid[componete.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
+            var comunIndex = idGrid_postulante[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
             if (comunIndex == -1) comunIndex = 0;
 
-            if(DeleteForm[componete.id] !== undefined){
-                DeleteForm[componete.id] = _.union(DeleteForm[componete.id], [info]);
+            if(DeleteForm[componente.id] !== undefined){
+                DeleteForm[componente.id] = _.union(DeleteForm[componente.id], [info]);
             }else if(DeleteForm.length > 0){
 
-                DeleteForm[componete.id] = [info];
+                DeleteForm[componente.id] = [info];
 
             }else if(DeleteForm.length == 0){
                 
-                DeleteForm[componete.id] = [info];
+                DeleteForm[componente.id] = [info];
             }
             if(indexRow == -1) indexRow = 0
 
-            idGrid[componete.id].current.instance.deleteRow(indexRow);
-            idGrid[componete.id].current.instance.repaintRows([indexRow]);
+            idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
+            idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
         }else{
-            idGrid[componete.id].current.instance.deleteRow(indexRow);
-            idGrid[componete.id].current.instance.repaintRows([indexRow]);
+            idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
+            idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
         }
         setTimeout(()=>{
             indexRow = indexRow - 1;
-            idGrid[componete.id].current.instance.focus(idGrid[componete.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid.defaultFocus[componete.id]))
+            idGrid_postulante[componente.id].current.instance.focus(idGrid_postulante[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_postulante.defaultFocus[componente.id]))
         },50);
     }
-}
-
+    }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    const onKeyDownBuscar = async(e)=>{
+    var BuscadorRow = []
+    var value = e.target.value;
+    // console.log("esto es valueTrim ===>> ",value.trim())
+    if(value.trim() == ''){
+        // value = 'null'
+        getDataB();
+    }
+
+    var url   = '/rh/rhpostul/search'
+    if(e.keyCode == 13){
+
+            const index = await ArrayPushHedSeled.indexOf(undefined);
+            if (index > -1) {
+            ArrayPushHedSeled.splice(index, 1); 
+            }
+
+            try {
+                var method         = "POST";
+                const cod_empresa  = sessionStorage.getItem('cod_empresa');        
+                await Main.Request(url,method,{'value':value, 'cod_empresa': cod_empresa, filter:ArrayPushHedSeled })
+                    .then( response =>{
+                        if( response.status == 200 ){
+                        BuscadorRow = new DataSource({
+                            store: new ArrayStore({
+                                data: response.data.rows,
+                            }),
+                            key: 'ID'
+                        }) 
+                        gridCab.current.instance.option('dataSource', BuscadorRow);
+                        cancelar_Cab = JSON.stringify(response.data.rows);
+                        }
+                    setTimeout(()=>{
+                        gridCab.current.instance.option('focusedRowIndex', 0);
+                    },70)
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleInputChange = async(e)=>{
         modifico();
@@ -589,14 +715,18 @@ const deleteRows = async()=>{
             gridCab.current.instance.repaintRows(info.rowIndex);
         }        
     }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const handleTabChange = (value) => {
+		setTabKey(value);
+	}
 
     return (
         <>
             <Main.Layout defaultOpenKeys={defaultOpenKeys} defaultSelectedKeys={defaultSelectedKeys}>
-                <Main.Helmet title={`${process.env.REACT_APP_TITULO} - ${TituloList}` }/>
+                <Main.Helmet title={`${process.env.REACT_APP_TITULO} - ${title}` }/>
                 <div className="paper-header">
                     <Title level={5} className="title-color">
-                        {TituloList}
+                        {title}
                         <div>
                             <Title level={4} style={{ float: 'right', marginTop: '-16px', marginRight: '5px', fontSize: '10px' }} className="title-color">{FormName}</Title>
                         </div>
@@ -604,376 +734,401 @@ const deleteRows = async()=>{
                 </div>
 
                 <div className='paper-container'>
-                        <Main.Paper className="paper-style">
-                                    <Search
-                                        addRow                  = {addRow}
-                                        eliminarRow             = {deleteRows}
-                                        cancelarProceso         = {funcionCancelar}
-                                        formName                = {FormName}
-                                        guardarRow              = {guardar}
-                                        handleChange            = {handleChange}
-                                        // onKeyDownBuscar         = {onKeyDownBuscar}
-                                        buttonGuardar           = {buttonSaveRef}
-                                        buttonAddRef            = {buttonAddRowRef} 
+                    <Tabs 
+                            activeKey={tabKey}
+                            onChange={handleTabChange}
+                            type="card"
+                            size={"large"}>
+                        <Tabs.TabPane tab="Postulantes" key="1">
+
+                            <Main.Paper className="paper-style">
+                                        <Search
+                                            addRow            = {addRow}
+                                            eliminarRow       = {deleteRows}
+                                            cancelarProceso   = {funcionCancelar}
+                                            formName          = {FormName}
+                                            guardarRow        = {guardar}
+                                            handleChange      = {handleChange}
+                                            onKeyDownBuscar   = {onKeyDownBuscar}
+                                            buttonGuardar     = {buttonSaveRef}
+                                            buttonAddRef      = {buttonAddRowRef}
+                                        />
+
+                                <div style={{padding:'10px'}}>
+                                    <DevExtremeDet
+                                        gridDet             = {gridCab}
+                                        id                  = "RHPOSTUL_CAB"
+                                        IDCOMPONENTE        = "RHPOSTUL_CAB"
+                                        columnDet           = {columnsListar}
+                                        notOrderByAccion    = {notOrderByAccion}
+                                        FormName            = {FormName}
+                                        guardar             = {guardar}
+                                        newAddRow           = {false}
+                                        deleteDisable       = {false}
+                                        setRowFocusDet      = {setRowFocus}
+                                        optionSelect        = {opciones}
+                                        activateF10         = {false}
+                                        activateF6          = {false}
+                                        setActivarSpinner   = {setActivarSpinner}
+                                        altura              = {'200px'}
+                                        doNotsearch         = {doNotsearch}
+                                        columBuscador       = {columBuscador_cab}
+                                        nextFocusNew        = {"APTITUDES"}
+
+                                        // initialRow          = {initialRow}
                                     />
 
-                            <div style={{padding:'10px'}}>
-                                <DevExtremeDet
-                                    gridDet             = {gridCab}
-                                    columnDet           = {columnsListar}
-                                    initialRow          = {initialRow}
-                                    notOrderByAccion    = {notOrderByAccion}
-                                    id                  = "RHPOSTUL_CAB"
-                                    IDCOMPONENTE        = "RHPOSTUL_CAB"
-                                    FormName            = {FormName}
-                                    setRowFocusDet      = {setRowFocus}
-                                    optionSelect        = {estado}
-                                    activateF10         = {false}
-                                    activateF6          = {false}
-                                    altura              = {'200px'}
-                                    columBuscador       = {columBuscador_cab}
-                                    doNotsearch         = {doNotsearch}
-                                    showBorders         = {false}
-                                    nextFocusNew        = {"APTITUDES"}
-                                />
+                                    <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                                        <div style={{ padding: "1px" }}> 
+                                            <Card>
+                                                <Col style={{ paddingTop: "2px"}}>
+                                                    <Row gutter={[3, 3]}>
+                                                        <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
+                                                            <Form.Item 
+                                                                name="FEC_NACIMIENTO"
+                                                                label= "Fecha de Nac."
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}
+                                                                >
+                                                                    <DatePicker 
+                                                                        initialValues={(e)=>activateButtonCancelar1(e,"FEC_NACIMIENTO")}
+                                                                        onChange={(e)=>activateButtonCancelar1(e,"FEC_NACIMIENTO")}
+                                                                        format={"DD/MM/YYYY"}																			
+                                                                        open={openDatePicker1}
+                                                                        onOpenChange={stateOpenDate1}
+                                                                        onClick={clickDataPicket1}
+                                                                        allowClear={false}
+                                                                        
+                                                                    />
+                                                            </Form.Item>
+                                                        </Col> 
 
-                                <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
-                                    <div style={{ padding: "1px" }}> 
-                                        <Card>
-                                            <Col style={{ paddingTop: "2px"}}>
-                                                <Row gutter={[3, 3]}>
-
-                                                    <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
-                                                        <Form.Item 
-                                                            name="FEC_NACIMIENTO"
-                                                            label= "Fecha de Nac."
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <DateBox defaultValue={date} 
-                                                                type="date" 
-                                                                onChange={ async(e)=>{
+                                                        <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
+                                                            <Form.Item 
+                                                                name="SEXO"
+                                                                label= "Sexo"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="Masculino" 
+                                                                    onChange={ async(e)=>{
                                                                     modifico();
                                                                         var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
                                                                         }else if(!row.inserted) row.updated = true;
-                                                                            row.FEC_NACIMIENTO = e;
-                                                                }}
-                                                                
-                                                                />
-                                                        </Form.Item>
-                                                    </Col>
+                                                                            row.SEXO = e;
+                                                                }}>
+                                                                    <Select.Option value="Masculino">Masculino</Select.Option>
+                                                                    <Select.Option value="Femenino">Femenino</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
-                                                        <Form.Item 
-                                                            name="SEXO"
-                                                            label= "Sexo"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                               <Select initialvalues="Masculino" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.SEXO = e;
-                                                            }}>
-                                                                <Select.Option value="Masculino">Masculino</Select.Option>
-                                                                <Select.Option value="Femenino">Femenino</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 3 }} style={{ paddingTop: "2px"}}>    
+                                                            <Form.Item 
+                                                                name="APTITUDES"
+                                                                label= "Aptitudes"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange}/>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 3 }} style={{ paddingTop: "2px"}}>    
-                                                        <Form.Item 
-                                                            name="APTITUDES"
-                                                            label= "Aptitudes"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange}/>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 4 }} style={{ paddingTop: "2px"}}>
+                                                            <Form.Item 
+                                                                name="PRETENCION_SALARIAL"
+                                                                label= "Pretención"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 4 }} style={{ paddingTop: "2px"}}>
-                                                        <Form.Item 
-                                                            name="PRETENCION_SALARIAL"
-                                                            label= "Pretención"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 5 }}>
+                                                            <Form.Item
+                                                                name="NACIONALIDAD"
+                                                                label= "Nacionalidad"
+                                                                labelCol={{ span: 7}}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>                                                
 
-                                                    <Col span={12} xs={{ order: 5 }}>
-                                                        <Form.Item
-                                                            name="NACIONALIDAD"
-                                                            label= "Nacionalidad"
-                                                            labelCol={{ span: 7}}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>                                                
+                                                        <Col span={12} xs={{ order: 6 }}>
+                                                            <Form.Item 
+                                                                name="IND_TIENE_HIJO"
+                                                                label= "Tiene hijos?"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_TIENE_HIJO = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 6 }}>
-                                                        <Form.Item 
-                                                            name="IND_TIENE_HIJO"
-                                                            label= "Tiene hijos?"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_TIENE_HIJO = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 7 }}>
+                                                            <Form.Item 
+                                                                name="DIRECCION"
+                                                                label= "Dirección"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 7 }}>
-                                                        <Form.Item 
-                                                            name="DIRECCION"
-                                                            label= "Dirección"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 8 }}>
+                                                            <Form.Item 
+                                                                name="BARRIO"
+                                                                label= "Barrio"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 8 }}>
-                                                        <Form.Item 
-                                                            name="BARRIO"
-                                                            label= "Barrio"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        
+                                                        <Col span={12} xs={{ order: 9 }}>
+                                                            <Form.Item 
+                                                                name="IND_HORARIO_ROTATIVO"
+                                                                label= "Disp. Horario Rotativo?"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_HORARIO_ROTATIVO = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    
-                                                    <Col span={12} xs={{ order: 9 }}>
-                                                        <Form.Item 
-                                                            name="IND_HORARIO_ROTATIVO"
-                                                            label= "Disp. Horario Rotativo?"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_HORARIO_ROTATIVO = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 10 }}>
+                                                            <Form.Item 
+                                                                name="IND_ESTUDIA"
+                                                                label= "Estudiando? "
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_ESTUDIA = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 10 }}>
-                                                        <Form.Item 
-                                                            name="IND_ESTUDIA"
-                                                            label= "Estudiando? "
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_ESTUDIA = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 11 }}>
+                                                            <Form.Item 
+                                                                name="TELEFONO"
+                                                                label= "Teléfono"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 11 }}>
-                                                        <Form.Item 
-                                                            name="TELEFONO"
-                                                            label= "Teléfono"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 12 }}>
+                                                            <Form.Item 
+                                                                name="NIVEL_ESTUDIO"
+                                                                label= "Nivel de estudio"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 12 }}>
-                                                        <Form.Item 
-                                                            name="NIVEL_ESTUDIO"
-                                                            label= "Nivel de estudio"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 13 }}>
+                                                            <Form.Item 
+                                                                name="IND_ESTUDIA_HORARIO"
+                                                                label= "Hora de clases"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 13 }}>
-                                                        <Form.Item 
-                                                            name="IND_ESTUDIA_HORARIO"
-                                                            label= "Hora de clases"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        
 
-                                                    
+                                                        <Col span={12} xs={{ order: 14 }}>
+                                                            <Form.Item 
+                                                                name="IND_MOVILIDAD_PROPIA"
+                                                                label= "Movilidad Propia"
+                                                                labelCol={{ span: 8  }}
+                                                                wrapperCol={{ span: 20 }}
+                                                                >
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_MOVILIDAD_PROPIA = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 14 }}>
-                                                        <Form.Item 
-                                                            name="IND_MOVILIDAD_PROPIA"
-                                                            label= "Movilidad Propia"
-                                                            labelCol={{ span: 8  }}
-                                                            wrapperCol={{ span: 20 }}
-                                                            >
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_MOVILIDAD_PROPIA = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 15 }}>
+                                                            <Form.Item 
+                                                                name="IND_TIPO_MOVILIDAD"
+                                                                label= "Tipo de movilidad"
+                                                                labelCol={{ span: 7  }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 15 }}>
-                                                        <Form.Item 
-                                                            name="IND_TIPO_MOVILIDAD"
-                                                            label= "Tipo de movilidad"
-                                                            labelCol={{ span: 7  }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 16 }}>
+                                                            <Form.Item 
+                                                                name="IND_MOTIVO_SALIDA"
+                                                                label= "Motivo de salida"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 16 }}>
-                                                        <Form.Item 
-                                                            name="IND_MOTIVO_SALIDA"
-                                                            label= "Motivo de salida"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 17 }}>
+                                                            <Form.Item 
+                                                                name="IND_EX_FUNCIONARIO"
+                                                                label= "Ex Funcionario?"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_EX_FUNCIONARIO = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 17 }}>
-                                                        <Form.Item 
-                                                            name="IND_EX_FUNCIONARIO"
-                                                            label= "Ex Funcionario?"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_EX_FUNCIONARIO = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
-
-                                                    <Col span={12} xs={{ order: 18 }}>
-                                                        <Form.Item 
-                                                            name="IND_TRABAJA"
-                                                            label= "Trabaja actualmente?"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                            <Select initialvalues="NO" 
-                                                                onChange={ async(e)=>{
-                                                                modifico();
-                                                                    var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
-                                                                    if(row.InsertDefault){
-                                                                        row.inserted = true;
-                                                                        row.InsertDefault = false;
-                                                                    }else if(!row.inserted) row.updated = true;
-                                                                        row.IND_TRABAJA = e;
-                                                            }}>
-                                                                <Select.Option value="NO">No</Select.Option>
-                                                                <Select.Option value="SI">Si</Select.Option>
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 18 }}>
+                                                            <Form.Item 
+                                                                name="IND_TRABAJA"
+                                                                label= "Trabaja actualmente?"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                <Select initialvalues="NO" 
+                                                                    onChange={ async(e)=>{
+                                                                    modifico();
+                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        if(row.InsertDefault){
+                                                                            row.inserted = true;
+                                                                            row.InsertDefault = false;
+                                                                        }else if(!row.inserted) row.updated = true;
+                                                                            row.IND_TRABAJA = e;
+                                                                }}>
+                                                                    <Select.Option value="NO">No</Select.Option>
+                                                                    <Select.Option value="SI">Si</Select.Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                        </Col>
 
 
-                                                    <Col span={12} xs={{ order: 19 }}>
-                                                        <Form.Item 
-                                                            name="IND_EX_FUNCIONARIO_MOT_SAL"
-                                                            label= "Mot. Sal. de Empresa"
-                                                            labelCol={{ span: 7 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={12} xs={{ order: 19 }}>
+                                                            <Form.Item 
+                                                                name="IND_EX_FUNCIONARIO_MOT_SAL"
+                                                                label= "Mot. Sal. de Empresa"
+                                                                labelCol={{ span: 7 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={12} xs={{ order: 20 }}>
-                                                        <Form.Item 
-                                                            name="MEDIO_CON_OFERTA_LABORAL"
-                                                            label= "Conocimiento de Oferta"
-                                                            labelCol={{ span: 8 }}
-                                                            wrapperCol={{ span: 20 }}>
-                                                                <Input onChange={handleInputChange} />
-                                                        </Form.Item>
-                                                    </Col>
-                                                </Row>
+                                                        <Col span={12} xs={{ order: 20 }}>
+                                                            <Form.Item 
+                                                                name="MEDIO_CON_OFERTA_LABORAL"
+                                                                label= "Conocimiento de Oferta"
+                                                                labelCol={{ span: 8 }}
+                                                                wrapperCol={{ span: 20 }}>
+                                                                    <Input onChange={handleInputChange} />
+                                                            </Form.Item>
+                                                        </Col>
+                                                    </Row>
+                                                
+                                                </Col>
+
+                                                
+
+                                            </Card>
+                                        </div>
+
+
+                                        <div style={{ padding: "3px" }} className='paper-container'>
+                                            <Card style={{ padding: "3px" }}>
                                             
-                                            </Col>
+                                                <Col span={24} style={{paddingTop:5, paddingLeft:1}}>
+                                                        <Form.Item 
+                                                            label= "Experiencia Laboral" 
+                                                            name="EXPERIENCIA_LABORAL"
+                                                            size='large'>
+                                                            <Input onChange={handleInputChange}/>
+                                                        </Form.Item>
+                                                </Col>
 
-                                            
+                                            </Card>
+                                        </div>
+    
+    
 
-                                        </Card>
-                                    </div>
-
-
-                                    <div style={{ padding: "1px" }}>
-                                        <Card>
-                                          
-                                            <Col span={24} style={{paddingLeft:5}}>
-                                                    <Form.Item 
-                                                        label= "Experiencia Laboral" 
-                                                        name="EXPERIENCIA_LABORAL">
-                                                        <Input  onChange={handleInputChange}/>
-                                                    </Form.Item>
-                                            </Col>
-
-                                        </Card>
-                                    </div>
- 
-
-                                </Form>
-                            </div>
+                                    </Form>
+                                </div>
 
 
 
-                        </Main.Paper>
+                            </Main.Paper>
+                        </Tabs.TabPane>
+
+                        <Tabs.TabPane tab="Entrevista" key="2">
+                            <Main.Paper className="paper-style">
+                                    <LISTAENTREVISTA/>
+                            </Main.Paper>
+                        </Tabs.TabPane>
+
+                        <Tabs.TabPane tab="Contratado" key="3">
+                               <Main.Paper className="paper-style">
+                                    <LISTACONTRATADO/>
+                            </Main.Paper>
+                        </Tabs.TabPane>
+                    </Tabs>
+
                 </div>
 
             </Main.Layout>

@@ -1,11 +1,10 @@
 import React, { useState, useRef, memo, useEffect } from 'react';
 import Main            from '../../../../../../components/utils/Main';
 import _, { defaults }                             from "underscore";
-import { Input, Row, Col, Form, Card, Grid, Typography, Select, Alert, DatePicker, Tabs, Button }  from 'antd';
+import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
 import Search                        from '../../../../../../components/utils/SearchForm/SearchForm';
 import {setModifico,modifico}        from '../../../../../../components/utils/SearchForm/Cancelar';
 
-import { Menu, DireccionMenu }       from '../../../../../../components/utils/FocusDelMenu';
 import DataSource                    from "devextreme/data/data_source";
 import ArrayStore                    from "devextreme/data/array_store";
 import { v4 as uuidID }              from "uuid";
@@ -13,30 +12,60 @@ import { v4 as uuidID }              from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
                              getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
                     from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+import moment                        from 'moment';
+import locale                   from 'antd/lib/locale/es_ES';
+
 
 import '../../../../../../assets/css/DevExtreme.css';
+
+
+const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
+const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
+const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
 
 
 const columnsListar = [  
     { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
     { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
-    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    },
+    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    , isOpcionSelect:true},
     { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
     { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
     { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    },
-    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , requerido:true},
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    , isOpcionSelect:true},
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
     { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
   ];
 
 
-  
-const estado    = {
+  // operaciones
+var insert   = false;
+var update   = false;
+
+
+  const opciones    = {
     ESTADO:  [    
         { ID:'POSTULANTE'   , NAME:'Postulante', isNew:true }, 
         { ID:'ENTREVISTA'   , NAME:'Entrevista' },
         { ID:'CONTRATADO'   , NAME:'Contratado' },
     ],
+    ESTADO_CIVIL:[
+        { ID:'Soltero/a', NAME:'Soltero/a', isNew:true },
+        { ID:'Casado/a' , NAME:'Casado/a'   },
+        { ID:'Otros'    , NAME:'Otros'      },
+    ],
+    SUCURSAL:[
+        { ID:'Matriz'                   , NAME:'Matriz'                 , isNew:true },
+        { ID:'Abasto'                   , NAME:'Abasto'                 },
+        { ID:'Mariano Roque Alonso'     , NAME:'Mariano Roque Alonso'   },
+        { ID:'Capiatá Ruta 1'           , NAME:'Capiatá Ruta 1'         },
+        { ID:'Próxima apertura Capiatá Ruta 2', NAME:'Capiatá Ruta 2'   },
+        { ID:'Luque'                    , NAME:'Luque'                  },
+    ],
+    IND_VACANCIA_INTERES:[
+        { ID:'Cajero/a'                 , NAME:'Cajero/a'               , isNew:true },
+        { ID:'Repositor/a'              , NAME:'Repositor/a'            },
+        { ID:'Agente de prevención'     , NAME:'Agente de prevención'   },
+    ]
 }
 
 
@@ -48,7 +77,6 @@ const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL
 const title            = "Lista de postulantes";
 
 const FormName              = 'RHPOSTUL';
-const { Title }             = Typography;
 
 
 var DeleteForm = []
@@ -60,10 +88,7 @@ var cancelar_Cab = '';
 const getCancelar_Cab = ()=>{
 	return cancelar_Cab;
 }
-var cancelar_Cont = '';
-const getCancelar_Cont = ()=>{
-	return cancelar_Cont;
-}
+
 
 
 const LISTACONTRATADO = memo((props) => {
@@ -86,21 +111,22 @@ const LISTACONTRATADO = memo((props) => {
     ///////////////////////////////////////////////////////////////////////////////
 
     const [form]              = Form.useForm();
-    const gridCab             = React.useRef();
-    const gridDet             = React.useRef();
-    const gridCont            = React.useRef();
+
+    const gridCab_contratado                   = React.useRef();
+
 
 
     const [ activarSpinner   , setActivarSpinner   ] = useState(false);
-    const [showMessageButton , setShowMessageButton] = React.useState(false)
+    const [showMessageButton , setShowMessageButton] = React.useState(false);
+    const [openDatePicker3 , setdatePicker	        ] = useState(true);
 
 
-    const idGrid = {
-        RHPOSTUL_CAB:gridCab,
-        RHPOSTUL_DET:gridDet,
+    const idGrid_contratado = {
+        RHPOSTUL_CAB:gridCab_contratado,
+
         defaultFocus:{
 			RHPOSTUL_CAB:1,
-            RHPOSTUL_DET:0
+
         }
     }
        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,15 +194,16 @@ const LISTACONTRATADO = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab.current.instance.option('dataSource', dataSource_Cab);
+                gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_Cab = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1))
+                    gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,1))
                 },100)
-            }
+
+    }
             /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
 
-            const getDataB = async()=>{
+    const getDataB = async()=>{
                 try {
                     setActivarSpinner(true);
                     var content = await getInfo(url_getcabecera, "GET", []);
@@ -203,12 +230,12 @@ const LISTACONTRATADO = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab.current.instance.option('dataSource', dataSource_Cab);
+                gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_Cab = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement())
+                    gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement())
                 },100)
-            }
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -223,7 +250,7 @@ const LISTACONTRATADO = memo((props) => {
             if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0    
             modifico();
             let initialInput = await initialFormData(true)
-            let data = gridCab.current.instance.getDataSource();
+            let data = gridCab_contratado.current.instance.getDataSource();
             var newKey = uuidID();
             var row    = [0]
 
@@ -241,14 +268,14 @@ const LISTACONTRATADO = memo((props) => {
                 }),
                 key: 'ID'
             });
-            gridCab.current.instance.option('dataSource', dataSource_cab);
+            gridCab_contratado.current.instance.option('dataSource', dataSource_cab);
             setTimeout(()=>{
-                gridCab.current.instance.focus(gridCab.current.instance.getCellElement(indexRow,1))
+                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(indexRow,1))
             },110)
         }else{
-            gridCab.current.instance.option("focusedRowKey", 120);
-            gridCab.current.instance.clearSelection();
-            gridCab.current.instance.focus(0);
+            gridCab_contratado.current.instance.option("focusedRowKey", 120);
+            gridCab_contratado.current.instance.clearSelection();
+            gridCab_contratado.current.instance.focus(0);
             setShowMessageButton(true);
             showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
         }
@@ -265,18 +292,18 @@ const LISTACONTRATADO = memo((props) => {
             ['NRO_DOCUMENTO'                ] : '',
             ['NOMBRE'                       ] : '',
             ['SEXO'                         ] : 'Masculino',
-            ['ESTADO_CIVIL'                 ] : '',
+            ['ESTADO_CIVIL'                 ] : 'Soltero/a',
             ['ZONA_RESIDENCIA'              ] : '',
             ['CELULAR'                      ] : '',
             ['EMAIL'                        ] : '',
             ['SUCURSAL'                     ] : '',
-            ['IND_VACANCIA_INTERES'         ] : '',
-            ['ESTADO'                       ] : 'ENTREVISTA',
-            ['CONTRATADO'                   ] : 'N',
+            ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
+            ['ESTADO'                       ] : 'CONTRATADO',
             
+            ['FEC_NACIMIENTO'               ] : '01/01/2000',
             ['APTITUDES'                    ] : '',
             ['PRETENCION_SALARIAL'          ] : '',
-            ['NACIONALIDAD'                 ] : '',
+            ['NACIONALIDAD'                 ] : 'Paraguaya',
             ['IND_TIENE_HIJO'               ] : '',
             ['DIRECCION'                    ] : '',
             ['BARRIO'                       ] : '',      
@@ -340,7 +367,7 @@ const LISTACONTRATADO = memo((props) => {
             let indexRow =  await getRowIndex();
             if(indexRow == -1) indexRow = 0
             console.log(" esto es componete ==> ",componente)
-            let data    = idGrid[componente.id].current.instance.getDataSource()._items
+            let data    = idGrid_contratado[componente.id].current.instance.getDataSource()._items
             // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
             let info    = data[indexRow]
             
@@ -348,7 +375,7 @@ const LISTACONTRATADO = memo((props) => {
                 modifico();
     
                 var nameColumn = await getFocusedColumnName()
-                var comunIndex = idGrid[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
+                var comunIndex = idGrid_contratado[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
                 if (comunIndex == -1) comunIndex = 0;
     
                 if(DeleteForm[componente.id] !== undefined){
@@ -363,15 +390,15 @@ const LISTACONTRATADO = memo((props) => {
                 }
                 if(indexRow == -1) indexRow = 0
     
-                idGrid[componente.id].current.instance.deleteRow(indexRow);
-                idGrid[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_contratado[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_contratado[componente.id].current.instance.repaintRows([indexRow]);
             }else{
-                idGrid[componente.id].current.instance.deleteRow(indexRow);
-                idGrid[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_contratado[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_contratado[componente.id].current.instance.repaintRows([indexRow]);
             }
             setTimeout(()=>{
                 indexRow = indexRow - 1;
-                idGrid[componente.id].current.instance.focus(idGrid[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid.defaultFocus[componente.id]))
+                idGrid_contratado[componente.id].current.instance.focus(idGrid_contratado[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_contratado.defaultFocus[componente.id]))
             },50);
         }
         }
@@ -379,11 +406,11 @@ const LISTACONTRATADO = memo((props) => {
 
     const funcionCancelar =async()=>{
             setActivarSpinner(true)
-            var e = getFocusGlobalEventDet();
+            // var e = getFocusGlobalEventDet();
             if(getCancelar_Cab()){
                 var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
     
-                if(AuxDataCancelCab.length > 0 && gridCab.current){
+                if(AuxDataCancelCab.length > 0 && gridCab_contratado.current){
                     const dataSource_cab = new DataSource({
                         store: new ArrayStore({
                               keyExpr:"ID",
@@ -391,27 +418,14 @@ const LISTACONTRATADO = memo((props) => {
                         }),
                         key: 'ID'
                     })
-                    gridCab.current.instance.option('dataSource', dataSource_cab);
+                    gridCab_contratado.current.instance.option('dataSource', dataSource_cab);
                     cancelar_Cab = JSON.stringify(AuxDataCancelCab);
                     // setInputData(e.row.data);
                     // console.log('esto es erowdata =>', e.row.data)              
                 }
             }
-            if(getCancelar_Cont()){
-                var AuxDataCancelCont = await JSON.parse(await getCancelar_Cont());
-                if(AuxDataCancelCont.length > 0 && gridCont.current){
-                    const dataSource_cont = new DataSource({
-                        store: new ArrayStore({
-                              keyExpr:"ID",
-                              data: AuxDataCancelCont
-                        }),
-                        key: 'ID'
-                    })
-                    gridCont.current.instance.option('dataSource', dataSource_cont);
-                    cancelar_Cont = JSON.stringify(AuxDataCancelCont);
-                }
-            }
-            // LimpiarDelete();
+         
+            LimpiarDelete();
             // QuitarClaseRequerido();
             banSwitch = false;
             setBandBloqueo(false);
@@ -419,7 +433,7 @@ const LISTACONTRATADO = memo((props) => {
             setTimeout(()=>{
                 setModifico();
                 setActivarSpinner(false)
-                gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1));
+                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,1));
     
             },50);
         }
@@ -427,109 +441,110 @@ const LISTACONTRATADO = memo((props) => {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const guardar = async(e)=>{
+        const guardar = async(e)=>{
 
-        setActivarSpinner(true);
-        // GENERAMOS EL PK AUTOMATICO
-        var datosCab    = gridCab.current.instance.getDataSource()._items;
-        console.log("datosCab ====>> ",datosCab);
-        var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
-                                                        // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
+            setActivarSpinner(true);
+            // GENERAMOS EL PK AUTOMATICO
     
-        var aux_cab             = info_cab.rowsAux;
-        var update_insert_cab   = info_cab.updateInsert;
-        var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
-        // console.log("delete_cab ===> ", delete_cab)
-        console.log("update ===> ", update_insert_cab)
-        let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
-        var data = {
-            // Cabecera
-                update_insert_cab,  delete_cab, valorAuxiliar_cab ,
-            // Adicional
-            "cod_usuario": sessionStorage.getItem('cod_usuario'),
-            "cod_empresa": sessionStorage.getItem('cod_empresa')
-        }
-        console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
+            // var datosCab    = gridCab_contratado.current.instance.getDataSource()._items;
     
-        if(update_insert_cab.length > 0){
-            for (let i = 0; i < update_insert_cab.length; i++) {
-                const items = update_insert_cab[i];
-                if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
-                    let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
-                    if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                                    //PRUEBA CODIGO CON IF ////////
+    
+            var datosCab = []
+            if(gridCab_contratado.current != undefined){
+                datosCab    = gridCab_contratado.current.instance.getDataSource()._items;
+            }
+    
+            var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
+                                                            // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
+        
+            var aux_cab             = info_cab.rowsAux;
+            var update_insert_cab   = info_cab.updateInsert;
+            var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
+            console.log("update ===> ", update_insert_cab)
+            
+            if(update_insert_cab.length > 0){
+                for (let i = 0; i < update_insert_cab.length; i++) {
+                    const items = update_insert_cab[i];
+                    if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
+                        let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
+                        if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                    }
                 }
             }
-        }
+            let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
     
+            var data = {
+                // Cabecera
+                    update_insert_cab,  delete_cab, valorAuxiliar_cab ,
+                // Adicional
+                "cod_usuario": sessionStorage.getItem('cod_usuario'),
+                "cod_empresa": sessionStorage.getItem('cod_empresa')
+            }
+            console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
+        
+        
+        
+        
+            if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
+                  try{
+                      var method = "POST"
+                      await Main.Request( url_abm, method, data).then(async(response) => {
+                          var resp = response.data;
+                          console.log("ESTO ES RESPONSE ===>>> ",response)
+                        //   console.log("ESTO ES RESP ==>> ", resp.ret);
+                          if(resp.ret == 1){
+                              Main.message.success({
+                                  content  : `Procesado correctamente!!`,
+                                  className: 'custom-class',
+                                  duration : `${2}`,
+                                  style    : {
+                                  marginTop: '4vh',
+                                  },
+                              });
+                              // BOTON MODIFICAR
+                              setModifico();
+        
+                              var dataSource = '';
+                              if(gridCab_contratado.current != undefined){
+                                  dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
+                                  gridCab_contratado.current.instance.option('dataSource', dataSource);
+                              }
     
-    
-        if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
-              try{
-                  var method = "POST"
-                  await Main.Request( url_abm, method, data).then(async(response) => {
-                      var resp = response.data;
-                      console.log("ESTO ES RESPONSE ===>>> ",response)
-                    //   console.log("ESTO ES RESP ==>> ", resp.ret);
-                      if(resp.ret == 1){
-                          Main.message.success({
-                              content  : `Procesado correctamente!!`,
-                              className: 'custom-class',
-                              duration : `${2}`,
-                              style    : {
-                              marginTop: '4vh',
-                              },
-                          });
-                          // BOTON MODIFICAR
-                          setModifico();
-    
-                          var dataSource = '';
-                          if(gridCab.current != undefined){
-                              dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                              gridCab.current.instance.option('dataSource', dataSource);
+                              cancelar_Cab =  JSON.stringify(aux_cab);
+                              setShowMessageButton(false)
+                              banSwitch = false;
+                              setTimeout(()=>{
+                                  // RHPOSTUL_CAB
+                                  let info = getComponenteFocusDet()
+                                  let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
+                                  gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(fila,1))
+                              },60);
+                          }else{
+                              setActivarSpinner(false);
+                            //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
+                              console.log("ENTRO EN EL ELSE!!")
                           }
-                          cancelar_Cab =  JSON.stringify(aux_cab);
-    
-                          // ---------------------------------------------
-                          if(gridCont.current != undefined){
-                              dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cont}), key:'ID'})
-                              gridCont.current.instance.option('dataSource', dataSource);
-                          }
-                          cancelar_Cab =  JSON.stringify(aux_cab);
-    
-                          setShowMessageButton(false)
-                          banSwitch = false;
-                          setTimeout(()=>{
-                              // RHPOSTUL_CAB
-                              let info = getComponenteFocusDet()
-                              let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
-                              gridCab.current.instance.focus(gridCab.current.instance.getCellElement(fila,1))
-                          },60);
-                      }else{
-                          setActivarSpinner(false);
-                        //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
-                          console.log("ENTRO EN EL ELSE!!")
-                      }
+                      });
+                  } catch (error) {
+                      console.log("Error en la funcion de Guardar!",error);
+                  }
+                  setActivarSpinner(false);
+              }else{
+                  setModifico();
+                  setActivarSpinner(false);
+                  Main.message.info({
+                      content  : `No encontramos cambios para guardar`,
+                      className: 'custom-class',
+                      duration : `${2}`,
+                      style    : {
+                          marginTop: '2vh',
+                      },
                   });
-              } catch (error) {
-                  console.log("Error en la funcion de Guardar!",error);
               }
+        
               setActivarSpinner(false);
-          }else{
-              setModifico();
-              setActivarSpinner(false);
-              Main.message.info({
-                  content  : `No encontramos cambios para guardar`,
-                  className: 'custom-class',
-                  duration : `${2}`,
-                  style    : {
-                      marginTop: '2vh',
-                  },
-              });
-          }
-    
-          setActivarSpinner(false);
-    }
-
+        }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleChange = async(e)=>{
@@ -555,11 +570,11 @@ const LISTACONTRATADO = memo((props) => {
                             }),
                             key: 'ID'
                         }) 
-                        gridCab.current.instance.option('dataSource', BuscadorRow);
+                        gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
                         cancelar_Cab = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
-                        gridCab.current.instance.option('focusedRowIndex', 0);
+                        gridCab_contratado.current.instance.option('focusedRowIndex', 0);
                     },70)
                 });
             } catch (error) {
@@ -576,6 +591,7 @@ const LISTACONTRATADO = memo((props) => {
         // console.log("esto es valueTrim ===>> ",value.trim())
         if(value.trim() == ''){
             // value = 'null'
+            // getData();
             getDataB();
         }
     
@@ -599,11 +615,11 @@ const LISTACONTRATADO = memo((props) => {
                                 }),
                                 key: 'ID'
                             }) 
-                            gridCab.current.instance.option('dataSource', BuscadorRow);
+                            gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
                             cancelar_Cab = JSON.stringify(response.data.rows);
                             }
                         setTimeout(()=>{
-                            gridCab.current.instance.option('focusedRowIndex', 0);
+                            gridCab_contratado.current.instance.option('focusedRowIndex', 0);
                         },70)
                     });
                 } catch (error) {
@@ -614,17 +630,17 @@ const LISTACONTRATADO = memo((props) => {
         }
             //FILA QUE QUEDA EN FOCUS
     const setRowFocus = async(e,grid,f9)=>{
-        
         if(e.row){
 
-            console.log(e.row.data);
+            var fecnac3 = e.row.data.FEC_NACIMIENTO;
+            e.row.data.FEC_NACIMIENTO = moment(fecnac3,'DD/MM/YYYY');
             form.setFieldsValue(e.row.data);
+            console.log(e.row.data);
             
         }else{
             console.log("Error al seteo de información", error)
             alert("Error al seteo de información", error);
         }
-
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -644,9 +660,55 @@ const LISTACONTRATADO = memo((props) => {
                 info.row.data['FEC_MODIFICACION'] = Main.moment().format('DD/MM/YYYY');
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
-            gridCab.current.instance.repaintRows(info.rowIndex);
+            gridCab_contratado.current.instance.repaintRows(info.rowIndex);
         }        
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const activateButtonCancelar3 = async(e,nameInput)=>{
+        console.log("====>>> se activo activateButtonCancelar")
+        var row  = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+        console.log("row ==>> ",row)
+        if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
+        else row[nameInput] = ''
+        
+        if(!row.inserted){ row.updated = true;
+            update = true;
+        } 
+        modifico()
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const stateOpenDate3 = (e)=>{
+		let res = document.getElementsByClassName('ant-picker-dropdown');
+		if(e){
+			res[0].classList.remove(Ocultar_classDataPiker_1);
+			res[0].classList.remove(Ocultar_classDataPiker_2);
+			res[0].classList.add(mostrar_classDataPiker_3);
+		}else{
+			res[0].classList.add(Ocultar_classDataPiker_1);
+			res[0].classList.add(Ocultar_classDataPiker_2);
+			res[0].classList.remove(mostrar_classDataPiker_3);
+		}
+	}
+
+    const clickDataPicket3 = async(e)=>{
+		let res   = await document.getElementsByClassName('ant-picker-dropdown');
+		let resul = res[0].classList.value.split(' ');
+		if(resul.indexOf(Ocultar_classDataPiker_2) !== -1){
+			res[0].classList.remove(Ocultar_classDataPiker_1);
+			res[0].classList.remove(Ocultar_classDataPiker_2);
+			res[0].classList.add(mostrar_classDataPiker_3);
+		}
+	}
+
+
+    const enCambio = (date, dateString) => {
+        // console.log(date);
+        (e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")
+        console.log('en cambio ==>> ',dateString)
+      };
+
 
 
     return (
@@ -669,8 +731,8 @@ const LISTACONTRATADO = memo((props) => {
 
                                 <div style={{padding:'10px'}}>
                                     <DevExtremeDet
-                                        gridDet             = {gridCab}
-                                        id                  = "RHPOSTUL_CAB"
+                                        gridDet             = {gridCab_contratado}
+                                        id                  = "ID"
                                         IDCOMPONENTE        = "RHPOSTUL_CAB"
                                         columnDet           = {columnsListar}
                                         notOrderByAccion    = {notOrderByAccion}
@@ -679,34 +741,44 @@ const LISTACONTRATADO = memo((props) => {
                                         newAddRow           = {false}
                                         deleteDisable       = {false}
                                         setRowFocusDet      = {setRowFocus}
-                                        optionSelect        = {estado}
+                                        optionSelect        = {opciones}
                                         activateF10         = {false}
                                         activateF6          = {false}
                                         setActivarSpinner   = {setActivarSpinner}
                                         altura              = {'200px'}
                                         doNotsearch         = {doNotsearch}
                                         columBuscador       = {columBuscador_cab}
-                                        // nextFocusNew        = {"APTITUDES"}
+                                        nextFocusNew        = {"APTITUDES"}
 
                                         // initialRow          = {initialRow}
                                     />
 
 
-<Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
                                             <Card>
                                                 <Col style={{ paddingTop: "2px"}}>
                                                     <Row gutter={[3, 3]}>
-
-                                                        {/* <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
-                                                            <Form.Item 
-                                                                name="FEC_NACIMIENTO"
-                                                                label= "Fecha de Nac."
-                                                                labelCol={{ span: 7 }}
-                                                                wrapperCol={{ span: 20 }}>
-                                                                    <DatePicker />
-                                                            </Form.Item>
-                                                        </Col> */}
+                                                        <ConfigProvider locale={locale}>
+                                                                <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
+                                                                    <Form.Item 
+                                                                    name="FEC_NACIMIENTO"
+                                                                        label= "Fecha de Nac."
+                                                                        labelCol={{ span: 7 }}
+                                                                        wrapperCol={{ span: 20 }}
+                                                                        >
+                                                                            <DatePicker 
+                                                                                // onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
+                                                                                onChange={enCambio}
+                                                                                format={"DD/MM/YYYY"}																			
+                                                                                // open={openDatePicker3}
+                                                                                // onOpenChange={stateOpenDate3}
+                                                                                // onClick={clickDataPicket3}
+                                                                                allowClear={false}
+                                                                            />
+                                                                    </Form.Item>
+                                                                </Col> 
+                                                            </ConfigProvider>
 
                                                         <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
                                                             <Form.Item 
@@ -717,7 +789,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="Masculino" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -769,7 +841,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -812,7 +884,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -834,7 +906,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -889,7 +961,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -931,7 +1003,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -953,7 +1025,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -996,24 +1068,25 @@ const LISTACONTRATADO = memo((props) => {
                                         </div>
 
 
-                                        <div style={{ padding: "1px" }}>
-                                            <Card>
+                                        <div style={{ padding: "3px" }} className='paper-container'>
+                                                <Card style={{ padding: "3px" }}>
                                             
-                                                <Col span={24} style={{paddingLeft:5}}>
-                                                        <Form.Item 
-                                                            label= "Experiencia Laboral" 
-                                                            name="EXPERIENCIA_LABORAL">
-                                                            <Input  onChange={handleInputChange}/>
-                                                        </Form.Item>
-                                                </Col>
+                                                    <Card>
+                                                        <Col span={24} style={{paddingLeft:5}}>
+                                                                <Form.Item 
+                                                                    label= "Experiencia Laboral" 
+                                                                    name="EXPERIENCIA_LABORAL">
+                                                                    <Input  onChange={handleInputChange} />
+                                                                </Form.Item>
+                                                        </Col>
 
-                                            </Card>
-                                        </div>
-    
+                                                    </Card>
 
+                                                </Card>
+                                            </div>
                                     </Form>
                                 </div>
-        </Main.Paper>
+         </Main.Paper>
 
     </>
     

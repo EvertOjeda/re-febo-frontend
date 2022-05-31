@@ -14,6 +14,7 @@ import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , Array
 import moment from 'moment';
 import locale                   from 'antd/lib/locale/es_ES';
 
+
 import '../../../../../../assets/css/DevExtreme.css';
 
 
@@ -69,7 +70,7 @@ const FormName              = 'RHPOSTUL';
 
 
 
-const LISTAENTREVISTA = memo((props) => {
+const LISTAPOSTULANTE = memo((props) => {
 
 
 
@@ -100,10 +101,9 @@ const LISTAENTREVISTA = memo((props) => {
 
 
 
-
     ///////////////////////////////////////////////////////////////////////////////
     //URL CABECERA
-    const url_getcabecera    = '/rh/rhpostul_ent/';
+    const url_getcabecera    = '/rh/rhpostul_pos/';
     //URL ABM
     const url_abm            = '/rh/rhpostul' ;
     ///////////////////////////////////////////////////////////////////////////////
@@ -116,21 +116,20 @@ const LISTAENTREVISTA = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]                    = Form.useForm();
+    const [form]        = Form.useForm();
 
 
-    const gridCab_entrevista       = React.useRef();
-    const gridDet       = React.useRef();
+    const gridCab_postulante       = React.useRef();
 
 
     const [ activarSpinner   , setActivarSpinner    ] = useState(false);
     const [showMessageButton , setShowMessageButton ] = React.useState(false)
-    const [openDatePicker2   , setdatePicker	    ] = React.useState(true);
+    const [openDatePicker1 , setdatePicker	        ] = React.useState(true);
 
 
 
-    const idGrid_entrevista = {
-        RHPOSTUL_CAB:gridCab_entrevista,
+    const idGrid_postulante = {
+        RHPOSTUL_CAB:gridCab_postulante,
 
         defaultFocus:{
 			RHPOSTUL_CAB:1,
@@ -174,7 +173,7 @@ const LISTAENTREVISTA = memo((props) => {
             ['EMAIL'                        ] : '',
             ['SUCURSAL'                     ] : '',
             ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
-            ['ESTADO'                       ] : 'ENTREVISTA',
+            ['ESTADO'                       ] : 'POSTULANTE',
             
             ['FEC_NACIMIENTO'               ] : '01/01/2000',
             ['APTITUDES'                    ] : '',
@@ -272,7 +271,6 @@ const LISTAENTREVISTA = memo((props) => {
                         IDCOMPONENTE  : "RHPOSTUL_CAB",
                     }]
                 }
-                console.log("content ===>>> ",content)
 
                 const dataSource_Cab = new DataSource({
                     store: new ArrayStore({
@@ -280,10 +278,10 @@ const LISTAENTREVISTA = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
+                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_Cab = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(0,1))
+                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1))
                 },100)
             }
             /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
@@ -314,17 +312,57 @@ const LISTAENTREVISTA = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
+                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_Cab = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement())
+                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement())
                 },100)
             }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const addRow = async()=>{
+        if(!bandBloqueo){
+            let idComponent = getComponenteEliminarDet().id
+            let indexRow  = getRowIndex()
+            if(indexRow == -1) indexRow = 0
+            if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0
+            modifico();
+            let initialInput = await initialFormData(true)
+            let data = gridCab_postulante.current.instance.getDataSource();
+            var newKey = uuidID();
+            var row    = [0]
 
-            //////////////////////////////////////////////////////////////////////////////////////////
-    const activateButtonCancelar2 = async(e,nameInput)=>{
-        var row  = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+            row = [{
+                ...initialInput,
+                ID	          : newKey,
+                IDCOMPONENTE  : "RHPOSTUL_CAB",
+            }]
+            let rows    = data._items;
+            let info = rows.concat(rows.splice(indexRow, 0, ...row))
+
+            const dataSource_cab = new DataSource({
+                store: new ArrayStore({
+                    data: info,
+                }),
+                key: 'ID'
+            });
+            gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
+            setTimeout(()=>{
+                gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(indexRow,1))
+            },110)
+        }else{
+            gridCab_postulante.current.instance.option("focusedRowKey", 120);
+            gridCab_postulante.current.instance.clearSelection();
+            gridCab_postulante.current.instance.focus(0);
+            setShowMessageButton(true);
+            showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
+        }
+
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const activateButtonCancelar1 = async(e,nameInput)=>{
+        var row  = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
         console.log("row ==>> ",row)
         if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
         else row[nameInput] = ''
@@ -336,7 +374,7 @@ const LISTAENTREVISTA = memo((props) => {
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const stateOpenDate2 = (e)=>{
+    const stateOpenDate1 = (e)=>{
 		let res = document.getElementsByClassName('ant-picker-dropdown');
 		if(e){
 			res[0].classList.remove(Ocultar_classDataPiker_1);
@@ -350,7 +388,7 @@ const LISTAENTREVISTA = memo((props) => {
 	}
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const clickDataPicket2 = async(e)=>{
+    const clickDataPicket1 = async(e)=>{
 		let res   = await document.getElementsByClassName('ant-picker-dropdown');
 		let resul = res[0].classList.value.split(' ');
 		if(resul.indexOf(Ocultar_classDataPiker_2) !== -1){
@@ -371,9 +409,10 @@ const LISTAENTREVISTA = memo((props) => {
         console.log("Componente ==> ",componente)
         if(componente.delete){
             let indexRow =  await getRowIndex();
+            console.log('esto es indexRow ==>> ',indexRow)
             if(indexRow == -1) indexRow = 0
             console.log(" esto es componete ==> ",componente)
-            let data    = idGrid_entrevista[componente.id].current.instance.getDataSource()._items
+            let data    = idGrid_postulante[componente.id].current.instance.getDataSource()._items
             // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
             let info    = data[indexRow]
             
@@ -381,7 +420,7 @@ const LISTAENTREVISTA = memo((props) => {
                 modifico();
     
                 var nameColumn = await getFocusedColumnName()
-                var comunIndex = idGrid_entrevista[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
+                var comunIndex = idGrid_postulante[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
                 if (comunIndex == -1) comunIndex = 0;
     
                 if(DeleteForm[componente.id] !== undefined){
@@ -396,15 +435,15 @@ const LISTAENTREVISTA = memo((props) => {
                 }
                 if(indexRow == -1) indexRow = 0
     
-                idGrid_entrevista[componente.id].current.instance.deleteRow(indexRow);
-                idGrid_entrevista[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
             }else{
-                idGrid_entrevista[componente.id].current.instance.deleteRow(indexRow);
-                idGrid_entrevista[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
             }
             setTimeout(()=>{
                 indexRow = indexRow - 1;
-                idGrid_entrevista[componente.id].current.instance.focus(idGrid_entrevista[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_entrevista.defaultFocus[componente.id]))
+                idGrid_postulante[componente.id].current.instance.focus(idGrid_postulante[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_postulante.defaultFocus[componente.id]))
             },50);
         }
         }
@@ -419,13 +458,13 @@ const LISTAENTREVISTA = memo((props) => {
         setActivarSpinner(true);
         // GENERAMOS EL PK AUTOMATICO
 
-        // var datosCab    = gridCab_entrevista.current.instance.getDataSource()._items;
+        // var datosCab    = gridCab_postulante.current.instance.getDataSource()._items;
 
                                 //PRUEBA CODIGO CON IF ////////
 
         var datosCab = []
-        if(gridCab_entrevista.current != undefined){
-            datosCab    = gridCab_entrevista.current.instance.getDataSource()._items;
+        if(gridCab_postulante.current != undefined){
+            datosCab    = gridCab_postulante.current.instance.getDataSource()._items;
         }
 
         var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
@@ -454,18 +493,16 @@ const LISTAENTREVISTA = memo((props) => {
             "cod_usuario": sessionStorage.getItem('cod_usuario'),
             "cod_empresa": sessionStorage.getItem('cod_empresa')
         }
-        console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
-    
-    
-    
-    
+        console.log("insert_cab.length ===>>> ",update_insert_cab.length, 
+                    "delete_cab.length ===>>> ",delete_cab.length );
+
         if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
               try{
                   var method = "POST"
                   await Main.Request( url_abm, method, data).then(async(response) => {
+                    console.log("esto es response ==> ",response)
+
                       var resp = response.data;
-                      console.log("ESTO ES RESPONSE ===>>> ",response)
-                    //   console.log("ESTO ES RESP ==>> ", resp.ret);
                       if(resp.ret == 1){
                           Main.message.success({
                               content  : `Procesado correctamente!!`,
@@ -475,23 +512,25 @@ const LISTAENTREVISTA = memo((props) => {
                               marginTop: '4vh',
                               },
                           });
-                          // BOTON MODIFICAR
-                          setModifico();
-    
+                         // BOTON MODIFICAR
+						 setModifico();
+                         // CLEAR DELETE
+                         LimpiarDelete()
                           var dataSource = '';
-                          if(gridCab_entrevista.current != undefined){
+                          if(gridCab_postulante.current != undefined){
                               dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                              gridCab_entrevista.current.instance.option('dataSource', dataSource);
+                              gridCab_postulante.current.instance.option('dataSource', dataSource);
                           }
 
                           cancelar_Cab =  JSON.stringify(aux_cab);
+                          setBandBloqueo(false);
                           setShowMessageButton(false)
                           banSwitch = false;
                           setTimeout(()=>{
                               // RHPOSTUL_CAB
                               let info = getComponenteFocusDet()
-                              let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
-                              gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(fila,1))
+                              let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0 
+                              gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(fila,1))
                           },60);
                       }else{
                           setActivarSpinner(false);
@@ -515,7 +554,7 @@ const LISTAENTREVISTA = memo((props) => {
                   },
               });
           }
-    
+          
           setActivarSpinner(false);
     }
 
@@ -527,7 +566,7 @@ const LISTAENTREVISTA = memo((props) => {
         if(getCancelar_Cab()){
             var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
 
-            if(AuxDataCancelCab.length > 0 && gridCab_entrevista.current){
+            if(AuxDataCancelCab.length > 0 && gridCab_postulante.current){
                 const dataSource_cab = new DataSource({
                     store: new ArrayStore({
                           keyExpr:"ID",
@@ -535,22 +574,20 @@ const LISTAENTREVISTA = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab_entrevista.current.instance.option('dataSource', dataSource_cab);
+                gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
                 cancelar_Cab = JSON.stringify(AuxDataCancelCab);
                 // setInputData(e.row.data);
                 // console.log('esto es erowdata =>', e.row.data)              
             }
         }
-        
         LimpiarDelete();
-        // QuitarClaseRequerido();
         banSwitch = false;
         setBandBloqueo(false);
         setShowMessageButton(false)
         setTimeout(()=>{
             setModifico();
             setActivarSpinner(false)
-            gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(0,1));
+            gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1));
 
         },50);
     }
@@ -580,11 +617,11 @@ const LISTAENTREVISTA = memo((props) => {
                             }),
                             key: 'ID'
                         }) 
-                        gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
+                        gridCab_postulante.current.instance.option('dataSource', BuscadorRow);
                         cancelar_Cab = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
-                        gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
+                        gridCab_postulante.current.instance.option('focusedRowIndex', 0);
                     },70)
                 });
             } catch (error) {
@@ -623,11 +660,11 @@ const LISTAENTREVISTA = memo((props) => {
                                 }),
                                 key: 'ID'
                             }) 
-                            gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
+                            gridCab_postulante.current.instance.option('dataSource', BuscadorRow);
                             cancelar_Cab = JSON.stringify(response.data.rows);
                             }
                         setTimeout(()=>{
-                            gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
+                            gridCab_postulante.current.instance.option('focusedRowIndex', 0);
                         },70)
                     });
                 } catch (error) {
@@ -640,8 +677,8 @@ const LISTAENTREVISTA = memo((props) => {
     const setRowFocus = async(e,grid,f9)=>{
         if(e.row){
 
-            var fecnac2 = e.row.data.FEC_NACIMIENTO;
-            e.row.data.FEC_NACIMIENTO = moment(fecnac2,'DD/MM/YYYY')
+            var fecnac1 = e.row.data.FEC_NACIMIENTO;
+            e.row.data.FEC_NACIMIENTO = moment(fecnac1,'DD/MM/YYYY')
             console.log(e.row.data);
             form.setFieldsValue(e.row.data);
             
@@ -653,47 +690,7 @@ const LISTAENTREVISTA = memo((props) => {
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const addRow = async()=>{
-            if(!bandBloqueo){
-                let idComponent = getComponenteEliminarDet().id
-                let indexRow  = getRowIndex()
-                if(indexRow == -1) indexRow = 0
-                if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0    
-                modifico();
-                let initialInput = await initialFormData(true)
-                let data = gridCab_entrevista.current.instance.getDataSource();
-                var newKey = uuidID();
-                var row    = [0]
-    
-                row = [{
-                    ...initialInput,
-                    ID	          : newKey,
-                    IDCOMPONENTE  : "RHPOSTUL_CAB",
-                }]
-                let rows    = data._items;
-                let info = rows.concat(rows.splice(indexRow, 0, ...row))
-    
-                const dataSource_cab = new DataSource({
-                    store: new ArrayStore({
-                        data: info,
-                    }),
-                    key: 'ID'
-                });
-                gridCab_entrevista.current.instance.option('dataSource', dataSource_cab);
-                setTimeout(()=>{
-                    gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(indexRow,1))
-                },110)
-            }else{
-                gridCab_entrevista.current.instance.option("focusedRowKey", 120);
-                gridCab_entrevista.current.instance.clearSelection();
-                gridCab_entrevista.current.instance.focus(0);
-                setShowMessageButton(true);
-                showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
-            }
-    
-        }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleInputChange = async(e)=>{
         modifico();
@@ -710,9 +707,11 @@ const LISTAENTREVISTA = memo((props) => {
                 info.row.data['FEC_MODIFICACION'] = Main.moment().format('DD/MM/YYYY');
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
-            gridCab_entrevista.current.instance.repaintRows(info.rowIndex);
+            gridCab_postulante.current.instance.repaintRows(info.rowIndex);
         }        
+
     }
+
 
 
 
@@ -738,7 +737,7 @@ const LISTAENTREVISTA = memo((props) => {
 
                                     <div style={{padding:'10px'}}>
                                         <DevExtremeDet
-                                            gridDet             = {gridCab_entrevista}
+                                            gridDet             = {gridCab_postulante}
                                             id                  = "ID"
                                             IDCOMPONENTE        = "RHPOSTUL_CAB"
                                             columnDet           = {columnsListar}
@@ -775,17 +774,17 @@ const LISTAENTREVISTA = memo((props) => {
                                                                         wrapperCol={{ span: 20 }}
                                                                         >
                                                                             <DatePicker 
-                                                                                onChange={(e)=>activateButtonCancelar2(e,"FEC_NACIMIENTO")}
-                                                                                format={"DD/MM/YYYY"}																			
-                                                                                open={openDatePicker2}
-                                                                                onOpenChange={stateOpenDate2}
-                                                                                onClick={clickDataPicket2}
-                                                                                allowClear={false}
+                                                                                onChange={(e)=>{activateButtonCancelar1(e,"FEC_NACIMIENTO")}}
+                                                                                    format={"DD/MM/YYYY"}																			
+                                                                                    open={openDatePicker1}
+                                                                                    onOpenChange={stateOpenDate1}    
+                                                                                    onClick={clickDataPicket1}
+                                                                                    allowClear={false}
                                                                             />
+
                                                                     </Form.Item>
                                                                 </Col> 
                                                             </ConfigProvider>
-
 
                                                             <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
                                                                 <Form.Item 
@@ -796,7 +795,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="Masculino" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -848,7 +847,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -891,7 +890,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -913,7 +912,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -968,7 +967,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1010,7 +1009,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1032,7 +1031,7 @@ const LISTAENTREVISTA = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1089,7 +1088,6 @@ const LISTAENTREVISTA = memo((props) => {
 
                                                 </Card>
                                             </div>
-        
 
                                         </Form>
                                     </div>
@@ -1101,4 +1099,4 @@ const LISTAENTREVISTA = memo((props) => {
 
 });
 
-export default LISTAENTREVISTA;
+export default LISTAPOSTULANTE;
