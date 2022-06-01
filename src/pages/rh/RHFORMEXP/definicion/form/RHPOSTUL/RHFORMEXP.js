@@ -1,14 +1,14 @@
 import React, { useState, memo }      from 'react';
-import Main            from "../../../../../components/utils/Main";
-import * as XLSX from "xlsx";
-import { Typography } from "antd";
-import DataGrid from 'devextreme-react/data-grid';
-import { Button } from 'antd';
-import '../../../../../assets/css/DevExtreme.css';
+import Main                           from "../../../../../../components/utils/Main";
+import * as XLSX                      from "xlsx";
+import { Typography }                 from "antd";
+import DataGrid                       from 'devextreme-react/data-grid';
+import { Button }                     from 'antd';
+import '../../../../../../assets/css/DevExtreme.css';
 
 import swal from 'sweetalert';
-import agregarIcon from     '../../../../../assets/icons/add.svg';
-import guardarIcon from     '../../../../../assets/icons/diskette.svg';
+import agregarIcon from     '../../../../../../assets/icons/add.svg';
+import guardarIcon from     '../../../../../../assets/icons/diskette.svg';
 import './style.css';
 
 const { Title }               = Typography;

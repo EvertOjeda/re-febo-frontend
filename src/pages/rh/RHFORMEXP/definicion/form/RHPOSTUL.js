@@ -6,7 +6,7 @@ import { Menu, DireccionMenu }      from '../../../../../components/utils/FocusD
 import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
 import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 import LISTAPOSTULANTE from './RHPOSTUL/LISTAPOSTULANTE';
-import RHFORMEXP       from './RHFORMEXP';
+import RHFORMEXP       from './RHPOSTUL/RHFORMEXP';
 
 
 import '../../../../../assets/css/DevExtreme.css';
