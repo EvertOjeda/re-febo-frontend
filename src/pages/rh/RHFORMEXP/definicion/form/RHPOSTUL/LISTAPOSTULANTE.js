@@ -1,23 +1,25 @@
-import React, { useState, memo, useEffect } from 'react';
-import Main                          from '../../../../../../components/utils/Main';
-import _                             from "underscore";
+import React, { useState, useRef, memo, useEffect } from 'react';
+import Main                         from '../../../../../../components/utils/Main';
+import _                            from "underscore";
 import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
-import Search                        from '../../../../../../components/utils/SearchForm/SearchForm';
-import {setModifico,modifico}        from '../../../../../../components/utils/SearchForm/Cancelar';
+import Search                       from '../../../../../../components/utils/SearchForm/SearchForm';
+import {setModifico,modifico}       from '../../../../../../components/utils/SearchForm/Cancelar';
 
-import DataSource                    from "devextreme/data/data_source";
-import ArrayStore                    from "devextreme/data/array_store";
-import { v4 as uuidID }              from "uuid";
+import DataSource                   from "devextreme/data/data_source";
+import ArrayStore                   from "devextreme/data/array_store";
+import { v4 as uuidID }             from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
-                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet
-}                                                      from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
-import moment from 'moment';
+                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
+                       from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+import moment                        from 'moment';
 import locale                   from 'antd/lib/locale/es_ES';
-
 
 import '../../../../../../assets/css/DevExtreme.css';
 
 
+const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
+const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
+const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
 
 
 const columnsListar = [  
@@ -27,13 +29,18 @@ const columnsListar = [
     { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
     { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
     { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'     ,isOpcionSelect:true},
-    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true, requerido:true},
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    , isOpcionSelect:true},
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
     { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
-];
+  ];
 
 
-const opciones    = {
+  // operaciones
+var insert   = false;
+var update   = false;
+
+
+  const opciones    = {
     ESTADO:  [    
         { ID:'POSTULANTE'   , NAME:'Postulante', isNew:true }, 
         { ID:'ENTREVISTA'   , NAME:'Entrevista' },
@@ -41,7 +48,7 @@ const opciones    = {
     ],
     ESTADO_CIVIL:[
         { ID:'Soltero/a', NAME:'Soltero/a', isNew:true },
-        { ID:'Casado/a' , NAME:'Casado/a'  },
+        { ID:'Casado/a' , NAME:'Casado/a'   },
         { ID:'Otros'    , NAME:'Otros'      },
     ],
     SUCURSAL:[
@@ -53,8 +60,8 @@ const opciones    = {
         { ID:'Luque'                    , NAME:'Luque'                  },
     ],
     IND_VACANCIA_INTERES:[
-        { ID:'Repositor/a'              , NAME:'Repositor/a'            , isNew:true },
-        { ID:'Cajero/a'                 , NAME:'Cajero/a'               },
+        { ID:'Cajero/a'                 , NAME:'Cajero/a'               , isNew:true },
+        { ID:'Repositor/a'              , NAME:'Repositor/a'            },
         { ID:'Agente de prevención'     , NAME:'Agente de prevención'   },
     ]
 }
@@ -65,43 +72,28 @@ const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACION
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
+const title                 = "Lista de postulantes";
 
 const FormName              = 'RHPOSTUL';
+
+
+var DeleteForm = []
+const LimpiarDelete = () =>{
+    DeleteForm = [];
+}
+
+var cancelar_Cab = '';
+const getCancelar_Cab = ()=>{
+	return cancelar_Cab;
+}
 
 
 
 const LISTAPOSTULANTE = memo((props) => {
 
-
-
     const cod_empresa         = sessionStorage.getItem('cod_empresa');
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
-
-    ////////////////////////// ZONA VARIABLES ////////////////////////////////////
-
-    const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
-    const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
-    const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
-
-
-      // operaciones
-    var insert   = false;
-    var update   = false;
-
-    
-    var DeleteForm = []
-    const LimpiarDelete = () =>{
-        DeleteForm = [];
-    }
-
-    var cancelar_Cab = '';
-    const getCancelar_Cab = ()=>{
-        return cancelar_Cab;
-    }
-
-
-
-    ///////////////////////////////////////////////////////////////////////////////
+   
     //URL CABECERA
     const url_getcabecera    = '/rh/rhpostul_pos/';
     //URL ABM
@@ -116,19 +108,18 @@ const LISTAPOSTULANTE = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]        = Form.useForm();
+    const [form]              = Form.useForm();
 
-
-    const gridCab_postulante       = React.useRef();
-
-
-    const [ activarSpinner   , setActivarSpinner    ] = useState(false);
-    const [showMessageButton , setShowMessageButton ] = React.useState(false)
-    const [openDatePicker1 , setdatePicker	        ] = React.useState(true);
+    const gridCab_postulante                   = React.useRef();
 
 
 
-    const idGrid_postulante = {
+    const [ activarSpinner   , setActivarSpinner   ] = useState(false);
+    const [showMessageButton , setShowMessageButton] = React.useState(false);
+    const [openDatePicker1 , setdatePicker	       ] = useState(true);
+
+
+    const idGrid_contratado = {
         RHPOSTUL_CAB:gridCab_postulante,
 
         defaultFocus:{
@@ -158,8 +149,140 @@ const LISTAPOSTULANTE = memo((props) => {
     },{filterPreventDefault:true,enableOnTags:['INPUT','TEXTAREA']});
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // GET GENERICO
+    const getInfo = async (url, method, data) => {
+        var content = [];        
+        try {
+            var info = await Main.Request(url, method, data);
+            if (info.data.rows) {
+                content = info.data.rows;
+
+            }
+            return content;
+        }  catch (error) {
+            console.log(error);
+            }
+    };
+
+    const getData = async()=>{
+                try {
+                    setActivarSpinner(true);
+                    var content = await getInfo(url_getcabecera, "GET", []);
+                    if(_.isUndefined(content)) content = []
+                } catch (error) {
+                    console.log(error)
+                }finally{
+                    setActivarSpinner(false);
+                }
+                if(content.length == 0){
+                    var newKey = uuidID();
+                    content = [{
+                        ID	          : newKey,
+                        COD_EMPRESA   : cod_empresa,
+                        InsertDefault : true,
+                        COD_USUARIO   : sessionStorage.getItem('cod_usuario'),
+                        IDCOMPONENTE  : "RHPOSTUL_CAB",
+
+                    }]
+                }
+                const dataSource_Cab = new DataSource({
+                    store: new ArrayStore({
+                        data: content,
+                    }),
+                    key: 'ID'
+                })
+                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
+                cancelar_Cab = JSON.stringify(content);
+                setTimeout(()=>{
+                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1))
+                },100)
+
+    }
+            /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
+
+    const getDataB = async()=>{
+                try {
+                    setActivarSpinner(true);
+                    var content = await getInfo(url_getcabecera, "GET", []);
+                    if(_.isUndefined(content)) content = []
+                } catch (error) {
+                    console.log(error)
+                }finally{
+                    setActivarSpinner(false);
+                }
+                if(content.length == 0){
+                    var newKey = uuidID();
+                    content = [{
+                        ID	          : newKey,
+                        COD_EMPRESA   : cod_empresa,
+                        InsertDefault : true,
+                        COD_USUARIO   : sessionStorage.getItem('cod_usuario'),
+                        IDCOMPONENTE  : "RHPOSTUL_CAB",
+
+                    }]
+                }
+                const dataSource_Cab = new DataSource({
+                    store: new ArrayStore({
+                        data: content,
+                    }),
+                    key: 'ID'
+                })
+                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
+                cancelar_Cab = JSON.stringify(content);
+                setTimeout(()=>{
+                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement())
+                },100)
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const addRow = async()=>{
+        if(!bandBloqueo){
+            let idComponent = getComponenteEliminarDet().id
+            let indexRow  = getRowIndex()
+            if(indexRow == -1) indexRow = 0
+            if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0    
+            modifico();
+            let initialInput = await initialFormData(true)
+            let data = gridCab_postulante.current.instance.getDataSource();
+            var newKey = uuidID();
+            var row    = [0]
+
+            row = [{
+                ...initialInput,
+                ID	          : newKey,
+                IDCOMPONENTE  : "RHPOSTUL_CAB",
+            }]
+            let rows    = data._items;
+            let info = rows.concat(rows.splice(indexRow, 0, ...row))
+
+            const dataSource_cab = new DataSource({
+                store: new ArrayStore({
+                    data: info,
+                }),
+                key: 'ID'
+            });
+            gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
+            setTimeout(()=>{
+                gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(indexRow,1))
+            },110)
+        }else{
+            gridCab_postulante.current.instance.option("focusedRowKey", 120);
+            gridCab_postulante.current.instance.clearSelection();
+            gridCab_postulante.current.instance.focus(0);
+            setShowMessageButton(true);
+            showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
+        }
+
+    }
+     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         
-    const initialFormData = async(isNew)=>{
+     const initialFormData = async(isNew)=>{
 
         
         var valor = {
@@ -173,7 +296,7 @@ const LISTAPOSTULANTE = memo((props) => {
             ['EMAIL'                        ] : '',
             ['SUCURSAL'                     ] : '',
             ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
-            ['ESTADO'                       ] : 'POSTULANTE',
+            ['ESTADO'                       ] : 'CONTRATADO',
             
             ['FEC_NACIMIENTO'               ] : '01/01/2000',
             ['APTITUDES'                    ] : '',
@@ -234,185 +357,15 @@ const LISTAPOSTULANTE = memo((props) => {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-    // GET GENERICO
-    const getInfo = async (url, method, data) => {
-        var content = [];        
-        try {
-            var info = await Main.Request(url, method, data);
-            if (info.data.rows) {
-                content = info.data.rows;
-            }
-            return content;
-        }  catch (error) {
-            console.log(error);
-            }
-    };
-
-    const getData = async()=>{
-                try {
-                    setActivarSpinner(true);
-                    var content = await getInfo(url_getcabecera, "GET", []);
-                    if(_.isUndefined(content)) content = []
-                } catch (error) {
-                    console.log(error)
-                }finally{
-                    setActivarSpinner(false);
-                }
-                if(content.length == 0){
-                    var newKey = uuidID();
-                    content = [{
-                        ID	          : newKey,
-                        COD_EMPRESA   : cod_empresa,
-                        InsertDefault : true,
-                        COD_USUARIO   : sessionStorage.getItem('cod_usuario'),
-                        IDCOMPONENTE  : "RHPOSTUL_CAB",
-                    }]
-                }
-
-                const dataSource_Cab = new DataSource({
-                    store: new ArrayStore({
-                        data: content,
-                    }),
-                    key: 'ID'
-                })
-                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
-                cancelar_Cab = JSON.stringify(content);
-                setTimeout(()=>{
-                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1))
-                },100)
-            }
-            /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
-            const getDataB = async()=>{
-                try {
-                    setActivarSpinner(true);
-                    var content = await getInfo(url_getcabecera, "GET", []);
-                    if(_.isUndefined(content)) content = []
-                } catch (error) {
-                    console.log(error)
-                }finally{
-                    setActivarSpinner(false);
-                }
-                if(content.length == 0){
-                    var newKey = uuidID();
-                    content = [{
-                        ID	          : newKey,
-                        COD_EMPRESA   : cod_empresa,
-                        InsertDefault : true,
-                        COD_USUARIO   : sessionStorage.getItem('cod_usuario'),
-                        IDCOMPONENTE  : "RHPOSTUL_CAB",
-
-                    }]
-                }
-                const dataSource_Cab = new DataSource({
-                    store: new ArrayStore({
-                        data: content,
-                    }),
-                    key: 'ID'
-                })
-                gridCab_postulante.current.instance.option('dataSource', dataSource_Cab);
-                cancelar_Cab = JSON.stringify(content);
-                setTimeout(()=>{
-                    gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement())
-                },100)
-            }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const addRow = async()=>{
-        if(!bandBloqueo){
-            let idComponent = getComponenteEliminarDet().id
-            let indexRow  = getRowIndex()
-            if(indexRow == -1) indexRow = 0
-            if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0
-            modifico();
-            let initialInput = await initialFormData(true)
-            let data = gridCab_postulante.current.instance.getDataSource();
-            var newKey = uuidID();
-            var row    = [0]
-
-            row = [{
-                ...initialInput,
-                ID	          : newKey,
-                IDCOMPONENTE  : "RHPOSTUL_CAB",
-            }]
-            let rows    = data._items;
-            let info = rows.concat(rows.splice(indexRow, 0, ...row))
-
-            const dataSource_cab = new DataSource({
-                store: new ArrayStore({
-                    data: info,
-                }),
-                key: 'ID'
-            });
-            gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
-            setTimeout(()=>{
-                gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(indexRow,1))
-            },110)
-        }else{
-            gridCab_postulante.current.instance.option("focusedRowKey", 120);
-            gridCab_postulante.current.instance.clearSelection();
-            gridCab_postulante.current.instance.focus(0);
-            setShowMessageButton(true);
-            showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
-        }
-
-    }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const activateButtonCancelar1 = async(e,nameInput)=>{
-        var row  = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
-        console.log("row ==>> ",row)
-        if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
-        else row[nameInput] = ''
-        
-        if(!row.inserted){ row.updated = true;
-            update = true;
-        } 
-        modifico()
-    }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const stateOpenDate1 = (e)=>{
-		let res = document.getElementsByClassName('ant-picker-dropdown');
-		if(e){
-			res[0].classList.remove(Ocultar_classDataPiker_1);
-			res[0].classList.remove(Ocultar_classDataPiker_2);
-			res[0].classList.add(mostrar_classDataPiker_3);
-		}else{
-			res[0].classList.add(Ocultar_classDataPiker_1);
-			res[0].classList.add(Ocultar_classDataPiker_2);
-			res[0].classList.remove(mostrar_classDataPiker_3);
-		}
-	}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const clickDataPicket1 = async(e)=>{
-		let res   = await document.getElementsByClassName('ant-picker-dropdown');
-		let resul = res[0].classList.value.split(' ');
-		if(resul.indexOf(Ocultar_classDataPiker_2) !== -1){
-			res[0].classList.remove(Ocultar_classDataPiker_1);
-			res[0].classList.remove(Ocultar_classDataPiker_2);
-			res[0].classList.add(mostrar_classDataPiker_3);
-		}
-	}
-
-
-
-     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     const deleteRows = async()=>{
         const componente = await getComponenteEliminarDet();
         componente.id = 'RHPOSTUL_CAB';
         console.log("Componente ==> ",componente)
         if(componente.delete){
             let indexRow =  await getRowIndex();
-            console.log('esto es indexRow ==>> ',indexRow)
             if(indexRow == -1) indexRow = 0
             console.log(" esto es componete ==> ",componente)
-            let data    = idGrid_postulante[componente.id].current.instance.getDataSource()._items
+            let data    = idGrid_contratado[componente.id].current.instance.getDataSource()._items
             // console.log('idGrid[componete.id].current ==> ', idGrid[componete.id].current)
             let info    = data[indexRow]
             
@@ -420,7 +373,7 @@ const LISTAPOSTULANTE = memo((props) => {
                 modifico();
     
                 var nameColumn = await getFocusedColumnName()
-                var comunIndex = idGrid_postulante[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
+                var comunIndex = idGrid_contratado[componente.id].current.instance.getCellElement(indexRow,nameColumn).cellIndex;
                 if (comunIndex == -1) comunIndex = 0;
     
                 if(DeleteForm[componente.id] !== undefined){
@@ -435,163 +388,157 @@ const LISTAPOSTULANTE = memo((props) => {
                 }
                 if(indexRow == -1) indexRow = 0
     
-                idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
-                idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_contratado[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_contratado[componente.id].current.instance.repaintRows([indexRow]);
             }else{
-                idGrid_postulante[componente.id].current.instance.deleteRow(indexRow);
-                idGrid_postulante[componente.id].current.instance.repaintRows([indexRow]);
+                idGrid_contratado[componente.id].current.instance.deleteRow(indexRow);
+                idGrid_contratado[componente.id].current.instance.repaintRows([indexRow]);
             }
             setTimeout(()=>{
                 indexRow = indexRow - 1;
-                idGrid_postulante[componente.id].current.instance.focus(idGrid_postulante[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_postulante.defaultFocus[componente.id]))
+                idGrid_contratado[componente.id].current.instance.focus(idGrid_contratado[componente.id].current.instance.getCellElement(indexRow == -1 ? 0 : indexRow ,idGrid_contratado.defaultFocus[componente.id]))
             },50);
         }
         }
 
 
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const guardar = async(e)=>{
-
-        setActivarSpinner(true);
-        // GENERAMOS EL PK AUTOMATICO
-
-        // var datosCab    = gridCab_postulante.current.instance.getDataSource()._items;
-
-                                //PRUEBA CODIGO CON IF ////////
-
-        var datosCab = []
-        if(gridCab_postulante.current != undefined){
-            datosCab    = gridCab_postulante.current.instance.getDataSource()._items;
-        }
-
-        var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
-                                                        // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
+    const funcionCancelar =async()=>{
+            setActivarSpinner(true)
+            // var e = getFocusGlobalEventDet();
+            if(getCancelar_Cab()){
+                var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
     
-        var aux_cab             = info_cab.rowsAux;
-        var update_insert_cab   = info_cab.updateInsert;
-        var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
-        console.log("update ===> ", update_insert_cab)
-        
-        if(update_insert_cab.length > 0){
-            for (let i = 0; i < update_insert_cab.length; i++) {
-                const items = update_insert_cab[i];
-                if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
-                    let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
-                    if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                if(AuxDataCancelCab.length > 0 && gridCab_postulante.current){
+                    const dataSource_cab = new DataSource({
+                        store: new ArrayStore({
+                              keyExpr:"ID",
+                              data: AuxDataCancelCab
+                        }),
+                        key: 'ID'
+                    })
+                    gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
+                    cancelar_Cab = JSON.stringify(AuxDataCancelCab);
+                    // setInputData(e.row.data);
+                    // console.log('esto es erowdata =>', e.row.data)              
                 }
             }
-        }
-        let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
-
-        var data = {
-            // Cabecera
-                update_insert_cab,  delete_cab, valorAuxiliar_cab ,
-            // Adicional
-            "cod_usuario": sessionStorage.getItem('cod_usuario'),
-            "cod_empresa": sessionStorage.getItem('cod_empresa')
-        }
-        console.log("insert_cab.length ===>>> ",update_insert_cab.length, 
-                    "delete_cab.length ===>>> ",delete_cab.length );
-
-        if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
-              try{
-                  var method = "POST"
-                  await Main.Request( url_abm, method, data).then(async(response) => {
-                    console.log("esto es response ==> ",response)
-
-                      var resp = response.data;
-                      if(resp.ret == 1){
-                          Main.message.success({
-                              content  : `Procesado correctamente!!`,
-                              className: 'custom-class',
-                              duration : `${2}`,
-                              style    : {
-                              marginTop: '4vh',
-                              },
-                          });
-                         // BOTON MODIFICAR
-						 setModifico();
-                         // CLEAR DELETE
-                         LimpiarDelete()
-                          var dataSource = '';
-                          if(gridCab_postulante.current != undefined){
-                              dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                              gridCab_postulante.current.instance.option('dataSource', dataSource);
-                          }
-
-                          cancelar_Cab =  JSON.stringify(aux_cab);
-                          setBandBloqueo(false);
-                          setShowMessageButton(false)
-                          banSwitch = false;
-                          setTimeout(()=>{
-                              // RHPOSTUL_CAB
-                              let info = getComponenteFocusDet()
-                              let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0 
-                              gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(fila,1))
-                          },60);
-                      }else{
-                          setActivarSpinner(false);
-                        //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
-                          console.log("ENTRO EN EL ELSE!!")
-                      }
-                  });
-              } catch (error) {
-                  console.log("Error en la funcion de Guardar!",error);
-              }
-              setActivarSpinner(false);
-          }else{
-              setModifico();
-              setActivarSpinner(false);
-              Main.message.info({
-                  content  : `No encontramos cambios para guardar`,
-                  className: 'custom-class',
-                  duration : `${2}`,
-                  style    : {
-                      marginTop: '2vh',
-                  },
-              });
-          }
-          
-          setActivarSpinner(false);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+         
+            LimpiarDelete();
+            // QuitarClaseRequerido();
+            banSwitch = false;
+            setBandBloqueo(false);
+            setShowMessageButton(false)
+            setTimeout(()=>{
+                setModifico();
+                setActivarSpinner(false)
+                gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1));
     
-    const funcionCancelar =async()=>{
-        setActivarSpinner(true)
-        // var e = getFocusGlobalEventDet();
-        if(getCancelar_Cab()){
-            var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
-
-            if(AuxDataCancelCab.length > 0 && gridCab_postulante.current){
-                const dataSource_cab = new DataSource({
-                    store: new ArrayStore({
-                          keyExpr:"ID",
-                          data: AuxDataCancelCab
-                    }),
-                    key: 'ID'
-                })
-                gridCab_postulante.current.instance.option('dataSource', dataSource_cab);
-                cancelar_Cab = JSON.stringify(AuxDataCancelCab);
-                // setInputData(e.row.data);
-                // console.log('esto es erowdata =>', e.row.data)              
-            }
+            },50);
         }
-        LimpiarDelete();
-        banSwitch = false;
-        setBandBloqueo(false);
-        setShowMessageButton(false)
-        setTimeout(()=>{
-            setModifico();
-            setActivarSpinner(false)
-            gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(0,1));
 
-        },50);
-    }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const guardar = async(e)=>{
+
+            setActivarSpinner(true);
+
+    
+            var datosCab = []
+            if(gridCab_postulante.current != undefined){
+                datosCab    = gridCab_postulante.current.instance.getDataSource()._items;
+            }
+    
+            var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
+                                                            // rows, key, url ,updateDependencia,autoCodigo,cod_Not_null
+        
+            var aux_cab             = info_cab.rowsAux;
+            var update_insert_cab   = info_cab.updateInsert;
+            var delete_cab          = DeleteForm.RHPOSTUL_CAB != undefined ? DeleteForm.RHPOSTUL_CAB : [];
+            console.log("update ===> ", update_insert_cab)
+            
+            if(update_insert_cab.length > 0){
+                for (let i = 0; i < update_insert_cab.length; i++) {
+                    const items = update_insert_cab[i];
+                    if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
+                        let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
+                        if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                    }
+                }
+            }
+            let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
+    
+            var data = {
+                // Cabecera
+                    update_insert_cab,  delete_cab, valorAuxiliar_cab ,
+                // Adicional
+                "cod_usuario": sessionStorage.getItem('cod_usuario'),
+                "cod_empresa": sessionStorage.getItem('cod_empresa')
+            }
+            console.log("insert_cab.length ===>>> ",update_insert_cab.length, "delete_cab.length ===>>> ",delete_cab.length )
+        
+        
+        
+        
+            if(update_insert_cab.length > 0 || delete_cab.length > 0  ){
+                  try{
+                      var method = "POST"
+                      await Main.Request( url_abm, method, data).then(async(response) => {
+                          var resp = response.data;
+                          console.log("ESTO ES RESPONSE ===>>> ",response)
+                        //   console.log("ESTO ES RESP ==>> ", resp.ret);
+                          if(resp.ret == 1){
+                              Main.message.success({
+                                  content  : `Procesado correctamente!!`,
+                                  className: 'custom-class',
+                                  duration : `${2}`,
+                                  style    : {
+                                  marginTop: '4vh',
+                                  },
+                              });
+                              // BOTON MODIFICAR
+                              setModifico();
+        
+                              var dataSource = '';
+                              if(gridCab_postulante.current != undefined){
+                                  dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
+                                  gridCab_postulante.current.instance.option('dataSource', dataSource);
+                              }
+    
+                              cancelar_Cab =  JSON.stringify(aux_cab);
+                              setShowMessageButton(false)
+                              banSwitch = false;
+                              setTimeout(()=>{
+                                  // RHPOSTUL_CAB
+                                  let info = getComponenteFocusDet()
+                                  let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
+                                  gridCab_postulante.current.instance.focus(gridCab_postulante.current.instance.getCellElement(fila,1))
+                              },60);
+                          }else{
+                              setActivarSpinner(false);
+                            //   Alert('Atencion!','atencion',`${response.data.p_mensaje}`);
+                              console.log("ENTRO EN EL ELSE!!")
+                          }
+                      });
+                  } catch (error) {
+                      console.log("Error en la funcion de Guardar!",error);
+                  }
+                  setActivarSpinner(false);
+              }else{
+                  setModifico();
+                  setActivarSpinner(false);
+                  Main.message.info({
+                      content  : `No encontramos cambios para guardar`,
+                      className: 'custom-class',
+                      duration : `${2}`,
+                      style    : {
+                          marginTop: '2vh',
+                      },
+                  });
+              }
+        
+              setActivarSpinner(false);
+        }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleChange = async(e)=>{
@@ -637,6 +584,8 @@ const LISTAPOSTULANTE = memo((props) => {
         var value = e.target.value;
         // console.log("esto es valueTrim ===>> ",value.trim())
         if(value.trim() == ''){
+            // value = 'null'
+            // getData();
             getDataB();
         }
     
@@ -677,10 +626,10 @@ const LISTAPOSTULANTE = memo((props) => {
     const setRowFocus = async(e,grid,f9)=>{
         if(e.row){
 
-            var fecnac1 = e.row.data.FEC_NACIMIENTO;
-            e.row.data.FEC_NACIMIENTO = moment(fecnac1,'DD/MM/YYYY')
-            console.log(e.row.data);
+            var fecnac3 = e.row.data.FEC_NACIMIENTO;
+            e.row.data.FEC_NACIMIENTO = moment(fecnac3,'DD/MM/YYYY');
             form.setFieldsValue(e.row.data);
+            console.log(e.row.data);
             
         }else{
             console.log("Error al seteo de información", error)
@@ -688,9 +637,7 @@ const LISTAPOSTULANTE = memo((props) => {
         }
     }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleInputChange = async(e)=>{
         modifico();
@@ -709,13 +656,47 @@ const LISTAPOSTULANTE = memo((props) => {
             }
             gridCab_postulante.current.instance.repaintRows(info.rowIndex);
         }        
-
     }
 
-
-
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const activateButtonCancelar1 = async(e,nameInput)=>{
+        console.log("====>>> se activo activateButtonCancelar")
+        var row  = await gridCab_postulante.current.instance.getDataSource()._items[getRowIndex()];
+        console.log("row ==>> ",row)
+        if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
+        else row[nameInput] = ''
+        
+        if(!row.inserted){ row.updated = true;
+            update = true;
+        } 
+        modifico()
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const stateOpenDate1 = (e)=>{
+		let res1 = document.getElementsByClassName('ant-picker-dropdown');
+		if(e){
+			res1[0].classList.remove(Ocultar_classDataPiker_1);
+			res1[0].classList.remove(Ocultar_classDataPiker_2);
+			res1[0].classList.add(mostrar_classDataPiker_3);
+		}else{
+			res1[0].classList.add(Ocultar_classDataPiker_1);
+			res1[0].classList.add(Ocultar_classDataPiker_2);
+			res1[0].classList.remove(mostrar_classDataPiker_3);
+		}
+	}
+
+    const clickDataPicket1 = async(e)=>{
+		let res1   = await document.getElementsByClassName('ant-picker-dropdown');
+		let resul1 = res1[0].classList.value.split(' ');
+		if(resul1.indexOf(Ocultar_classDataPiker_2) !== -1){
+			res1[0].classList.remove(Ocultar_classDataPiker_1);
+			res1[0].classList.remove(Ocultar_classDataPiker_2);
+			res1[0].classList.add(mostrar_classDataPiker_3);
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     return (
     <>
@@ -775,11 +756,11 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                         >
                                                                             <DatePicker 
                                                                                 onChange={(e)=>{activateButtonCancelar1(e,"FEC_NACIMIENTO")}}
-                                                                                    format={"DD/MM/YYYY"}																			
-                                                                                    open={openDatePicker1}
-                                                                                    onOpenChange={stateOpenDate1}    
-                                                                                    onClick={clickDataPicket1}
-                                                                                    allowClear={false}
+                                                                                format={"DD/MM/YYYY"}
+                                                                                open={openDatePicker1}
+                                                                                onOpenChange={stateOpenDate1}    
+                                                                                onClick={clickDataPicket1}
+                                                                                allowClear={false} 
                                                                             />
 
                                                                     </Form.Item>

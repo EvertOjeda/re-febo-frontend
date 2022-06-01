@@ -1,20 +1,18 @@
 import React, { useState, useRef, memo, useEffect } from 'react';
-import Main            from '../../../../../../components/utils/Main';
-import _, { defaults }                             from "underscore";
+import Main                         from '../../../../../../components/utils/Main';
+import _                            from "underscore";
 import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
-import Search                        from '../../../../../../components/utils/SearchForm/SearchForm';
-import {setModifico,modifico}        from '../../../../../../components/utils/SearchForm/Cancelar';
+import Search                       from '../../../../../../components/utils/SearchForm/SearchForm';
+import {setModifico,modifico}       from '../../../../../../components/utils/SearchForm/Cancelar';
 
-import DataSource                    from "devextreme/data/data_source";
-import ArrayStore                    from "devextreme/data/array_store";
-import { v4 as uuidID }              from "uuid";
-
+import DataSource                   from "devextreme/data/data_source";
+import ArrayStore                   from "devextreme/data/array_store";
+import { v4 as uuidID }             from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
-                             getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
-                    from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
+                       from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
 import moment                        from 'moment';
 import locale                   from 'antd/lib/locale/es_ES';
-
 
 import '../../../../../../assets/css/DevExtreme.css';
 
@@ -74,7 +72,7 @@ const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACION
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
-const title            = "Lista de postulantes";
+const title                 = "Lista de postulantes";
 
 const FormName              = 'RHPOSTUL';
 
@@ -97,9 +95,9 @@ const LISTACONTRATADO = memo((props) => {
     const cod_usuario         = sessionStorage.getItem('cod_usuario');
 
         //URL CABECERA
-        const url_getcabecera    = '/rh/rhpostul_con/';
+    const url_getcabecera    = '/rh/rhpostul_con/';
         //URL ABM
-        const url_abm            = '/rh/rhpostul' ;
+    const url_abm            = '/rh/rhpostul' ;
     ///////////////////////////////////////////////////////////////////////////////
     var banSwitch   = false
     var bandBloqueo = false
@@ -118,7 +116,7 @@ const LISTACONTRATADO = memo((props) => {
 
     const [ activarSpinner   , setActivarSpinner   ] = useState(false);
     const [showMessageButton , setShowMessageButton] = React.useState(false);
-    const [openDatePicker3 , setdatePicker	        ] = useState(true);
+    const [openDatePicker3 , setdatePicker	       ] = useState(true);
 
 
     const idGrid_contratado = {
@@ -444,11 +442,7 @@ const LISTACONTRATADO = memo((props) => {
         const guardar = async(e)=>{
 
             setActivarSpinner(true);
-            // GENERAMOS EL PK AUTOMATICO
-    
-            // var datosCab    = gridCab_contratado.current.instance.getDataSource()._items;
-    
-                                    //PRUEBA CODIGO CON IF ////////
+
     
             var datosCab = []
             if(gridCab_contratado.current != undefined){
@@ -680,35 +674,28 @@ const LISTACONTRATADO = memo((props) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const stateOpenDate3 = (e)=>{
-		let res = document.getElementsByClassName('ant-picker-dropdown');
+		let res3 = document.getElementsByClassName('ant-picker-dropdown');
 		if(e){
-			res[0].classList.remove(Ocultar_classDataPiker_1);
-			res[0].classList.remove(Ocultar_classDataPiker_2);
-			res[0].classList.add(mostrar_classDataPiker_3);
+			res3[0].classList.remove(Ocultar_classDataPiker_1);
+			res3[0].classList.remove(Ocultar_classDataPiker_2);
+			res3[0].classList.add(mostrar_classDataPiker_3);
 		}else{
-			res[0].classList.add(Ocultar_classDataPiker_1);
-			res[0].classList.add(Ocultar_classDataPiker_2);
-			res[0].classList.remove(mostrar_classDataPiker_3);
+			res3[0].classList.add(Ocultar_classDataPiker_1);
+			res3[0].classList.add(Ocultar_classDataPiker_2);
+			res3[0].classList.remove(mostrar_classDataPiker_3);
 		}
 	}
 
     const clickDataPicket3 = async(e)=>{
-		let res   = await document.getElementsByClassName('ant-picker-dropdown');
-		let resul = res[0].classList.value.split(' ');
-		if(resul.indexOf(Ocultar_classDataPiker_2) !== -1){
-			res[0].classList.remove(Ocultar_classDataPiker_1);
-			res[0].classList.remove(Ocultar_classDataPiker_2);
-			res[0].classList.add(mostrar_classDataPiker_3);
+		let res3   = await document.getElementsByClassName('ant-picker-dropdown');
+		let resul3 = res3[0].classList.value.split(' ');
+		if(resul3.indexOf(Ocultar_classDataPiker_2) !== -1){
+			res3[0].classList.remove(Ocultar_classDataPiker_1);
+			res3[0].classList.remove(Ocultar_classDataPiker_2);
+			res3[0].classList.add(mostrar_classDataPiker_3);
 		}
 	}
-
-
-    const enCambio = (date, dateString) => {
-        // console.log(date);
-        (e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")
-        console.log('en cambio ==>> ',dateString)
-      };
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     return (
@@ -762,18 +749,18 @@ const LISTACONTRATADO = memo((props) => {
                                                         <ConfigProvider locale={locale}>
                                                                 <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
                                                                     <Form.Item 
-                                                                    name="FEC_NACIMIENTO"
+                                                                        name="FEC_NACIMIENTO"
                                                                         label= "Fecha de Nac."
                                                                         labelCol={{ span: 7 }}
                                                                         wrapperCol={{ span: 20 }}
                                                                         >
                                                                             <DatePicker 
-                                                                                // onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
-                                                                                onChange={enCambio}
+                                                                                onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
+                                                                                // onChange={enCambio}
                                                                                 format={"DD/MM/YYYY"}																			
-                                                                                // open={openDatePicker3}
-                                                                                // onOpenChange={stateOpenDate3}
-                                                                                // onClick={clickDataPicket3}
+                                                                                open={openDatePicker3}
+                                                                                onOpenChange={stateOpenDate3}
+                                                                                onClick={clickDataPicket3}
                                                                                 allowClear={false}
                                                                             />
                                                                     </Form.Item>
