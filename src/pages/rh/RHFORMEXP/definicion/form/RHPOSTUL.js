@@ -6,7 +6,7 @@ import { Menu, DireccionMenu }      from '../../../../../components/utils/FocusD
 import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
 import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 import LISTAPOSTULANTE from './RHPOSTUL/LISTAPOSTULANTE';
-
+import RHFORMEXP       from './RHFORMEXP';
 
 
 import '../../../../../assets/css/DevExtreme.css';
@@ -76,6 +76,12 @@ const POSTULANTES = memo((props) => {
                             <Tabs.TabPane tab="Contratado" key="3">
                                 <Main.Paper className="paper-style-contratado">
                                         <LISTACONTRATADO/>
+                                </Main.Paper>
+                            </Tabs.TabPane>
+
+                            <Tabs.TabPane tab="Importar lista" key="4">
+                                <Main.Paper className="paper-style-contratado">
+                                        <RHFORMEXP/>
                                 </Main.Paper>
                             </Tabs.TabPane>
 

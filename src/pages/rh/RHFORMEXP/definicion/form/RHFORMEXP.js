@@ -32,8 +32,12 @@ const columns = [
       { dataField:"SUCURSAL"        ,caption:"Sucursal"           },
   ];
 
+
+
+
+  
 // FUNCION PRINCIPAL 
-const POSTULANTESEXC = memo(() => {
+const RHFORMEXP = memo(() => {
 
 
    // ESTADOS
@@ -197,28 +201,9 @@ const getData = async() =>{
     
     <div className='file'>
 
-        <Main.Layout defaultOpenKeys={defaultOpenKeys} defaultSelectedKeys={defaultSelectedKeys}>
-          <Main.Helmet title={`${process.env.REACT_APP_TITULO} - ${title}`} />
-
-              <div className="paper-header">
-                    <Title level={5} className="title-color">
-
-                        {title}
-
-                          <div>
-                              <Title level={4} style={{ float: 'right', marginTop: '-16px', marginRight: '5px', fontSize: '10px' }} className="title-color">{FormName}</Title>
-                          </div>
-
-                    </Title>
-                </div>
 
              <Main.Paper className="paper-style">
-                 
 
-
-{/* ############################################################################################################## */}
-
-{/* ############################################################################################################## */}
 
                               <label htmlFor="archivoexcel">
                                     <img className="paper-header-menu-button" src={agregarIcon} width="29"/>
@@ -257,7 +242,6 @@ const getData = async() =>{
 
              </Main.Paper>
 
-         </Main.Layout>
     
     </div>
 
@@ -269,6 +253,6 @@ const getData = async() =>{
 
 
 
-export default POSTULANTESEXC;
+export default RHFORMEXP;
 
 
