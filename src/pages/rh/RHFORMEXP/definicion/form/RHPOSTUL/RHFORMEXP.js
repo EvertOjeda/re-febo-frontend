@@ -11,17 +11,12 @@ import agregarIcon from     '../../../../../../assets/icons/add.svg';
 import guardarIcon from     '../../../../../../assets/icons/diskette.svg';
 import './style.css';
 
-const { Title }               = Typography;
-const FormName                = 'RHFORMEXP';
-var defaultOpenKeys         = sessionStorage.getItem("mode") === 'vertical' ? [] : ['RH', 'RH-RH1'];
-var defaultSelectedKeys     = sessionStorage.getItem("mode") === 'vertical' ? [] : ['RH-RH1-null-RHFORMEXP'];
-const title                   = 'Formulario de Postulantes';
 
 
 
 //    Columnas para la DataGrid DEL EXCEL
 const columns = [ 
-      { dataField:"NRO_DOCUMENTO"   ,caption:"Nro. de documento"},
+      { dataField:"NRO_DOCUMENTO"   ,caption:"Nro. de documento"  },
       { dataField:"NOMBRE"          ,caption:"Nombre"             },
       { dataField:"FEC_NACIMIENTO"  ,caption:"Fecha Nacimiento"   },
       { dataField:"SEXO"            ,caption:"Sexo"               },
