@@ -12,9 +12,10 @@ import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , Array
                        getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
                        from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
 import moment                        from 'moment';
-import locale                   from 'antd/lib/locale/es_ES';
+import locale                        from 'antd/lib/locale/es_ES';
 
 import '../../../../../../assets/css/DevExtreme.css';
+const { TextArea } = Input;
 
 
 const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
@@ -402,7 +403,7 @@ const LISTACONTRATADO = memo((props) => {
         }
 
 
-    const funcionCancelar =async()=>{
+    const funcionCancelar3 =async()=>{
             setActivarSpinner(true)
             // var e = getFocusGlobalEventDet();
             if(getCancelar_Cab()){
@@ -536,12 +537,12 @@ const LISTACONTRATADO = memo((props) => {
                       },
                   });
               }
-        
+              getDataB();
               setActivarSpinner(false);
         }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const handleChange = async(e)=>{
+    const handleChange3 = async(e)=>{
         var BuscadorRow = []
         var value = e.target.value;
         if(value.trim() == '') value = 'null'
@@ -686,7 +687,7 @@ const LISTACONTRATADO = memo((props) => {
 		}
 	}
 
-    const clickDataPicket3 = async(e)=>{
+    const clickDataPicket3 = async()=>{
 		let res3   = await document.getElementsByClassName('ant-picker-dropdown');
 		let resul3 = res3[0].classList.value.split(' ');
 		if(resul3.indexOf(Ocultar_classDataPiker_2) !== -1){
@@ -702,14 +703,14 @@ const LISTACONTRATADO = memo((props) => {
     <>  
         
 
-        <Main.Paper className="paper-style">
+        <Main.Paper className="paper-style-contratado">
                                 <Search
                                     addRow            = {addRow}
                                     eliminarRow       = {deleteRows}
-                                    cancelarProceso   = {funcionCancelar}
+                                    cancelarProceso   = {funcionCancelar3}
                                     formName          = {FormName}
                                     guardarRow        = {guardar}
-                                    handleChange      = {handleChange}
+                                    handleChange      = {handleChange3}
                                     onKeyDownBuscar   = {onKeyDownBuscar}
                                     buttonGuardar     = {buttonSaveRef}
                                     buttonAddRef      = {buttonAddRowRef}
@@ -1045,32 +1046,28 @@ const LISTACONTRATADO = memo((props) => {
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
+
+                                                        <Col span={24} xs={{ order: 21 }}>
+                                                                <Form.Item 
+                                                                    label= "Experiencia Laboral" 
+                                                                    name="EXPERIENCIA_LABORAL">
+                                                                    <TextArea 
+                                                                        onChange={handleInputChange}
+                                                                        style={{
+                                                                            height: 60,
+                                                                          }}
+                                                                    />
+                                                                </Form.Item>
+                                                        </Col>
+
                                                     </Row>
                                                 
                                                 </Col>
-
-                                                
 
                                             </Card>
                                         </div>
 
 
-                                        <div style={{ padding: "3px" }} className='paper-container'>
-                                                <Card style={{ padding: "3px" }}>
-                                            
-                                                    <Card>
-                                                        <Col span={24} style={{paddingLeft:5}}>
-                                                                <Form.Item 
-                                                                    label= "Experiencia Laboral" 
-                                                                    name="EXPERIENCIA_LABORAL">
-                                                                    <Input  onChange={handleInputChange} />
-                                                                </Form.Item>
-                                                        </Col>
-
-                                                    </Card>
-
-                                                </Card>
-                                            </div>
                                     </Form>
                                 </div>
          </Main.Paper>

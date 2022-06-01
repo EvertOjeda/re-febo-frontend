@@ -12,9 +12,10 @@ import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , Array
                        getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
                        from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
 import moment                        from 'moment';
-import locale                   from 'antd/lib/locale/es_ES';
+import locale                        from 'antd/lib/locale/es_ES';
 
 import '../../../../../../assets/css/DevExtreme.css';
+const { TextArea } = Input;
 
 
 const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
@@ -296,7 +297,7 @@ const LISTAPOSTULANTE = memo((props) => {
             ['EMAIL'                        ] : '',
             ['SUCURSAL'                     ] : '',
             ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
-            ['ESTADO'                       ] : 'CONTRATADO',
+            ['ESTADO'                       ] : 'POSTULANTE',
             
             ['FEC_NACIMIENTO'               ] : '01/01/2000',
             ['APTITUDES'                    ] : '',
@@ -402,7 +403,7 @@ const LISTAPOSTULANTE = memo((props) => {
         }
 
 
-    const funcionCancelar =async()=>{
+    const funcionCancelar1 =async()=>{
             setActivarSpinner(true)
             // var e = getFocusGlobalEventDet();
             if(getCancelar_Cab()){
@@ -537,11 +538,12 @@ const LISTAPOSTULANTE = memo((props) => {
                   });
               }
         
+              getDataB();
               setActivarSpinner(false);
         }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const handleChange = async(e)=>{
+    const handleChange1 = async(e)=>{
         var BuscadorRow = []
         var value = e.target.value;
         if(value.trim() == '') value = 'null'
@@ -697,20 +699,18 @@ const LISTAPOSTULANTE = memo((props) => {
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     return (
     <>
 
-        <div className='paper-container'>
 
-            <Main.Paper className="paper-style">
+            <Main.Paper className="paper-style-postulante">
                                     <Search
                                         addRow            = {addRow}
                                         eliminarRow       = {deleteRows}
-                                        cancelarProceso   = {funcionCancelar}
+                                        cancelarProceso   = {funcionCancelar1}
                                         formName          = {FormName}
                                         guardarRow        = {guardar}
-                                        handleChange      = {handleChange}
+                                        handleChange      = {handleChange1}
                                         onKeyDownBuscar   = {onKeyDownBuscar}
                                         buttonGuardar     = {buttonSaveRef}
                                         buttonAddRef      = {buttonAddRowRef} 
@@ -1045,35 +1045,31 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
-                                                        </Row>
-                                                    
-                                                    </Col>
 
-                                                </Card>
-                                            </div>
-
-
-                                            <div style={{ padding: "3px" }} className='paper-container'>
-                                                <Card style={{ padding: "3px" }}>
-                                            
-                                                    <Card>
-                                                        <Col span={24} style={{paddingLeft:5}}>
+                                                            <Col span={24} xs={{ order: 21 }}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
-                                                                    <Input  onChange={handleInputChange} />
+                                                                    <TextArea 
+                                                                        onChange={handleInputChange}
+                                                                        style={{
+                                                                            height: 60,
+                                                                          }}
+                                                                    />
                                                                 </Form.Item>
-                                                        </Col>
 
-                                                    </Card>
+                                                            </Col>
 
+                                                        </Row>
+                                                    
+                                                    </Col>
+                                                    
                                                 </Card>
                                             </div>
 
                                         </Form>
                                     </div>
                 </Main.Paper>
-        </div>
     </>
     
     )
