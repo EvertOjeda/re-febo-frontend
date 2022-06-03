@@ -1304,6 +1304,7 @@ const CMPROVEC = memo((props) => {
     const handleInputChange = async(e)=>{
         modifico();
         let info = await getFocusGlobalEventDet()
+        console.log("info => ", info)      
         if(info){
             info.row.data[e.target.id] = e.target.value
             if(info.row.data.InsertDefault){

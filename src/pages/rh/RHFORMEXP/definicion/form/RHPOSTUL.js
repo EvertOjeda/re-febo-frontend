@@ -1,8 +1,10 @@
-import React, { memo }              from 'react';
+import React                        from 'react';
 import Main                         from '../../../../../components/utils/Main';
 import _                            from "underscore";
 import { Typography, Tabs }         from 'antd';
 import { Menu, DireccionMenu }      from '../../../../../components/utils/FocusDelMenu';
+
+
 import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
 import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 import LISTAPOSTULANTE from './RHPOSTUL/LISTAPOSTULANTE';
@@ -18,12 +20,12 @@ const FormName              = 'RHPOSTUL';
 const { Title }             = Typography;
 
 
-const POSTULANTES = memo((props) => {
+const POSTULANTES = () => {
 
     const defaultOpenKeys     = sessionStorage.getItem("mode") === "vertical" ? [] : DireccionMenu(FormName);
     const defaultSelectedKeys = sessionStorage.getItem("mode") === "vertical" ? [] : Menu(FormName);
 
-    ///////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const [ tabKey, setTabKey                       ] = React.useState("1");
 
@@ -89,12 +91,13 @@ const POSTULANTES = memo((props) => {
 
 
 
+
             </Main.Layout>
         
         
         </>
     )
 
-});
+};
 
 export default POSTULANTES;

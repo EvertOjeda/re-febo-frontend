@@ -68,7 +68,7 @@ var update   = false;
 }
 
 
-const columBuscador_cab     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
+const columBuscador_con     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
 const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
@@ -83,9 +83,9 @@ const LimpiarDelete = () =>{
     DeleteForm = [];
 }
 
-var cancelar_Cab = '';
-const getCancelar_Cab = ()=>{
-	return cancelar_Cab;
+var cancelar_con = '';
+const getCancelar_con = ()=>{
+	return cancelar_con;
 }
 
 
@@ -194,7 +194,7 @@ const LISTACONTRATADO = memo((props) => {
                     key: 'ID'
                 })
                 gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
-                cancelar_Cab = JSON.stringify(content);
+                cancelar_con = JSON.stringify(content);
                 setTimeout(()=>{
                     gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,1))
                 },100)
@@ -230,7 +230,7 @@ const LISTACONTRATADO = memo((props) => {
                     key: 'ID'
                 })
                 gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
-                cancelar_Cab = JSON.stringify(content);
+                cancelar_con = JSON.stringify(content);
                 setTimeout(()=>{
                     gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement())
                 },100)
@@ -295,7 +295,7 @@ const LISTACONTRATADO = memo((props) => {
             ['ZONA_RESIDENCIA'              ] : '',
             ['CELULAR'                      ] : '',
             ['EMAIL'                        ] : '',
-            ['SUCURSAL'                     ] : '',
+            ['SUCURSAL'                     ] : 'Matriz',
             ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
             ['ESTADO'                       ] : 'CONTRATADO',
             
@@ -406,8 +406,8 @@ const LISTACONTRATADO = memo((props) => {
     const funcionCancelar3 =async()=>{
             setActivarSpinner(true)
             // var e = getFocusGlobalEventDet();
-            if(getCancelar_Cab()){
-                var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
+            if(getCancelar_con()){
+                var AuxDataCancelCab = await JSON.parse(await getCancelar_con());
     
                 if(AuxDataCancelCab.length > 0 && gridCab_contratado.current){
                     const dataSource_cab = new DataSource({
@@ -418,8 +418,8 @@ const LISTACONTRATADO = memo((props) => {
                         key: 'ID'
                     })
                     gridCab_contratado.current.instance.option('dataSource', dataSource_cab);
-                    cancelar_Cab = JSON.stringify(AuxDataCancelCab);
-                    // setInputData(e.row.data);
+                    cancelar_con = JSON.stringify(AuxDataCancelCab);
+                    //  setInputData(e.row.data);
                     // console.log('esto es erowdata =>', e.row.data)              
                 }
             }
@@ -467,7 +467,7 @@ const LISTACONTRATADO = memo((props) => {
                     }
                 }
             }
-            let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
+            let valorAuxiliar_cab  = getCancelar_con()  !== '' ? JSON.parse(getCancelar_con())  : [];
     
             var data = {
                 // Cabecera
@@ -506,7 +506,7 @@ const LISTACONTRATADO = memo((props) => {
                                   gridCab_contratado.current.instance.option('dataSource', dataSource);
                               }
     
-                              cancelar_Cab =  JSON.stringify(aux_cab);
+                              cancelar_con =  JSON.stringify(aux_cab);
                               setShowMessageButton(false)
                               banSwitch = false;
                               setTimeout(()=>{
@@ -566,7 +566,7 @@ const LISTACONTRATADO = memo((props) => {
                             key: 'ID'
                         }) 
                         gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
-                        cancelar_Cab = JSON.stringify(response.data.rows);
+                        cancelar_con = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
                         gridCab_contratado.current.instance.option('focusedRowIndex', 0);
@@ -611,7 +611,7 @@ const LISTACONTRATADO = memo((props) => {
                                 key: 'ID'
                             }) 
                             gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
-                            cancelar_Cab = JSON.stringify(response.data.rows);
+                            cancelar_con = JSON.stringify(response.data.rows);
                             }
                         setTimeout(()=>{
                             gridCab_contratado.current.instance.option('focusedRowIndex', 0);
@@ -624,7 +624,7 @@ const LISTACONTRATADO = memo((props) => {
     
         }
             //FILA QUE QUEDA EN FOCUS
-    const setRowFocus = async(e,grid,f9)=>{
+    const setRowFocus3 = async(e,grid,f9)=>{
         if(e.row){
 
             var fecnac3 = e.row.data.FEC_NACIMIENTO;
@@ -717,7 +717,7 @@ const LISTACONTRATADO = memo((props) => {
                                     
                                  />
 
-                                <div style={{padding:'10px'}}>
+                                <div >
                                     <DevExtremeDet
                                         gridDet             = {gridCab_contratado}
                                         id                  = "ID"
@@ -728,21 +728,21 @@ const LISTACONTRATADO = memo((props) => {
                                         guardar             = {guardar}
                                         newAddRow           = {false}
                                         deleteDisable       = {false}
-                                        setRowFocusDet      = {setRowFocus}
+                                        setRowFocusDet      = {setRowFocus3}
                                         optionSelect        = {opciones}
                                         activateF10         = {false}
                                         activateF6          = {false}
                                         setActivarSpinner   = {setActivarSpinner}
                                         altura              = {'200px'}
                                         doNotsearch         = {doNotsearch}
-                                        columBuscador       = {columBuscador_cab}
+                                        columBuscador       = {columBuscador_con}
                                         nextFocusNew        = {"APTITUDES"}
 
                                         // initialRow          = {initialRow}
                                     />
 
 
-                <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                                    <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
                                             <Card>
                                                 <Col style={{ paddingTop: "2px"}}>
@@ -755,9 +755,9 @@ const LISTACONTRATADO = memo((props) => {
                                                                         labelCol={{ span: 7 }}
                                                                         wrapperCol={{ span: 20 }}
                                                                         >
-                                                                            <DatePicker 
+                                                                            <DatePicker
+                                                                                className='picker3'
                                                                                 onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
-                                                                                // onChange={enCambio}
                                                                                 format={"DD/MM/YYYY"}																			
                                                                                 open={openDatePicker3}
                                                                                 onOpenChange={stateOpenDate3}
@@ -1040,25 +1040,26 @@ const LISTACONTRATADO = memo((props) => {
                                                         <Col span={12} xs={{ order: 20 }}>
                                                             <Form.Item 
                                                                 name="MEDIO_CON_OFERTA_LABORAL"
-                                                                label= "Conocimiento de Oferta"
+                                                                label= "Conocimiento de Oferta:"
                                                                 labelCol={{ span: 8 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={24} xs={{ order: 21 }}>
+                                                            <Col span={24} xs={{ order: 21 }}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
                                                                     <TextArea 
                                                                         onChange={handleInputChange}
-                                                                        style={{
-                                                                            height: 60,
-                                                                          }}
+                                                                        showCount
+                                                                        maxLength={1000}
+                                                                        style={{height: 60,}}
                                                                     />
                                                                 </Form.Item>
-                                                        </Col>
+
+                                                            </Col>
 
                                                     </Row>
                                                 
@@ -1079,3 +1080,21 @@ const LISTACONTRATADO = memo((props) => {
 });
 
 export default LISTACONTRATADO;
+
+
+/*
+<Form.Item 
+                                                                    name="EXPERIENCIA_LABORAL"
+                                                                    label= "Experiencia Laboral" 
+                                                                    >
+                                                                    <Input 
+                                                                        onChange={handleInputChange}
+                                                                        
+                                                                        // style={{
+                                                                        //     height: 60,
+                                                                        //    }}
+                                                                    />
+                                                                </Form.Item>
+
+
+*/

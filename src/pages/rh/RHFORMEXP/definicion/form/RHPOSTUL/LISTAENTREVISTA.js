@@ -68,7 +68,7 @@ const opciones    = {
 }
 
 
-const columBuscador_cab     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
+const columBuscador_ent     = 'NOMBRE'  // ['NRO_DOCUMENTO'],
 const doNotsearch           = ['NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
                                 ,'IND_EX_FUNCIONARIO_MOT_SAL', 'SUCURSAL']
 const notOrderByAccion      = ['NOMBRE','NRO_DOCUMENTO','ZONA_RESIDENCIA','EMAIL','NACIONALIDAD','BARRIO','NIVEL_ESTUDIO','IND_ESTUDIA_HORARIO','IND_EX_FUNCIONARIO'
@@ -83,9 +83,9 @@ const LimpiarDelete = () =>{
     DeleteForm = [];
 }
 
-var cancelar_Cab = '';
-const getCancelar_Cab = ()=>{
-    return cancelar_Cab;
+var cancelar_ent = '';
+const getCancelar_ent = ()=>{
+    return cancelar_ent;
 }
 
 
@@ -195,7 +195,7 @@ const LISTAENTREVISTA = memo((props) => {
                         key: 'ID'
                     })
                     gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
-                    cancelar_Cab = JSON.stringify(content);
+                    cancelar_ent = JSON.stringify(content);
                     setTimeout(()=>{
                         gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(0,1))
                     },100)
@@ -230,7 +230,7 @@ const LISTAENTREVISTA = memo((props) => {
                         key: 'ID'
                     })
                     gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
-                    cancelar_Cab = JSON.stringify(content);
+                    cancelar_ent = JSON.stringify(content);
                     setTimeout(()=>{
                         gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement())
                     },100)
@@ -295,7 +295,7 @@ const LISTAENTREVISTA = memo((props) => {
                 ['ZONA_RESIDENCIA'              ] : '',
                 ['CELULAR'                      ] : '',
                 ['EMAIL'                        ] : '',
-                ['SUCURSAL'                     ] : '',
+                ['SUCURSAL'                     ] : 'Matriz',
                 ['IND_VACANCIA_INTERES'         ] : 'Repositor/a',
                 ['ESTADO'                       ] : 'ENTREVISTA',
                 
@@ -406,8 +406,8 @@ const LISTAENTREVISTA = memo((props) => {
         const funcionCancelar2 =async()=>{
             setActivarSpinner(true)
             // var e = getFocusGlobalEventDet();
-            if(getCancelar_Cab()){
-                var AuxDataCancelCab = await JSON.parse(await getCancelar_Cab());
+            if(getCancelar_ent()){
+                var AuxDataCancelCab = await JSON.parse(await getCancelar_ent());
 
                 if(AuxDataCancelCab.length > 0 && gridCab_entrevista.current){
                     const dataSource_cab = new DataSource({
@@ -418,7 +418,7 @@ const LISTAENTREVISTA = memo((props) => {
                         key: 'ID'
                     })
                     gridCab_entrevista.current.instance.option('dataSource', dataSource_cab);
-                    cancelar_Cab = JSON.stringify(AuxDataCancelCab);
+                    cancelar_ent = JSON.stringify(AuxDataCancelCab);
                     // setInputData(e.row.data);
                     // console.log('esto es erowdata =>', e.row.data)              
                 }
@@ -467,7 +467,7 @@ const guardar = async(e)=>{
             }
         }
     }
-    let valorAuxiliar_cab  = getCancelar_Cab()  !== '' ? JSON.parse(getCancelar_Cab())  : [];
+    let valorAuxiliar_cab  = getCancelar_ent()  !== '' ? JSON.parse(getCancelar_ent())  : [];
 
     var data = {
         // Cabecera
@@ -506,7 +506,7 @@ const guardar = async(e)=>{
                           gridCab_entrevista.current.instance.option('dataSource', dataSource);
                       }
 
-                      cancelar_Cab =  JSON.stringify(aux_cab);
+                      cancelar_ent =  JSON.stringify(aux_cab);
                       setShowMessageButton(false)
                       banSwitch = false;
                       setTimeout(()=>{
@@ -566,7 +566,7 @@ const handleChange2 = async(e)=>{
                         key: 'ID'
                     }) 
                     gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
-                    cancelar_Cab = JSON.stringify(response.data.rows);
+                    cancelar_ent = JSON.stringify(response.data.rows);
                     }
                 setTimeout(()=>{
                     gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
@@ -611,7 +611,7 @@ const onKeyDownBuscar = async(e)=>{
                             key: 'ID'
                         }) 
                         gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
-                        cancelar_Cab = JSON.stringify(response.data.rows);
+                        cancelar_ent = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
                         gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
@@ -624,7 +624,7 @@ const onKeyDownBuscar = async(e)=>{
 
     }
             //FILA QUE QUEDA EN FOCUS
-            const setRowFocus = async(e,grid,f9)=>{
+            const setRowFocus2 = async(e,grid,f9)=>{
                 if(e.row){
         
                     var fecnac2 = e.row.data.FEC_NACIMIENTO;
@@ -656,6 +656,7 @@ const onKeyDownBuscar = async(e)=>{
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
             gridCab_entrevista.current.instance.repaintRows(info.rowIndex);
+            console.log("info => ", info)      
         }        
     }
 
@@ -716,7 +717,7 @@ const onKeyDownBuscar = async(e)=>{
                                         buttonAddRef      = {buttonAddRowRef} 
                                     />
 
-                                    <div style={{padding:'10px'}}>
+                                    <div >
                                         <DevExtremeDet
                                             gridDet             = {gridCab_entrevista}
                                             id                  = "ID"
@@ -727,14 +728,14 @@ const onKeyDownBuscar = async(e)=>{
                                             guardar             = {guardar}
                                             newAddRow           = {false}
                                             deleteDisable       = {false}
-                                            setRowFocusDet      = {setRowFocus}
+                                            setRowFocusDet      = {setRowFocus2}
                                             optionSelect        = {opciones}
                                             activateF10         = {false}
                                             activateF6          = {false}
                                             setActivarSpinner   = {setActivarSpinner}
                                             altura              = {'200px'}
                                             doNotsearch         = {doNotsearch}
-                                            columBuscador       = {columBuscador_cab}
+                                            columBuscador       = {columBuscador_ent}
                                             nextFocusNew        = {"APTITUDES"}
 
                                             // initialRow          = {initialRow}
@@ -754,7 +755,8 @@ const onKeyDownBuscar = async(e)=>{
                                                                         labelCol={{ span: 7 }}
                                                                         wrapperCol={{ span: 20 }}
                                                                         >
-                                                                            <DatePicker 
+                                                                            <DatePicker
+                                                                                className='picker2'
                                                                                 onChange={(e)=>activateButtonCancelar2(e,"FEC_NACIMIENTO")}
                                                                                 format={"DD/MM/YYYY"}																			
                                                                                 open={openDatePicker2}
@@ -1052,9 +1054,9 @@ const onKeyDownBuscar = async(e)=>{
                                                                     name="EXPERIENCIA_LABORAL">
                                                                     <TextArea 
                                                                         onChange={handleInputChange}
-                                                                        style={{
-                                                                            height: 60,
-                                                                          }}
+                                                                        showCount
+                                                                        maxLength={1000}
+                                                                        style={{height: 60,}}
                                                                     />
                                                                 </Form.Item>
 
