@@ -1,7 +1,7 @@
 import React, { useState, memo }      from 'react';
 import Main                           from "../../../../../../components/utils/Main";
 import * as XLSX                      from "xlsx";
-import { Typography }                 from "antd";
+import { Card, Typography }                 from "antd";
 import DataGrid                       from 'devextreme-react/data-grid';
 import { Button }                     from 'antd';
 import '../../../../../../assets/css/DevExtreme.css';
@@ -190,6 +190,39 @@ const getData = async() =>{
         )
   }
 
+  const informacion = ()=>{
+
+
+    Main.message.info({
+      content  : `Obs: El archivo a importar debera tener los siguientes encabezados: 
+                 ITEM, FEC_INICIO,NOMBRE, NRO_DOCUMENTO, FEC_NACIMIENTO, SEXO, NACIONALIDAD,
+                 ESTADO_CIVIL, IND_TIENE_HIJO, ZONA_RESIDENCIA, DIRECCION, BARRIO, CELULAR, 
+                 TELEFONO, EMAIL, NIVEL_ESTUDIO, IND_ESTUDIA, IND_ESTUDIA_HORARIO,
+                 IND_MOVILIDAD_PROPIA, IND_TIPO_MOVILIDAD, IND_TRABAJA, IND_MOTIVO_SALIDA,
+                 IND_HORARIO_ROTATIVO, IND_VACANCIA_INTERES, EXPERIENCIA_LABORAL,
+                 IND_EX_FUNCIONARIO, IND_EX_FUNCIONARIO_MOT_SAL, MEDIO_CON_OFERTA_LABORAL,
+                 PRETENCION_SALARIAL, APTITUDES, SUCURSAL, ESTADO
+                `,
+      className: 'custom-class',
+      duration : `${4}`,
+      style    : {
+          marginTop: '20vh',
+      },
+  });
+    
+    // alert( 'Obs: El archivo a importar debera tener los siguientes encabezados: '+
+    //   '\n \n ' +
+      
+    //   'ITEM, FEC_INICIO,NOMBRE, NRO_DOCUMENTO, FEC_NACIMIENTO, SEXO, NACIONALIDAD,'+
+    //   'ESTADO_CIVIL, IND_TIENE_HIJO, ZONA_RESIDENCIA, DIRECCION, BARRIO, CELULAR, '+
+    //   'TELEFONO, EMAIL, NIVEL_ESTUDIO, IND_ESTUDIA, IND_ESTUDIA_HORARIO,'+
+    //   'IND_MOVILIDAD_PROPIA, IND_TIPO_MOVILIDAD, IND_TRABAJA, IND_MOTIVO_SALIDA,' +
+    //   'IND_HORARIO_ROTATIVO, IND_VACANCIA_INTERES, EXPERIENCIA_LABORAL, '+
+    //   'IND_EX_FUNCIONARIO, IND_EX_FUNCIONARIO_MOT_SAL, MEDIO_CON_OFERTA_LABORAL,'+
+    //   'PRETENCION_SALARIAL, APTITUDES, SUCURSAL, ESTADO')
+     
+  }
+
  
 
   return (
@@ -231,7 +264,10 @@ const getData = async() =>{
                                   showBorders             = {false}
                                   noDataText              = "Sin archivo seleccionado"
 
-                              />                               
+                              />
+                              <br/>
+                              <Button className='botoninfo' onClick={informacion}>Importante!</Button>
+                                                     
 
                              
 

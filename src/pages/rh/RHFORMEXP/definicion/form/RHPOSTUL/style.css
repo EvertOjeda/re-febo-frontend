@@ -10,6 +10,14 @@
     
 }
 
+.botoninfo{
+    background-color: #3b4c5c;
+    color: aliceblue
+}
+#site-content[data-theme="light"] .botoninfo {
+    background: #cccccc;
+    color: rgba(0, 0, 0, 0.85);
+} 
 
 .DevExtremeDet th, td{
     padding-bottom: 10px;
