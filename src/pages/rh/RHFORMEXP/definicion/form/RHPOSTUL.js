@@ -9,7 +9,7 @@ import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
 import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 import LISTAPOSTULANTE from './RHPOSTUL/LISTAPOSTULANTE';
 import RHFORMEXP       from './RHPOSTUL/RHFORMEXP';
-
+import LISTAPRUEBA     from './RHPOSTUL/LISTAPRUEBA';
 
 import '../../../../../assets/css/DevExtreme.css';
 
@@ -86,6 +86,7 @@ const POSTULANTES = () => {
                                         <RHFORMEXP/>
                                 </Main.Paper>
                             </Tabs.TabPane>
+
 
                     </Tabs>
 

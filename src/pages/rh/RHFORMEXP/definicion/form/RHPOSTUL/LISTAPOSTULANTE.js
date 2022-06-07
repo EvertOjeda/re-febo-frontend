@@ -25,15 +25,15 @@ const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
 
 
 const columnsListar = [  
-    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
-    { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
-    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    , isOpcionSelect:true},
-    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
-    { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
-    { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    , isOpcionSelect:true},
-    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
-    { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
+    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 120     , align:'center'    , requerido:true},
+    { ID: 'NOMBRE'                  , label: 'Nombre/Apellido'        , minWidth: 100    , align:'left'      , requerido:true},
+    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , maxWidth: 60     , align:'center'    , isOpcionSelect:true},
+    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125    , align:'left'      },
+    { ID: 'CELULAR'                 , label: 'Celular'                , maxWidth: 50     , align:'center'    },
+    { ID: 'EMAIL'                   , label: 'Email'                  , maxWidth: 90     , align:'center'    },
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , maxWidth: 100    , align:'center'    , isOpcionSelect:true},
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , maxWidth: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
+    { ID: 'ESTADO'                  , label: 'Estado'                 , maxWidth: 80     , align:'center'    , isOpcionSelect:true }
   ];
 
 
@@ -286,6 +286,8 @@ const LISTAPOSTULANTE = memo((props) => {
         
      const initialFormData = async(isNew)=>{
 
+        const fechahoycompleto = new Date();
+        const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
         
         var valor = {
     
@@ -347,6 +349,9 @@ const LISTAPOSTULANTE = memo((props) => {
                 ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
     
                 ['EXPERIENCIA_LABORAL'          ] : '',
+
+                
+                ['FEC_INICIO'                   ] : fechacorta,
             }
             return valor
         }else{
@@ -444,7 +449,9 @@ const LISTAPOSTULANTE = memo((props) => {
         const guardar = async(e)=>{
 
             setActivarSpinner(true);
-
+            
+            const fechahoycompleto = new Date();
+            const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
     
             var datosCab = []
             if(gridCab.current != undefined){
@@ -465,6 +472,11 @@ const LISTAPOSTULANTE = memo((props) => {
                     if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
                         let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
                         if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                    }
+                    //PARA REGISTRAR ULTIMA ACTUALIZACION
+                    if(items){
+                       items.FEC_INICIO     = fechacorta;
+                       items.COD_EMPRESA    = 1;
                     }
                 }
             }
@@ -630,6 +642,8 @@ const LISTAPOSTULANTE = memo((props) => {
         if(e.row){
 
             var fecnac1 = e.row.data.FEC_NACIMIENTO;
+            var fecini1  = e.row.data.FEC_INICIO
+            e.row.data.FEC_INICIO       = moment(fecini1,'DD/MM/YYYY');
             e.row.data.FEC_NACIMIENTO = moment(fecnac1,'DD/MM/YYYY');
             form.setFieldsValue(e.row.data);
             console.log(e.row.data);
@@ -722,7 +736,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                     />
                                 </Form>
 
-                                    <div >
+                                    <div style={{ paddingTop: "2px"}}>
                                         <DevExtremeDet
                                             gridDet             = {gridCab}
                                             id                  = "ID"
@@ -750,35 +764,14 @@ const LISTAPOSTULANTE = memo((props) => {
                                         <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                             <div style={{ padding: "1px" }}> 
                                                 <Card>
-                                                    <Col style={{ paddingTop: "2px"}}>
+                                                    <Col style={{ paddingTop: "10px"}}>
                                                         <Row gutter={[3, 3]}>
-                                                            <ConfigProvider locale={locale}>
-                                                                <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
-                                                                    <Form.Item 
-                                                                        name="FEC_NACIMIENTO"
-                                                                        label= "Fecha de Nac."
-                                                                        labelCol={{ span: 7 }}
-                                                                        wrapperCol={{ span: 20 }}
-                                                                        >
-                                                                            <DatePicker
-                                                                                className='picker1'
-                                                                                onChange={(e)=>{activateButtonCancelar1(e,"FEC_NACIMIENTO")}}
-                                                                                format={"DD/MM/YYYY"}
-                                                                                open={openDatePicker1}
-                                                                                onOpenChange={stateOpenDate1}    
-                                                                                onClick={clickDataPicket1}
-                                                                                allowClear={false}
-                                                                            />
 
-                                                                    </Form.Item>
-                                                                </Col> 
-                                                            </ConfigProvider>
-
-                                                            <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
+                                                            <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>    
                                                                 <Form.Item 
                                                                     name="SEXO"
                                                                     label= "Sexo"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                     <Select initialvalues="Masculino" 
                                                                         onChange={ async(e)=>{
@@ -796,7 +789,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 3 }} style={{ paddingTop: "2px"}}>    
+                                                            <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
                                                                 <Form.Item 
                                                                     name="APTITUDES"
                                                                     label= "Aptitudes"
@@ -806,17 +799,17 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 4 }} style={{ paddingTop: "2px"}}>
+                                                            <Col span={12} xs={{ order: 3 }}>
                                                                 <Form.Item 
                                                                     name="PRETENCION_SALARIAL"
                                                                     label= "Pretención"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 5 }}>
+                                                            <Col span={12} xs={{ order: 4 }}>
                                                                 <Form.Item
                                                                     name="NACIONALIDAD"
                                                                     label= "Nacionalidad"
@@ -826,16 +819,16 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>                                                
 
-                                                            <Col span={12} xs={{ order: 6 }}>
+                                                            <Col span={12} xs={{ order: 5 }}>
                                                                 <Form.Item 
                                                                     name="IND_TIENE_HIJO"
                                                                     label= "Tiene hijos?"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -848,7 +841,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 7 }}>
+                                                            <Col span={12} xs={{ order: 6 }}>
                                                                 <Form.Item 
                                                                     name="DIRECCION"
                                                                     label= "Dirección"
@@ -858,27 +851,27 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 8 }}>
+                                                            <Col span={12} xs={{ order: 7 }}>
                                                                 <Form.Item 
                                                                     name="BARRIO"
                                                                     label= "Barrio"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
 
                                                             
-                                                            <Col span={12} xs={{ order: 9 }}>
+                                                            <Col span={12} xs={{ order: 8 }}>
                                                                 <Form.Item 
                                                                     name="IND_HORARIO_ROTATIVO"
-                                                                    label= "Disp. Horario Rotativo?"
+                                                                    label= "Disp. Horario Rotativo"
                                                                     labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -891,16 +884,16 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 10 }}>
+                                                            <Col span={12} xs={{ order: 9 }}>
                                                                 <Form.Item 
                                                                     name="IND_ESTUDIA"
                                                                     label= "Estudiando? "
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -913,7 +906,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 11 }}>
+                                                            <Col span={12} xs={{ order: 10 }}>
                                                                 <Form.Item 
                                                                     name="TELEFONO"
                                                                     label= "Teléfono"
@@ -923,17 +916,17 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 12 }}>
+                                                            <Col span={12} xs={{ order: 11 }}>
                                                                 <Form.Item 
                                                                     name="NIVEL_ESTUDIO"
                                                                     label= "Nivel de estudio"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 13 }}>
+                                                            <Col span={12} xs={{ order: 12 }}>
                                                                 <Form.Item 
                                                                     name="IND_ESTUDIA_HORARIO"
                                                                     label= "Hora de clases"
@@ -943,19 +936,17 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            
-
-                                                            <Col span={12} xs={{ order: 14 }}>
+                                                            <Col span={12} xs={{ order: 13 }}>
                                                                 <Form.Item 
                                                                     name="IND_MOVILIDAD_PROPIA"
                                                                     label= "Movilidad Propia"
-                                                                    labelCol={{ span: 8  }}
+                                                                    labelCol={{ span: 7  }}
                                                                     wrapperCol={{ span: 20 }}
                                                                     >
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -968,7 +959,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 15 }}>
+                                                            <Col span={12} xs={{ order: 14 }}>
                                                                 <Form.Item 
                                                                     name="IND_TIPO_MOVILIDAD"
                                                                     label= "Tipo de movilidad"
@@ -978,17 +969,17 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 16 }}>
+                                                            <Col span={12} xs={{ order: 15 }}>
                                                                 <Form.Item 
                                                                     name="IND_MOTIVO_SALIDA"
                                                                     label= "Motivo de salida"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 17 }}>
+                                                            <Col span={12} xs={{ order: 16 }}>
                                                                 <Form.Item 
                                                                     name="IND_EX_FUNCIONARIO"
                                                                     label= "Ex Funcionario?"
@@ -997,7 +988,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1010,16 +1001,16 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 18 }}>
+                                                            <Col span={12} xs={{ order: 17 }}>
                                                                 <Form.Item 
                                                                     name="IND_TRABAJA"
                                                                     label= "Trabaja actualmente?"
-                                                                    labelCol={{ span: 8 }}
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1032,8 +1023,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-
-                                                            <Col span={12} xs={{ order: 19 }}>
+                                                            <Col span={12} xs={{ order: 18 }}>
                                                                 <Form.Item 
                                                                     name="IND_EX_FUNCIONARIO_MOT_SAL"
                                                                     label= "Mot. Sal. de Empresa"
@@ -1043,17 +1033,34 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 20 }}>
+                                                            <Col span={12} xs={{ order: 19 }}>
                                                                 <Form.Item 
                                                                     name="MEDIO_CON_OFERTA_LABORAL"
-                                                                    label= "Conocimiento de Oferta"
-                                                                    labelCol={{ span: 8 }}
+                                                                    label= "Conoci. de Oferta"
+                                                                    labelCol={{ span: 7 }}
                                                                     wrapperCol={{ span: 20 }}>
                                                                         <Input onChange={handleInputChange} />
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={24} xs={{ order: 21 }}>
+                                                            <Col span={12} xs={{ order: 20 }} >
+                                                                <ConfigProvider locale={locale}>
+                                                                        <Form.Item 
+                                                                            name={'FEC_NACIMIENTO'}
+                                                                            label= "Fecha de Nac."
+                                                                            labelCol={{ span: 7 }}
+                                                                            wrapperCol={{ span: 20 }}
+                                                                            >
+                                                                                <DatePicker
+                                                                                    onChange={(e)=>activateButtonCancelar1(e,"FEC_NACIMIENTO")}
+                                                                                    format={"DD/MM/YYYY"}																			
+                                                                                    allowClear={false}
+                                                                                    />
+                                                                        </Form.Item>
+                                                                </ConfigProvider>
+                                                            </Col> 
+
+                                                            <Col span={24} xs={{ order: 21 }} style={{ paddingTop: "10px"}}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
@@ -1066,12 +1073,37 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
 
                                                             </Col>
+
                                                         </Row>
                                                     
                                                     </Col>
-                                                    
+
                                                 </Card>
-                                            </div>
+
+                                                <Card bordered={false}>
+                                                    <Col span={24} style={{ paddingTop: "10px"}}>
+                                                            <Form.Item 
+                                                                    name="FEC_INICIO"
+                                                                    label= "Fecha de última modificación:"
+                                                                    labelCol={{ span: 21 }}
+                                                                    >
+                                                                        
+                                                                            <DatePicker
+                                                                                onChange={(e)=>activateButtonCancelar1(e,"FEC_INICIO")}
+                                                                                format={"DD/MM/YYYY"}																			
+                                                                                open={openDatePicker1}
+                                                                                onOpenChange={stateOpenDate1}
+                                                                                // onClick={clickDataPicket1}
+                                                                                allowClear={false}
+                                                                                disabled={true}
+                                                                                bordered={false}
+                                                                            />
+                                                                     
+                                                            </Form.Item>
+                                                    </Col>
+                                                </Card>
+
+                                            </div>       
 
                                         </Form>
                                     </div>

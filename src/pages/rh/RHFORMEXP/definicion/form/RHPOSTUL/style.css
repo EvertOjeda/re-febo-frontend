@@ -11,11 +11,17 @@
 }
 
 
-.DataGrid th, td{
+.DevExtremeDet th, td{
     padding-bottom: 10px;
-    width: 50px;
+    padding-right: 2px;
+    padding-left: 2px;
 }
 
-.TextArea{
-    color: 'red !important'
+
+.noseve{
+    visibility:collapse;
+}
+
+.blancotext{
+    color: aliceblue !important;
 }

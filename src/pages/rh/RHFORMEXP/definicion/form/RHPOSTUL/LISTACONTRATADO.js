@@ -24,15 +24,15 @@ const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
 
 
 const columnsListar = [  
-    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 70     , align:'center'    , requerido:true},
-    { ID: 'NOMBRE'                  , label: 'Nombre y Apellido'      , width: 100    , align:'left'      , requerido:true},
-    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , width: 60     , align:'center'    , isOpcionSelect:true},
-    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125 , minWidth: 120     , align:'left'      },
-    { ID: 'CELULAR'                 , label: 'Celular'                , width: 50     , align:'center'    },
-    { ID: 'EMAIL'                   , label: 'Email'                  , width: 90     , align:'center'    },
-    { ID: 'SUCURSAL'                , label: 'Sucursal'               , width: 100    , align:'center'    , isOpcionSelect:true},
-    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , width: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
-    { ID: 'ESTADO'                  , label: 'Estado'                 , width: 80     , align:'center'    , isOpcionSelect:true }
+    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 120       , align:'center'    , requerido:true},
+    { ID: 'NOMBRE'                  , label: 'Nombre/Apellido'        , minWidth: 100    , align:'left'      , requerido:true},
+    { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , maxWidth: 60     , align:'center'    , isOpcionSelect:true},
+    { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125    , align:'left'      },
+    { ID: 'CELULAR'                 , label: 'Celular'                , maxWidth: 50     , align:'center'    },
+    { ID: 'EMAIL'                   , label: 'Email'                  , maxWidth: 90     , align:'center'    },
+    { ID: 'SUCURSAL'                , label: 'Sucursal'               , maxWidth: 100    , align:'center'    , isOpcionSelect:true},
+    { ID: 'IND_VACANCIA_INTERES'    , label: 'Vac de interes'         , maxWidth: 80     , align:'center'    , isOpcionSelect:true , requerido:true},
+    { ID: 'ESTADO'                  , label: 'Estado'                 , maxWidth: 80     , align:'center'    , isOpcionSelect:true }
   ];
 
 
@@ -286,6 +286,11 @@ const LISTACONTRATADO = memo((props) => {
      const initialFormData = async(isNew)=>{
 
         
+        const fechahoycompleto = new Date();
+        const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
+
+        console.log('este fechacorta ==> ', fechacorta)
+        
         var valor = {
     
             ['NRO_DOCUMENTO'                ] : '',
@@ -320,6 +325,8 @@ const LISTACONTRATADO = memo((props) => {
             ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
     
             ['EXPERIENCIA_LABORAL'          ] : '',
+
+            ['COD_EMPRESA'                  ] : '1',
             
         }        
         if(isNew){
@@ -346,6 +353,8 @@ const LISTACONTRATADO = memo((props) => {
                 ['MEDIO_CON_OFERTA_LABORAL'     ] : '',
     
                 ['EXPERIENCIA_LABORAL'          ] : '',
+
+                ['FEC_INICIO'                   ] : fechacorta,
             }
             return valor
         }else{
@@ -432,7 +441,7 @@ const LISTACONTRATADO = memo((props) => {
             setTimeout(()=>{
                 setModifico();
                 setActivarSpinner(false)
-                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,1));
+                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,0));
     
             },50);
         }
@@ -444,7 +453,9 @@ const LISTACONTRATADO = memo((props) => {
 
             setActivarSpinner(true);
 
-    
+            const fechahoycompleto = new Date();
+            const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
+
             var datosCab = []
             if(gridCab_contratado.current != undefined){
                 datosCab    = gridCab_contratado.current.instance.getDataSource()._items;
@@ -464,6 +475,12 @@ const LISTACONTRATADO = memo((props) => {
                     if(items.FEC_NACIMIENTO !== '' && !_.isUndefined(items.FEC_NACIMIENTO)){
                         let fecha = Main.moment(items.FEC_NACIMIENTO).format('DD/MM/YYYY')
                         if(fecha !== 'Invalid date') items.FEC_NACIMIENTO = fecha;
+                    }
+
+                    //PARA REGISTRAR ULTIMA ACTUALIZACION
+                    if(items){
+                        items.FEC_INICIO    = fechacorta;
+                        items.COD_EMPRESA   = 1;
                     }
                 }
             }
@@ -627,8 +644,10 @@ const LISTACONTRATADO = memo((props) => {
     const setRowFocus3 = async(e,grid,f9)=>{
         if(e.row){
 
-            var fecnac3 = e.row.data.FEC_NACIMIENTO;
-            e.row.data.FEC_NACIMIENTO = moment(fecnac3,'DD/MM/YYYY');
+            var fecnac3  = e.row.data.FEC_NACIMIENTO;
+            var fecini3  = e.row.data.FEC_INICIO
+            e.row.data.FEC_INICIO       = moment(fecini3,'DD/MM/YYYY');
+            e.row.data.FEC_NACIMIENTO   = moment(fecnac3,'DD/MM/YYYY');
             form.setFieldsValue(e.row.data);
             console.log(e.row.data);
             
@@ -672,6 +691,8 @@ const LISTACONTRATADO = memo((props) => {
         } 
         modifico()
     }
+
+    
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const stateOpenDate3 = (e)=>{
@@ -684,16 +705,6 @@ const LISTACONTRATADO = memo((props) => {
 			res3[0].classList.add(Ocultar_classDataPiker_1);
 			res3[0].classList.add(Ocultar_classDataPiker_2);
 			res3[0].classList.remove(mostrar_classDataPiker_3);
-		}
-	}
-
-    const clickDataPicket3 = async()=>{
-		let res3   = await document.getElementsByClassName('ant-picker-dropdown');
-		let resul3 = res3[0].classList.value.split(' ');
-		if(resul3.indexOf(Ocultar_classDataPiker_2) !== -1){
-			res3[0].classList.remove(Ocultar_classDataPiker_1);
-			res3[0].classList.remove(Ocultar_classDataPiker_2);
-			res3[0].classList.add(mostrar_classDataPiker_3);
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -717,7 +728,7 @@ const LISTACONTRATADO = memo((props) => {
                                     
                                  />
 
-                                <div >
+                                <div style={{ paddingTop: "2px"}}>
                                     <DevExtremeDet
                                         gridDet             = {gridCab_contratado}
                                         id                  = "ID"
@@ -737,42 +748,21 @@ const LISTACONTRATADO = memo((props) => {
                                         doNotsearch         = {doNotsearch}
                                         columBuscador       = {columBuscador_con}
                                         nextFocusNew        = {"APTITUDES"}
-
-                                        // initialRow          = {initialRow}
                                     />
 
 
                                     <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
                                             <Card>
-                                                <Col style={{ paddingTop: "2px"}}>
-                                                    <Row gutter={[3, 3]}>
-                                                        <ConfigProvider locale={locale}>
-                                                                <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>
-                                                                    <Form.Item 
-                                                                        name="FEC_NACIMIENTO"
-                                                                        label= "Fecha de Nac."
-                                                                        labelCol={{ span: 7 }}
-                                                                        wrapperCol={{ span: 20 }}
-                                                                        >
-                                                                            <DatePicker
-                                                                                className='picker3'
-                                                                                onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
-                                                                                format={"DD/MM/YYYY"}																			
-                                                                                open={openDatePicker3}
-                                                                                onOpenChange={stateOpenDate3}
-                                                                                onClick={clickDataPicket3}
-                                                                                allowClear={false}
-                                                                            />
-                                                                    </Form.Item>
-                                                                </Col> 
-                                                            </ConfigProvider>
+                                                <Col style={{ paddingTop: "10px"}}>
+                                                    <Row gutter={[3, 3]} >
+ 
 
-                                                        <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
+                                                        <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>    
                                                             <Form.Item 
                                                                 name="SEXO"
                                                                 label= "Sexo"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                 <Select initialvalues="Masculino" 
                                                                     onChange={ async(e)=>{
@@ -790,7 +780,7 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 3 }} style={{ paddingTop: "2px"}}>    
+                                                        <Col span={12} xs={{ order: 2 }} style={{ paddingTop: "2px"}}>    
                                                             <Form.Item 
                                                                 name="APTITUDES"
                                                                 label= "Aptitudes"
@@ -800,17 +790,17 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 4 }} style={{ paddingTop: "2px"}}>
+                                                        <Col span={12} xs={{ order: 3 }}>
                                                             <Form.Item 
                                                                 name="PRETENCION_SALARIAL"
                                                                 label= "Pretención"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 5 }}>
+                                                        <Col span={12} xs={{ order: 4 }}>
                                                             <Form.Item
                                                                 name="NACIONALIDAD"
                                                                 label= "Nacionalidad"
@@ -820,11 +810,11 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>                                                
 
-                                                        <Col span={12} xs={{ order: 6 }}>
+                                                        <Col span={12} xs={{ order: 5 }}>
                                                             <Form.Item 
                                                                 name="IND_TIENE_HIJO"
                                                                 label= "Tiene hijos?"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
@@ -842,7 +832,7 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 7 }}>
+                                                        <Col span={12} xs={{ order: 6 }}>
                                                             <Form.Item 
                                                                 name="DIRECCION"
                                                                 label= "Dirección"
@@ -852,21 +842,21 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 8 }}>
+                                                        <Col span={12} xs={{ order: 7 }}>
                                                             <Form.Item 
                                                                 name="BARRIO"
                                                                 label= "Barrio"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
                                                         
-                                                        <Col span={12} xs={{ order: 9 }}>
+                                                        <Col span={12} xs={{ order: 8 }}>
                                                             <Form.Item 
                                                                 name="IND_HORARIO_ROTATIVO"
-                                                                label= "Disp. Horario Rotativo?"
+                                                                label= "Disp. Horario Rotativo"
                                                                 labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                 <Select initialvalues="NO" 
@@ -885,11 +875,11 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 10 }}>
+                                                        <Col span={12} xs={{ order: 9 }}>
                                                             <Form.Item 
                                                                 name="IND_ESTUDIA"
                                                                 label= "Estudiando? "
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
@@ -907,7 +897,7 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 11 }}>
+                                                        <Col span={12} xs={{ order: 10 }}>
                                                             <Form.Item 
                                                                 name="TELEFONO"
                                                                 label= "Teléfono"
@@ -917,17 +907,17 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 12 }}>
+                                                        <Col span={12} xs={{ order: 11 }}>
                                                             <Form.Item 
                                                                 name="NIVEL_ESTUDIO"
                                                                 label= "Nivel de estudio"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 13 }}>
+                                                        <Col span={12} xs={{ order: 12 }}>
                                                             <Form.Item 
                                                                 name="IND_ESTUDIA_HORARIO"
                                                                 label= "Hora de clases"
@@ -939,11 +929,11 @@ const LISTACONTRATADO = memo((props) => {
 
                                                         
 
-                                                        <Col span={12} xs={{ order: 14 }}>
+                                                        <Col span={12} xs={{ order: 13 }}>
                                                             <Form.Item 
                                                                 name="IND_MOVILIDAD_PROPIA"
                                                                 label= "Movilidad Propia"
-                                                                labelCol={{ span: 8  }}
+                                                                labelCol={{ span: 7  }}
                                                                 wrapperCol={{ span: 20 }}
                                                                 >
                                                                 <Select initialvalues="NO" 
@@ -962,7 +952,7 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 15 }}>
+                                                        <Col span={12} xs={{ order: 14 }}>
                                                             <Form.Item 
                                                                 name="IND_TIPO_MOVILIDAD"
                                                                 label= "Tipo de movilidad"
@@ -972,17 +962,17 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 16 }}>
+                                                        <Col span={12} xs={{ order: 15 }}>
                                                             <Form.Item 
                                                                 name="IND_MOTIVO_SALIDA"
                                                                 label= "Motivo de salida"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 17 }}>
+                                                        <Col span={12} xs={{ order: 16 }}>
                                                             <Form.Item 
                                                                 name="IND_EX_FUNCIONARIO"
                                                                 label= "Ex Funcionario?"
@@ -1004,11 +994,11 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 18 }}>
+                                                        <Col span={12} xs={{ order: 17 }}>
                                                             <Form.Item 
                                                                 name="IND_TRABAJA"
                                                                 label= "Trabaja actualmente?"
-                                                                labelCol={{ span: 8 }}
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
@@ -1027,7 +1017,7 @@ const LISTACONTRATADO = memo((props) => {
                                                         </Col>
 
 
-                                                        <Col span={12} xs={{ order: 19 }}>
+                                                        <Col span={12} xs={{ order: 18 }}>
                                                             <Form.Item 
                                                                 name="IND_EX_FUNCIONARIO_MOT_SAL"
                                                                 label= "Mot. Sal. de Empresa"
@@ -1037,21 +1027,38 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 20 }}>
+                                                        <Col span={12} xs={{ order: 19 }}>
                                                             <Form.Item 
                                                                 name="MEDIO_CON_OFERTA_LABORAL"
-                                                                label= "Conocimiento de Oferta:"
-                                                                labelCol={{ span: 8 }}
+                                                                label= "Conoci. de Oferta:"
+                                                                labelCol={{ span: 7 }}
                                                                 wrapperCol={{ span: 20 }}>
                                                                     <Input onChange={handleInputChange} />
                                                             </Form.Item>
                                                         </Col>
 
-                                                            <Col span={24} xs={{ order: 21 }}>
+                                                        <Col span={12} xs={{ order: 20 }} >
+                                                            <ConfigProvider locale={locale}>
+                                                                <Form.Item
+                                                                    name={'FEC_NACIMIENTO'}
+                                                                    label= "Fecha de Nac."
+                                                                    labelCol={{ span: 7 }}
+                                                                    wrapperCol={{ span: 20 }}
+                                                                    >
+                                                                            <DatePicker
+                                                                                onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
+                                                                                format={"DD/MM/YYYY"}																			
+                                                                                allowClear={false}
+                                                                                />
+                                                                </Form.Item>
+                                                            </ConfigProvider>
+                                                        </Col>
+
+                                                        <Col span={24} xs={{ order: 21 }} style={{ paddingTop: "10px"}}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
-                                                                    <TextArea 
+                                                                    <TextArea className='blancotext' 
                                                                         onChange={handleInputChange}
                                                                         showCount
                                                                         maxLength={1000}
@@ -1059,12 +1066,33 @@ const LISTACONTRATADO = memo((props) => {
                                                                     />
                                                                 </Form.Item>
 
-                                                            </Col>
+                                                        </Col>
 
                                                     </Row>
                                                 
                                                 </Col>
 
+                                            </Card>
+
+                                            <Card bordered={false}>
+                                                    <Col span={24} style={{ paddingTop: "10px"}}>
+                                                            <Form.Item 
+                                                                    name="FEC_INICIO"
+                                                                    label= "Fecha de última modificación:"
+                                                                    labelCol={{ span: 21 }}
+                                                                    >
+                                                                        <DatePicker
+                                                                            onChange={(e)=>activateButtonCancelar3(e,"FEC_INICIO")}
+                                                                            format={"DD/MM/YYYY"}																			
+                                                                            open={openDatePicker3}
+                                                                            onOpenChange={stateOpenDate3}
+                                                                            // onClick={clickDataPicket3}
+                                                                            allowClear={false}
+                                                                            disabled={true}
+                                                                            bordered={false}
+                                                                        />
+                                                            </Form.Item>
+                                                    </Col>
                                             </Card>
                                         </div>
 
@@ -1080,21 +1108,3 @@ const LISTACONTRATADO = memo((props) => {
 });
 
 export default LISTACONTRATADO;
-
-
-/*
-<Form.Item 
-                                                                    name="EXPERIENCIA_LABORAL"
-                                                                    label= "Experiencia Laboral" 
-                                                                    >
-                                                                    <Input 
-                                                                        onChange={handleInputChange}
-                                                                        
-                                                                        // style={{
-                                                                        //     height: 60,
-                                                                        //    }}
-                                                                    />
-                                                                </Form.Item>
-
-
-*/
