@@ -643,6 +643,11 @@ const onKeyDownBuscar = async(e)=>{
                 var fecini2  = e.row.data.FEC_INICIO
                 e.row.data.FEC_INICIO     = moment(fecini2,'DD/MM/YYYY');
                 e.row.data.FEC_NACIMIENTO = moment(fecnac2,'DD/MM/YYYY')
+
+
+                var PARAEDAD     = moment().diff(moment(fecnac2, "DD/MM/YYYY"), 'years')
+                e.row.data.EDAD = PARAEDAD
+    
                 form.setFieldsValue(e.row.data);
                 console.log(e.row.data);
                     
@@ -715,10 +720,11 @@ const onKeyDownBuscar = async(e)=>{
 
 
     return (
-    <>
+        <>
 
 
             <Main.Paper className="paper-style-entrevista">
+                <Main.Spin size="large" spinning={activarSpinner}>
                                     <Search
                                         addRow            = {addRow}
                                         eliminarRow       = {deleteRows}
@@ -758,9 +764,9 @@ const onKeyDownBuscar = async(e)=>{
 
                                         <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                             <div style={{ padding: "1px" }}> 
-                                                <Card>
+                                                <Card style={{ boxShadow: '3px 2px 20px 2px #262626'}}>
                                                     <Col style={{ paddingTop: "10px"}}>
-                                                        <Row gutter={[3, 3]}>
+                                                        <Row gutter={[1, 4]}>
 
                                                             <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>    
                                                                 <Form.Item 
@@ -1038,13 +1044,13 @@ const onKeyDownBuscar = async(e)=>{
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            <Col span={12} xs={{ order: 20 }} >
+                                                            <Col span={10} xs={{ order: 20 }} >
                                                                 <ConfigProvider locale={locale}>
                                                                     <Form.Item 
                                                                         name={'FEC_NACIMIENTO'}
                                                                         label= "Fecha de Nac."
-                                                                        labelCol={{ span: 7 }}
-                                                                        wrapperCol={{ span: 20 }}
+                                                                        labelCol={{ span: 8 }}
+                                                                        wrapperCol={{ span: 6 }}
                                                                         >
                                                                                 <DatePicker
                                                                                     onChange={(e)=>activateButtonCancelar2(e,"FEC_NACIMIENTO")}
@@ -1055,7 +1061,17 @@ const onKeyDownBuscar = async(e)=>{
                                                                 </ConfigProvider>
                                                             </Col> 
 
-                                                            <Col span={24} xs={{ order: 21 }} style={{ paddingTop: "10px"}}>
+                                                            <Col span={2} xs={{ order: 21 }} >
+                                                                <Form.Item
+                                                                    label="Edad: "
+                                                                    name="EDAD"
+                                                                    labelCol={{ span: 10 }}
+                                                                    wrapperCol={{ span: 8 }}>
+                                                                        <Input bordered={false}/>
+                                                                </Form.Item>
+                                                            </Col>
+
+                                                            <Col span={24} xs={{ order: 22 }} style={{ paddingTop: "10px"}}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
@@ -1100,8 +1116,9 @@ const onKeyDownBuscar = async(e)=>{
 
                                         </Form>
                                     </div>
-                </Main.Paper>
-    </>
+                </Main.Spin>
+            </Main.Paper>
+        </>
     
     )
 

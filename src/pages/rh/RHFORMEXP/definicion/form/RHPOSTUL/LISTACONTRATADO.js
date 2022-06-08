@@ -640,6 +640,11 @@ const LISTACONTRATADO = memo((props) => {
             }
     
         }
+
+        //variables de calculo de edad
+    var paraedad = '55555'
+    var EDAD     = '';
+
             //FILA QUE QUEDA EN FOCUS
     const setRowFocus3 = async(e,grid,f9)=>{
         if(e.row){
@@ -648,9 +653,15 @@ const LISTACONTRATADO = memo((props) => {
             var fecini3  = e.row.data.FEC_INICIO
             e.row.data.FEC_INICIO       = moment(fecini3,'DD/MM/YYYY');
             e.row.data.FEC_NACIMIENTO   = moment(fecnac3,'DD/MM/YYYY');
+
+            
+            var PARAEDAD     = moment().diff(moment(fecnac3, "DD/MM/YYYY"), 'years')
+            e.row.data.EDAD = PARAEDAD
+
             form.setFieldsValue(e.row.data);
             console.log(e.row.data);
             
+            // var paraedad = moment(fecnac3, "DD/MM/YYYY").month(0).from(moment().month(0))            
         }else{
             console.log("Error al seteo de información", error)
             alert("Error al seteo de información", error);
@@ -714,7 +725,8 @@ const LISTACONTRATADO = memo((props) => {
     <>  
         
 
-        <Main.Paper className="paper-style-contratado">
+        <Main.Paper className="paper-style">
+                <Main.Spin size="large" spinning={activarSpinner}>
                                 <Search
                                     addRow            = {addRow}
                                     eliminarRow       = {deleteRows}
@@ -747,15 +759,15 @@ const LISTACONTRATADO = memo((props) => {
                                         altura              = {'200px'}
                                         doNotsearch         = {doNotsearch}
                                         columBuscador       = {columBuscador_con}
-                                        nextFocusNew        = {"APTITUDES"}
+                                        nextFocusNew        = {"SEXO"}
                                     />
 
 
                                     <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
-                                            <Card>
+                                            <Card style={{ boxShadow: '3px 2px 20px 2px #262626'}}>
                                                 <Col style={{ paddingTop: "10px"}}>
-                                                    <Row gutter={[3, 3]} >
+                                                    <Row gutter={[1, 4]} >
  
 
                                                         <Col span={12} xs={{ order: 1 }} style={{ paddingTop: "2px"}}>    
@@ -1037,24 +1049,34 @@ const LISTACONTRATADO = memo((props) => {
                                                             </Form.Item>
                                                         </Col>
 
-                                                        <Col span={12} xs={{ order: 20 }} >
+                                                        <Col span={10} xs={{ order: 20 }} >
                                                             <ConfigProvider locale={locale}>
                                                                 <Form.Item
-                                                                    name={'FEC_NACIMIENTO'}
-                                                                    label= "Fecha de Nac."
-                                                                    labelCol={{ span: 7 }}
-                                                                    wrapperCol={{ span: 20 }}
-                                                                    >
-                                                                            <DatePicker
-                                                                                onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
-                                                                                format={"DD/MM/YYYY"}																			
-                                                                                allowClear={false}
-                                                                                />
+                                                                        name={'FEC_NACIMIENTO'}
+                                                                        label= "Fecha de Nac."
+                                                                        labelCol={{ span: 8 }}
+                                                                        wrapperCol={{ span: 6 }}
+                                                                        >
+                                                                        <DatePicker
+                                                                            onChange={(e)=>activateButtonCancelar3(e,"FEC_NACIMIENTO")}
+                                                                            format={"DD/MM/YYYY"}																			
+                                                                            allowClear={false}
+                                                                        />
                                                                 </Form.Item>
-                                                            </ConfigProvider>
+                                                            </ConfigProvider>   
                                                         </Col>
 
-                                                        <Col span={24} xs={{ order: 21 }} style={{ paddingTop: "10px"}}>
+                                                        <Col span={2} xs={{ order: 21 }} >
+                                                            <Form.Item
+                                                                label="Edad: "
+                                                                name="EDAD"
+                                                                labelCol={{ span: 10 }}
+                                                                wrapperCol={{ span: 8 }}>
+                                                                    <Input bordered={false}/>
+                                                            </Form.Item>
+                                                        </Col>
+
+                                                        <Col span={24} xs={{ order: 22 }} style={{ paddingTop: "10px"}}>
                                                                 <Form.Item 
                                                                     label= "Experiencia Laboral" 
                                                                     name="EXPERIENCIA_LABORAL">
@@ -1065,7 +1087,6 @@ const LISTACONTRATADO = memo((props) => {
                                                                         style={{height: 60,}}
                                                                     />
                                                                 </Form.Item>
-
                                                         </Col>
 
                                                     </Row>
@@ -1073,7 +1094,7 @@ const LISTACONTRATADO = memo((props) => {
                                                 </Col>
 
                                             </Card>
-
+                                            {/* style={{ boxShadow: '3px 2px 20px 2px #262626'}} */}
                                             <Card bordered={false}>
                                                     <Col span={24} style={{ paddingTop: "10px"}}>
                                                             <Form.Item 
@@ -1099,6 +1120,7 @@ const LISTACONTRATADO = memo((props) => {
 
                                     </Form>
                                 </div>
+                </Main.Spin>
          </Main.Paper>
 
     </>

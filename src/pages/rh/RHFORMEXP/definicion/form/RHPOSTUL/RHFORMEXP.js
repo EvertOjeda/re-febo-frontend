@@ -204,7 +204,7 @@ const getData = async() =>{
                  PRETENCION_SALARIAL, APTITUDES, SUCURSAL, ESTADO
                 `,
       className: 'custom-class',
-      duration : `${4}`,
+      duration : `${3}`,
       style    : {
           marginTop: '20vh',
       },
