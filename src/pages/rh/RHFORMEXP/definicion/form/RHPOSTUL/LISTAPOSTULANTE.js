@@ -18,14 +18,13 @@ import '../../../../../../assets/css/DevExtreme.css';
 
 const { TextArea } = Input;
 
-
 const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
 const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
 const mostrar_classDataPiker_3 = "ant-picker-dropdown-placement-bottomLeft-aux";
 
 
 const columnsListar = [  
-    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 120     , align:'center'    , requerido:true},
+    { ID: 'NRO_DOCUMENTO'           , label: 'Nro documento'          , width: 120       , align:'center'    , requerido:true},
     { ID: 'NOMBRE'                  , label: 'Nombre/Apellido'        , minWidth: 100    , align:'left'      , requerido:true},
     { ID: 'ESTADO_CIVIL'            , label: 'Est. civil'             , maxWidth: 60     , align:'center'    , isOpcionSelect:true},
     { ID: 'ZONA_RESIDENCIA'         , label: 'Residencia'             , maxWidth: 125    , align:'left'      },
@@ -110,7 +109,7 @@ const LISTAPOSTULANTE = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]              = Form.useForm();
+    const [formpost]                = Form.useForm();
 
     const gridCab                   = React.useRef();
 
@@ -118,7 +117,7 @@ const LISTAPOSTULANTE = memo((props) => {
 
     const [ activarSpinner   , setActivarSpinner   ] = useState(false);
     const [showMessageButton , setShowMessageButton] = React.useState(false);
-    const [openDatePicker1 , setdatePicker	       ] = useState(true);
+    const [openDatePicker1   , setdatePicker	   ] = useState(true);
 
 
     const idGrid = {
@@ -197,7 +196,7 @@ const LISTAPOSTULANTE = memo((props) => {
                 gridCab.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_pos = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,1))
+                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,0))
                 },100)
 
     }
@@ -233,7 +232,7 @@ const LISTAPOSTULANTE = memo((props) => {
                 gridCab.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_pos = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement())
+                    gridCab.current.instance.focus(gridCab.current.instance.getCellElement(0,0))
                 },100)
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -356,7 +355,7 @@ const LISTAPOSTULANTE = memo((props) => {
             return valor
         }else{
             valor.insertDefault = true
-            form.setFieldsValue(valor);
+            formpost.setFieldsValue(valor);
         };
     
         
@@ -409,24 +408,21 @@ const LISTAPOSTULANTE = memo((props) => {
         }
 
 
-    const funcionCancelar =async()=>{
+    const funcionCancelar = async()=>{
             setActivarSpinner(true)
-            var e = getFocusGlobalEventDet();
             if(getCancelar_pos()){
                 var AuxDataCancelCab = await JSON.parse(await getCancelar_pos());
     
                 if(AuxDataCancelCab.length > 0 && gridCab.current){
                     const dataSource_cab = new DataSource({
                         store: new ArrayStore({
-                              keyExpr:"ID",
-                              data: AuxDataCancelCab
+                            keyExpr:"ID",
+                            data: AuxDataCancelCab
                         }),
                         key: 'ID'
                     })
                     gridCab.current.instance.option('dataSource', dataSource_cab);
                     cancelar_pos = JSON.stringify(AuxDataCancelCab);
-                    // setInputData(e.row.data);
-                    // console.log('esto es erowdata =>', e.row.data)              
                 }
             }
          
@@ -650,7 +646,7 @@ const LISTAPOSTULANTE = memo((props) => {
             var PARAEDAD     = moment().diff(moment(fecnac1, "DD/MM/YYYY"), 'years')
             e.row.data.EDAD = PARAEDAD
 
-            form.setFieldsValue(e.row.data);
+            formpost.setFieldsValue(e.row.data);
             console.log(e.row.data);
             
         }else{
@@ -664,7 +660,6 @@ const LISTAPOSTULANTE = memo((props) => {
     const handleInputChange = async(e)=>{
         modifico();
         let info = await getFocusGlobalEventDet()
-        console.log("info ==> ", info.row.data)
         if(info){
             info.row.data[e.target.id] = e.target.value
             if(info.row.data.InsertDefault){
@@ -678,8 +673,6 @@ const LISTAPOSTULANTE = memo((props) => {
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
             gridCab.current.instance.repaintRows(info.rowIndex);
-            console.log('etarget ==> ', e.target.value)
- 
         }  
     }
 
@@ -726,8 +719,8 @@ const LISTAPOSTULANTE = memo((props) => {
     <>
         
 
-            <Main.Paper className="paper-style-postulante">
-                <Main.Spin size="large" spinning={activarSpinner}>
+            <Main.Spin size="large" spinning={activarSpinner}>
+                <Main.Paper >
                                 <Form>
                                     <Search
                                         addRow            = {addRow}
@@ -761,13 +754,13 @@ const LISTAPOSTULANTE = memo((props) => {
                                             altura              = {'200px'}
                                             doNotsearch         = {doNotsearch}
                                             columBuscador       = {columBuscador_pos}
-                                            nextFocusNew        = {"APTITUDES"}
+                                            nextFocusNew        = {"SEXO"}
 
                                             // initialRow          = {initialRow}
                                         />
 
 
-                                        <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                                        <Form autoComplete="off" size="small" form={formpost} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                             <div style={{ padding: "1px" }}> 
                                                 <Card style={{ boxShadow: '3px 2px 20px 2px #262626'}}>
                                                     <Col style={{ paddingTop: "10px"}}>
@@ -834,7 +827,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -867,7 +860,6 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            
                                                             <Col span={12} xs={{ order: 8 }}>
                                                                 <Form.Item 
                                                                     name="IND_HORARIO_ROTATIVO"
@@ -877,7 +869,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -899,7 +891,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -952,7 +944,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -994,7 +986,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1016,7 +1008,7 @@ const LISTAPOSTULANTE = memo((props) => {
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCab.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1124,8 +1116,8 @@ const LISTAPOSTULANTE = memo((props) => {
 
                                         </Form>
                                     </div>
-                </Main.Spin>
-            </Main.Paper>
+                </Main.Paper>
+            </Main.Spin>
     </>
     
     )

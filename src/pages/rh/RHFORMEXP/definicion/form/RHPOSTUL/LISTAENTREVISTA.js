@@ -1,22 +1,22 @@
 import React, { useState, memo, useEffect } from 'react';
-import Main                          from '../../../../../../components/utils/Main';
-import _                             from "underscore";
+import Main                         from '../../../../../../components/utils/Main';
+import _                            from "underscore";
 import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
-import Search                        from '../../../../../../components/utils/SearchForm/SearchForm';
-import {setModifico,modifico}        from '../../../../../../components/utils/SearchForm/Cancelar';
+import Search                       from '../../../../../../components/utils/SearchForm/SearchForm';
+import {setModifico,modifico}       from '../../../../../../components/utils/SearchForm/Cancelar';
 
-import DataSource                    from "devextreme/data/data_source";
-import ArrayStore                    from "devextreme/data/array_store";
-import { v4 as uuidID }              from "uuid";
+import DataSource                   from "devextreme/data/data_source";
+import ArrayStore                   from "devextreme/data/array_store";
+import { v4 as uuidID }             from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
-                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet
-}                      from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
-import moment from 'moment';
+                       getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
+                       from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+import moment                        from 'moment';
 import locale                        from 'antd/lib/locale/es_ES';
 
 import '../../../../../../assets/css/DevExtreme.css';
-const { TextArea } = Input;
 
+const { TextArea } = Input;
 
 const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
 const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
@@ -109,19 +109,19 @@ const LISTAENTREVISTA = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]                    = Form.useForm();
+    const [formentre]               = Form.useForm();
 
-    const gridCab_entrevista        = React.useRef();
+    const gridCabEntre        = React.useRef();
 
 
 
     const [ activarSpinner   , setActivarSpinner    ] = useState(false);
     const [showMessageButton , setShowMessageButton ] = React.useState(false)
-    const [openDatePicker2   , setdatePicker	    ] = React.useState(true);
+    const [openDatePicker2   , setdatePicker	    ] = useState(true);
 
 
     const idGrid_entrevista = {
-        RHPOSTUL_CAB:gridCab_entrevista,
+        RHPOSTUL_CAB:gridCabEntre,
 
         defaultFocus:{
 			RHPOSTUL_CAB:1,
@@ -194,10 +194,10 @@ const LISTAENTREVISTA = memo((props) => {
                         }),
                         key: 'ID'
                     })
-                    gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
+                    gridCabEntre.current.instance.option('dataSource', dataSource_Cab);
                     cancelar_ent = JSON.stringify(content);
                     setTimeout(()=>{
-                        gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(0,1))
+                        gridCabEntre.current.instance.focus(gridCabEntre.current.instance.getCellElement(0,0))
                     },100)
                 }
                 /////////////////////GETDATA PARA DESPUES DE LIMPIAR CUADRO DE BUSQUEDA ////////////////////////////////////////
@@ -229,10 +229,10 @@ const LISTAENTREVISTA = memo((props) => {
                         }),
                         key: 'ID'
                     })
-                    gridCab_entrevista.current.instance.option('dataSource', dataSource_Cab);
+                    gridCabEntre.current.instance.option('dataSource', dataSource_Cab);
                     cancelar_ent = JSON.stringify(content);
                     setTimeout(()=>{
-                        gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement())
+                        gridCabEntre.current.instance.focus(gridCabEntre.current.instance.getCellElement(0,0))
                     },100)
                 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,7 +249,7 @@ const LISTAENTREVISTA = memo((props) => {
                 if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0    
                 modifico();
                 let initialInput = await initialFormData(true)
-                let data = gridCab_entrevista.current.instance.getDataSource();
+                let data = gridCabEntre.current.instance.getDataSource();
                 var newKey = uuidID();
                 var row    = [0]
 
@@ -267,14 +267,14 @@ const LISTAENTREVISTA = memo((props) => {
                     }),
                     key: 'ID'
                 });
-                gridCab_entrevista.current.instance.option('dataSource', dataSource_cab);
+                gridCabEntre.current.instance.option('dataSource', dataSource_cab);
                 setTimeout(()=>{
-                    gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(indexRow,1))
+                    gridCabEntre.current.instance.focus(gridCabEntre.current.instance.getCellElement(indexRow,1))
                 },110)
             }else{
-                gridCab_entrevista.current.instance.option("focusedRowKey", 120);
-                gridCab_entrevista.current.instance.clearSelection();
-                gridCab_entrevista.current.instance.focus(0);
+                gridCabEntre.current.instance.option("focusedRowKey", 120);
+                gridCabEntre.current.instance.clearSelection();
+                gridCabEntre.current.instance.focus(0);
                 setShowMessageButton(true);
                 showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
             }
@@ -355,7 +355,7 @@ const LISTAENTREVISTA = memo((props) => {
                 return valor
             }else{
                 valor.insertDefault = true
-                form.setFieldsValue(valor);
+                formentre.setFieldsValue(valor);
             };
 
             
@@ -408,13 +408,12 @@ const LISTAENTREVISTA = memo((props) => {
         }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const funcionCancelar2 =async()=>{
+        const funcionCancelar2 = async()=>{
             setActivarSpinner(true)
-            // var e = getFocusGlobalEventDet();
             if(getCancelar_ent()){
                 var AuxDataCancelCab = await JSON.parse(await getCancelar_ent());
 
-                if(AuxDataCancelCab.length > 0 && gridCab_entrevista.current){
+                if(AuxDataCancelCab.length > 0 && gridCabEntre.current){
                     const dataSource_cab = new DataSource({
                         store: new ArrayStore({
                             keyExpr:"ID",
@@ -422,10 +421,8 @@ const LISTAENTREVISTA = memo((props) => {
                         }),
                         key: 'ID'
                     })
-                    gridCab_entrevista.current.instance.option('dataSource', dataSource_cab);
-                    cancelar_ent = JSON.stringify(AuxDataCancelCab);
-                    // setInputData(e.row.data);
-                    // console.log('esto es erowdata =>', e.row.data)              
+                    gridCabEntre.current.instance.option('dataSource', dataSource_cab);
+                    cancelar_ent = JSON.stringify(AuxDataCancelCab);            
                 }
             }
             
@@ -437,7 +434,7 @@ const LISTAENTREVISTA = memo((props) => {
             setTimeout(()=>{
                 setModifico();
                 setActivarSpinner(false)
-                gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(0,0));
+                gridCabEntre.current.instance.focus(gridCabEntre.current.instance.getCellElement(0,0));
 
             },50);
         }
@@ -453,8 +450,8 @@ const guardar = async(e)=>{
     const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
 
     var datosCab = []
-    if(gridCab_entrevista.current != undefined){
-        datosCab    = gridCab_entrevista.current.instance.getDataSource()._items;
+    if(gridCabEntre.current != undefined){
+        datosCab    = gridCabEntre.current.instance.getDataSource()._items;
     }
 
     var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
@@ -514,9 +511,9 @@ const guardar = async(e)=>{
                       setModifico();
 
                       var dataSource = '';
-                      if(gridCab_entrevista.current != undefined){
+                      if(gridCabEntre.current != undefined){
                           dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                          gridCab_entrevista.current.instance.option('dataSource', dataSource);
+                          gridCabEntre.current.instance.option('dataSource', dataSource);
                       }
 
                       cancelar_ent =  JSON.stringify(aux_cab);
@@ -526,7 +523,7 @@ const guardar = async(e)=>{
                           // RHPOSTUL_CAB
                           let info = getComponenteFocusDet()
                           let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
-                          gridCab_entrevista.current.instance.focus(gridCab_entrevista.current.instance.getCellElement(fila,1))
+                          gridCabEntre.current.instance.focus(gridCabEntre.current.instance.getCellElement(fila,1))
                       },60);
                   }else{
                       setActivarSpinner(false);
@@ -578,11 +575,11 @@ const handleChange2 = async(e)=>{
                         }),
                         key: 'ID'
                     }) 
-                    gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
+                    gridCabEntre.current.instance.option('dataSource', BuscadorRow);
                     cancelar_ent = JSON.stringify(response.data.rows);
                     }
                 setTimeout(()=>{
-                    gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
+                    gridCabEntre.current.instance.option('focusedRowIndex', 0);
                 },70)
             });
         } catch (error) {
@@ -623,11 +620,11 @@ const onKeyDownBuscar = async(e)=>{
                             }),
                             key: 'ID'
                         }) 
-                        gridCab_entrevista.current.instance.option('dataSource', BuscadorRow);
+                        gridCabEntre.current.instance.option('dataSource', BuscadorRow);
                         cancelar_ent = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
-                        gridCab_entrevista.current.instance.option('focusedRowIndex', 0);
+                        gridCabEntre.current.instance.option('focusedRowIndex', 0);
                     },70)
                 });
             } catch (error) {
@@ -648,7 +645,7 @@ const onKeyDownBuscar = async(e)=>{
                 var PARAEDAD     = moment().diff(moment(fecnac2, "DD/MM/YYYY"), 'years')
                 e.row.data.EDAD = PARAEDAD
     
-                form.setFieldsValue(e.row.data);
+                formentre.setFieldsValue(e.row.data);
                 console.log(e.row.data);
                     
             }else{
@@ -674,15 +671,14 @@ const onKeyDownBuscar = async(e)=>{
                 info.row.data['FEC_MODIFICACION'] = Main.moment().format('DD/MM/YYYY');
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
-            gridCab_entrevista.current.instance.repaintRows(info.rowIndex);
-            console.log("info => ", info)      
+            gridCabEntre.current.instance.repaintRows(info.rowIndex);
         }        
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const activateButtonCancelar2 = async(e,nameInput)=>{
         console.log("====>>> se activo activateButtonCancelar")
-        var row  = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+        var row  = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
         console.log("row ==>> ",row)
         if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
         else row[nameInput] = ''
@@ -723,8 +719,9 @@ const onKeyDownBuscar = async(e)=>{
         <>
 
 
-            <Main.Paper className="paper-style-entrevista">
-                <Main.Spin size="large" spinning={activarSpinner}>
+            <Main.Spin size="large" spinning={activarSpinner}>
+                <Main.Paper >
+                                <Form>
                                     <Search
                                         addRow            = {addRow}
                                         eliminarRow       = {deleteRows}
@@ -736,10 +733,11 @@ const onKeyDownBuscar = async(e)=>{
                                         buttonGuardar     = {buttonSaveRef}
                                         buttonAddRef      = {buttonAddRowRef} 
                                     />
+                                </Form>
 
                                     <div style={{ paddingTop: "2px"}}>
                                         <DevExtremeDet
-                                            gridDet             = {gridCab_entrevista}
+                                            gridDet             = {gridCabEntre}
                                             id                  = "ID"
                                             IDCOMPONENTE        = "RHPOSTUL_CAB"
                                             columnDet           = {columnsListar}
@@ -756,13 +754,13 @@ const onKeyDownBuscar = async(e)=>{
                                             altura              = {'200px'}
                                             doNotsearch         = {doNotsearch}
                                             columBuscador       = {columBuscador_ent}
-                                            nextFocusNew        = {"APTITUDES"}
+                                            nextFocusNew        = {"SEXO"}
 
                                             // initialRow          = {initialRow}
                                         />
 
 
-                                        <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                                        <Form autoComplete="off" size="small" form={formentre} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                             <div style={{ padding: "1px" }}> 
                                                 <Card style={{ boxShadow: '3px 2px 20px 2px #262626'}}>
                                                     <Col style={{ paddingTop: "10px"}}>
@@ -777,7 +775,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="Masculino" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -829,7 +827,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -862,7 +860,6 @@ const onKeyDownBuscar = async(e)=>{
                                                                 </Form.Item>
                                                             </Col>
 
-                                                            
                                                             <Col span={12} xs={{ order: 8 }}>
                                                                 <Form.Item 
                                                                     name="IND_HORARIO_ROTATIVO"
@@ -872,7 +869,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -894,7 +891,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -947,7 +944,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -989,7 +986,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1011,7 +1008,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     <Select initialvalues="NO" 
                                                                         onChange={ async(e)=>{
                                                                         modifico();
-                                                                            var row = await gridCab_entrevista.current.instance.getDataSource()._items[getRowIndex()];
+                                                                            var row = await gridCabEntre.current.instance.getDataSource()._items[getRowIndex()];
                                                                             if(row.InsertDefault){
                                                                                 row.inserted = true;
                                                                                 row.InsertDefault = false;
@@ -1099,7 +1096,7 @@ const onKeyDownBuscar = async(e)=>{
                                                                     labelCol={{ span: 21 }}
                                                                     >
                                                                         <DatePicker
-                                                                            onChange={(e)=>activateButtonCancelar3(e,"FEC_INICIO")}
+                                                                            onChange={(e)=>activateButtonCancelar2(e,"FEC_INICIO")}
                                                                             format={"DD/MM/YYYY"}																			
                                                                             open={openDatePicker2}
                                                                             onOpenChange={stateOpenDate2}
@@ -1116,8 +1113,8 @@ const onKeyDownBuscar = async(e)=>{
 
                                         </Form>
                                     </div>
-                </Main.Spin>
-            </Main.Paper>
+                </Main.Paper>
+            </Main.Spin>
         </>
     
     )

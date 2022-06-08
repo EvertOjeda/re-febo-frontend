@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo, useEffect } from 'react';
+import React, { useState, memo, useEffect } from 'react';
 import Main                         from '../../../../../../components/utils/Main';
 import _                            from "underscore";
 import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
@@ -15,8 +15,8 @@ import moment                        from 'moment';
 import locale                        from 'antd/lib/locale/es_ES';
 
 import '../../../../../../assets/css/DevExtreme.css';
-const { TextArea } = Input;
 
+const { TextArea } = Input;
 
 const Ocultar_classDataPiker_1 = "ant-picker-dropdown-hidden";
 const Ocultar_classDataPiker_2 = "ant-picker-dropdown-placement-bottomLeft";
@@ -109,19 +109,19 @@ const LISTACONTRATADO = memo((props) => {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    const [form]              = Form.useForm();
+    const [formcontra]                    = Form.useForm();
 
-    const gridCab_contratado                   = React.useRef();
+    const gridCabContra        = React.useRef();
 
 
 
     const [ activarSpinner   , setActivarSpinner   ] = useState(false);
     const [showMessageButton , setShowMessageButton] = React.useState(false);
-    const [openDatePicker3 , setdatePicker	       ] = useState(true);
+    const [openDatePicker3   , setdatePicker	   ] = useState(true);
 
 
     const idGrid_contratado = {
-        RHPOSTUL_CAB:gridCab_contratado,
+        RHPOSTUL_CAB:gridCabContra,
 
         defaultFocus:{
 			RHPOSTUL_CAB:1,
@@ -193,10 +193,10 @@ const LISTACONTRATADO = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
+                gridCabContra.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_con = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,1))
+                    gridCabContra.current.instance.focus(gridCabContra.current.instance.getCellElement(0,0))
                 },100)
 
     }
@@ -229,10 +229,10 @@ const LISTACONTRATADO = memo((props) => {
                     }),
                     key: 'ID'
                 })
-                gridCab_contratado.current.instance.option('dataSource', dataSource_Cab);
+                gridCabContra.current.instance.option('dataSource', dataSource_Cab);
                 cancelar_con = JSON.stringify(content);
                 setTimeout(()=>{
-                    gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement())
+                    gridCabContra.current.instance.focus(gridCabContra.current.instance.getCellElement(0,0))
                 },100)
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,7 +249,7 @@ const LISTACONTRATADO = memo((props) => {
             if(idComponent !== 'RHPOSTUL_CAB') indexRow = 0    
             modifico();
             let initialInput = await initialFormData(true)
-            let data = gridCab_contratado.current.instance.getDataSource();
+            let data = gridCabContra.current.instance.getDataSource();
             var newKey = uuidID();
             var row    = [0]
 
@@ -267,14 +267,14 @@ const LISTACONTRATADO = memo((props) => {
                 }),
                 key: 'ID'
             });
-            gridCab_contratado.current.instance.option('dataSource', dataSource_cab);
+            gridCabContra.current.instance.option('dataSource', dataSource_cab);
             setTimeout(()=>{
-                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(indexRow,1))
+                gridCabContra.current.instance.focus(gridCabContra.current.instance.getCellElement(indexRow,1))
             },110)
         }else{
-            gridCab_contratado.current.instance.option("focusedRowKey", 120);
-            gridCab_contratado.current.instance.clearSelection();
-            gridCab_contratado.current.instance.focus(0);
+            gridCabContra.current.instance.option("focusedRowKey", 120);
+            gridCabContra.current.instance.clearSelection();
+            gridCabContra.current.instance.focus(0);
             setShowMessageButton(true);
             showModalMensaje('Atencion!','atencion','Hay cambios pendientes. ¿Desea guardar los cambios?');
         }
@@ -359,7 +359,7 @@ const LISTACONTRATADO = memo((props) => {
             return valor
         }else{
             valor.insertDefault = true
-            form.setFieldsValue(valor);
+            formcontra.setFieldsValue(valor);
         };
     
         
@@ -412,24 +412,21 @@ const LISTACONTRATADO = memo((props) => {
         }
 
 
-    const funcionCancelar3 =async()=>{
+    const funcionCancelar3 = async()=>{
             setActivarSpinner(true)
-            // var e = getFocusGlobalEventDet();
             if(getCancelar_con()){
                 var AuxDataCancelCab = await JSON.parse(await getCancelar_con());
     
-                if(AuxDataCancelCab.length > 0 && gridCab_contratado.current){
+                if(AuxDataCancelCab.length > 0 && gridCabContra.current){
                     const dataSource_cab = new DataSource({
                         store: new ArrayStore({
-                              keyExpr:"ID",
-                              data: AuxDataCancelCab
+                            keyExpr:"ID",
+                            data: AuxDataCancelCab
                         }),
                         key: 'ID'
                     })
-                    gridCab_contratado.current.instance.option('dataSource', dataSource_cab);
-                    cancelar_con = JSON.stringify(AuxDataCancelCab);
-                    //  setInputData(e.row.data);
-                    // console.log('esto es erowdata =>', e.row.data)              
+                    gridCabContra.current.instance.option('dataSource', dataSource_cab);
+                    cancelar_con = JSON.stringify(AuxDataCancelCab);             
                 }
             }
          
@@ -441,7 +438,7 @@ const LISTACONTRATADO = memo((props) => {
             setTimeout(()=>{
                 setModifico();
                 setActivarSpinner(false)
-                gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(0,0));
+                gridCabContra.current.instance.focus(gridCabContra.current.instance.getCellElement(0,0));
     
             },50);
         }
@@ -457,8 +454,8 @@ const LISTACONTRATADO = memo((props) => {
             const fechacorta = moment(fechahoycompleto).format('DD/MM/YYYY');
 
             var datosCab = []
-            if(gridCab_contratado.current != undefined){
-                datosCab    = gridCab_contratado.current.instance.getDataSource()._items;
+            if(gridCabContra.current != undefined){
+                datosCab    = gridCabContra.current.instance.getDataSource()._items;
             }
     
             var info_cab = await Main.GeneraUpdateInsertCab(datosCab,'', '', [],false);
@@ -518,9 +515,9 @@ const LISTACONTRATADO = memo((props) => {
                               setModifico();
         
                               var dataSource = '';
-                              if(gridCab_contratado.current != undefined){
+                              if(gridCabContra.current != undefined){
                                   dataSource = new DataSource({store: new ArrayStore({keyExpr:"ID", data: aux_cab}), key:'ID'})
-                                  gridCab_contratado.current.instance.option('dataSource', dataSource);
+                                  gridCabContra.current.instance.option('dataSource', dataSource);
                               }
     
                               cancelar_con =  JSON.stringify(aux_cab);
@@ -530,7 +527,7 @@ const LISTACONTRATADO = memo((props) => {
                                   // RHPOSTUL_CAB
                                   let info = getComponenteFocusDet()
                                   let fila = info.RHPOSTUL_CAB.rowIndex ? info.RHPOSTUL_CAB.rowIndex : 0
-                                  gridCab_contratado.current.instance.focus(gridCab_contratado.current.instance.getCellElement(fila,1))
+                                  gridCabContra.current.instance.focus(gridCabContra.current.instance.getCellElement(fila,1))
                               },60);
                           }else{
                               setActivarSpinner(false);
@@ -582,11 +579,11 @@ const LISTACONTRATADO = memo((props) => {
                             }),
                             key: 'ID'
                         }) 
-                        gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
+                        gridCabContra.current.instance.option('dataSource', BuscadorRow);
                         cancelar_con = JSON.stringify(response.data.rows);
                         }
                     setTimeout(()=>{
-                        gridCab_contratado.current.instance.option('focusedRowIndex', 0);
+                        gridCabContra.current.instance.option('focusedRowIndex', 0);
                     },70)
                 });
             } catch (error) {
@@ -627,11 +624,11 @@ const LISTACONTRATADO = memo((props) => {
                                 }),
                                 key: 'ID'
                             }) 
-                            gridCab_contratado.current.instance.option('dataSource', BuscadorRow);
+                            gridCabContra.current.instance.option('dataSource', BuscadorRow);
                             cancelar_con = JSON.stringify(response.data.rows);
                             }
                         setTimeout(()=>{
-                            gridCab_contratado.current.instance.option('focusedRowIndex', 0);
+                            gridCabContra.current.instance.option('focusedRowIndex', 0);
                         },70)
                     });
                 } catch (error) {
@@ -658,7 +655,7 @@ const LISTACONTRATADO = memo((props) => {
             var PARAEDAD     = moment().diff(moment(fecnac3, "DD/MM/YYYY"), 'years')
             e.row.data.EDAD = PARAEDAD
 
-            form.setFieldsValue(e.row.data);
+            formcontra.setFieldsValue(e.row.data);
             console.log(e.row.data);
             
             // var paraedad = moment(fecnac3, "DD/MM/YYYY").month(0).from(moment().month(0))            
@@ -685,14 +682,14 @@ const LISTACONTRATADO = memo((props) => {
                 info.row.data['FEC_MODIFICACION'] = Main.moment().format('DD/MM/YYYY');
                 info.row.data['MODIFICADO_POR'  ] = cod_usuario;    
             }
-            gridCab_contratado.current.instance.repaintRows(info.rowIndex);
+            gridCabContra.current.instance.repaintRows(info.rowIndex);
         }        
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const activateButtonCancelar3 = async(e,nameInput)=>{
         console.log("====>>> se activo activateButtonCancelar")
-        var row  = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+        var row  = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
         console.log("row ==>> ",row)
         if(e)row[nameInput] = moment(e._d).format("MM/DD/YYYY");
         else row[nameInput] = ''
@@ -725,8 +722,9 @@ const LISTACONTRATADO = memo((props) => {
     <>  
         
 
-        <Main.Paper className="paper-style">
-                <Main.Spin size="large" spinning={activarSpinner}>
+            <Main.Spin size="large" spinning={activarSpinner}>
+                <Main.Paper >
+                            <Form>
                                 <Search
                                     addRow            = {addRow}
                                     eliminarRow       = {deleteRows}
@@ -737,12 +735,12 @@ const LISTACONTRATADO = memo((props) => {
                                     onKeyDownBuscar   = {onKeyDownBuscar}
                                     buttonGuardar     = {buttonSaveRef}
                                     buttonAddRef      = {buttonAddRowRef}
-                                    
                                  />
+                            </Form>
 
                                 <div style={{ paddingTop: "2px"}}>
                                     <DevExtremeDet
-                                        gridDet             = {gridCab_contratado}
+                                        gridDet             = {gridCabContra}
                                         id                  = "ID"
                                         IDCOMPONENTE        = "RHPOSTUL_CAB"
                                         columnDet           = {columnsListar}
@@ -763,7 +761,7 @@ const LISTACONTRATADO = memo((props) => {
                                     />
 
 
-                                    <Form autoComplete="off" size="small" form={form} style={{marginTop:'10px', paddingBottom:'15px'}}>
+                                    <Form autoComplete="off" size="small" form={formcontra} style={{marginTop:'10px', paddingBottom:'15px'}}>
                                         <div style={{ padding: "1px" }}> 
                                             <Card style={{ boxShadow: '3px 2px 20px 2px #262626'}}>
                                                 <Col style={{ paddingTop: "10px"}}>
@@ -779,7 +777,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="Masculino" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -831,7 +829,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -874,7 +872,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -896,7 +894,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -951,7 +949,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -993,7 +991,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -1015,7 +1013,7 @@ const LISTACONTRATADO = memo((props) => {
                                                                 <Select initialvalues="NO" 
                                                                     onChange={ async(e)=>{
                                                                     modifico();
-                                                                        var row = await gridCab_contratado.current.instance.getDataSource()._items[getRowIndex()];
+                                                                        var row = await gridCabContra.current.instance.getDataSource()._items[getRowIndex()];
                                                                         if(row.InsertDefault){
                                                                             row.inserted = true;
                                                                             row.InsertDefault = false;
@@ -1120,8 +1118,8 @@ const LISTACONTRATADO = memo((props) => {
 
                                     </Form>
                                 </div>
-                </Main.Spin>
-         </Main.Paper>
+                </Main.Paper>
+            </Main.Spin>
 
     </>
     
