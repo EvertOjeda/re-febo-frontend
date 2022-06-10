@@ -1,12 +1,11 @@
-import rhformexp from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL/RHFORMEXP'; 
-import rhpostul from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL';
-import LISTAPOSTULANTE from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL/LISTAPOSTULANTE';
-import LISTAENTREVISTA from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL/LISTAENTREVISTA';
-import LISTACONTRATADO from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL/LISTACONTRATADO';
-import LISTAPRUEBA from '../pages/rh/RHFORMEXP/definicion/form/RHPOSTUL/LISTAPRUEBA';
+import rhformexp from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/RHFORMEXP'; 
+import rhpostul from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL';
+import LISTAPOSTULANTE from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTAPOSTULANTE';
+import LISTAENTREVISTA from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTAENTREVISTA';
+import LISTACONTRATADO from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTACONTRATADO';
 
 const Route = [{
-    path:'/rh/rhpostul/rhformexp',                   // Exportar lista de Excel a Base de Datos
+    path:'/rh/rhpostul/rhformexp',          // Exportar lista de Excel a Base de Datos
     component:rhformexp
 },
 {
