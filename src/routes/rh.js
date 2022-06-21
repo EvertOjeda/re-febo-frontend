@@ -1,9 +1,9 @@
-import rhformexp from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/RHFORMEXP'; 
-import rhpostul from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL';
-import LISTAPOSTULANTE from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTAPOSTULANTE';
-import LISTAENTREVISTA from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTAENTREVISTA';
-import LISTACONTRATADO from '../pages/rh/definicion/RHFORMEXP/form/RHPOSTUL/LISTACONTRATADO';
-import CONCEPTOS from '../pages/rh/definicion/RHPLACON/RHPLACON';
+import rhformexp from '../pages/rh/definicion/form/RHPOSTUL/RHFORMEXP'; 
+import rhpostul from '../pages/rh/definicion/form/RHPOSTUL';
+import LISTAPOSTULANTE from '../pages/rh/definicion/form/RHPOSTUL/LISTAPOSTULANTE';
+import LISTAENTREVISTA from '../pages/rh/definicion/form/RHPOSTUL/LISTAENTREVISTA';
+import LISTACONTRATADO from '../pages/rh/definicion/form/RHPOSTUL/LISTACONTRATADO';
+import CONCEPTOS from '../pages/rh/definicion/form/RHPLACOF/RHPLACOF';
 
 const Route = [{
     path:'/rh/rhpostul/rhformexp',          // Exportar lista de Excel a Base de Datos
@@ -26,7 +26,7 @@ const Route = [{
     component:LISTACONTRATADO
 },
 {
-    path:'/rh/rhplacon/',                   // Conceptos para Planillas
+    path:'/rh/rhplacof',           // Conceptos para Planillas
     component:CONCEPTOS
 }
 ]

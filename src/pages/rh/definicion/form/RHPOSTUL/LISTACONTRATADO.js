@@ -1,20 +1,20 @@
 import React, { useState, memo, useEffect } from 'react';
-import Main                         from '../../../../../../components/utils/Main';
+import Main                         from '../../../../../components/utils/Main';
 import _                            from "underscore";
 import { Input, Row, Col, Form, Card, Select, DatePicker, ConfigProvider }  from 'antd';
-import Search                       from '../../../../../../components/utils/SearchForm/SearchForm';
-import {setModifico,modifico}       from '../../../../../../components/utils/SearchForm/Cancelar';
+import Search                       from '../../../../../components/utils/SearchForm/SearchForm';
+import {setModifico,modifico}       from '../../../../../components/utils/SearchForm/Cancelar';
 
 import DataSource                   from "devextreme/data/data_source";
 import ArrayStore                   from "devextreme/data/array_store";
 import { v4 as uuidID }             from "uuid";
 import DevExtremeDet,{ getFocusGlobalEventDet , getComponenteEliminarDet , ArrayPushHedSeled ,
                        getFocusedColumnName   , getRowIndex , getComponenteFocusDet}
-                       from '../../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
+                       from '../../../../../components/utils/DevExtremeGrid/DevExtremeDet';
 import moment                        from 'moment';
 import locale                        from 'antd/lib/locale/es_ES';
 
-import '../../../../../../assets/css/DevExtreme.css';
+import '../../../../../assets/css/DevExtreme.css'
 
 const { TextArea } = Input;
 
@@ -238,9 +238,6 @@ const LISTACONTRATADO = memo((props) => {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     const addRow = async()=>{
         if(!bandBloqueo){
             let idComponent = getComponenteEliminarDet().id
@@ -280,7 +277,7 @@ const LISTACONTRATADO = memo((props) => {
         }
 
     }
-     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         
      const initialFormData = async(isNew)=>{
@@ -444,7 +441,7 @@ const LISTACONTRATADO = memo((props) => {
         }
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const guardar = async(e)=>{
 
@@ -638,10 +635,6 @@ const LISTACONTRATADO = memo((props) => {
     
         }
 
-        //variables de calculo de edad
-    var paraedad = '55555'
-    var EDAD     = '';
-
             //FILA QUE QUEDA EN FOCUS
     const setRowFocus3 = async(e,grid,f9)=>{
         if(e.row){
@@ -701,7 +694,7 @@ const LISTACONTRATADO = memo((props) => {
     }
 
     
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const stateOpenDate3 = (e)=>{
 		let res3 = document.getElementsByClassName('ant-picker-dropdown');
@@ -715,7 +708,7 @@ const LISTACONTRATADO = memo((props) => {
 			res3[0].classList.remove(mostrar_classDataPiker_3);
 		}
 	}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     return (

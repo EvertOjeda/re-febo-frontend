@@ -1,14 +1,14 @@
 import React, { useState, memo }      from 'react';
-import Main                           from "../../../../../../components/utils/Main";
+import Main                           from "../../../../../components/utils/Main";
 import * as XLSX                      from "xlsx";
 import { Card, Typography }                 from "antd";
 import DataGrid                       from 'devextreme-react/data-grid';
 import { Button }                     from 'antd';
-import '../../../../../../assets/css/DevExtreme.css';
+import '../../../../../assets/css/DevExtreme.css'
 
 import swal from 'sweetalert';
-import agregarIcon from     '../../../../../../assets/icons/add.svg';
-import guardarIcon from     '../../../../../../assets/icons/diskette.svg';
+import agregarIcon from     '../../../../../assets/icons/add.svg';
+import guardarIcon from     '../../../../../assets/icons/diskette.svg';
 import './style.css';
 
 
@@ -86,47 +86,6 @@ const RHFORMEXP = memo(() => {
     })
   }
 
-{/* ###########################################SOLO PARA PRUEBA################################################################### */}
-
-
-
-var array50=[];
-
-
-React.useEffect(()=>{
-    getData();
-},[])
-const getData = async() =>{
-    try {
-        var url     = `${url_lista}`;
-        var method  = "GET";
-        await Main.Request( url,method,[])
-        .then( resp =>{
-            if(resp.data.response.rows){
-
-
-                setDatosListar(resp.data.response.rows);
-
-                array50 = resp.data.response.rows;
-                // console.log( "este es => ",  array50);
-            }
-        });
-        
-    } catch (error) {
-
-        console.log(error);
-
-    }finally{
-
-        setActivarSpinner(false);
-
-    }
-}
-
-
-
-
-{/* ################################################################################################################################ */}
   
  let estado = 0; ///NO TOCAR
 
@@ -209,18 +168,7 @@ const getData = async() =>{
           marginTop: '20vh',
       },
   });
-    
-    // alert( 'Obs: El archivo a importar debera tener los siguientes encabezados: '+
-    //   '\n \n ' +
-      
-    //   'ITEM, FEC_INICIO,NOMBRE, NRO_DOCUMENTO, FEC_NACIMIENTO, SEXO, NACIONALIDAD,'+
-    //   'ESTADO_CIVIL, IND_TIENE_HIJO, ZONA_RESIDENCIA, DIRECCION, BARRIO, CELULAR, '+
-    //   'TELEFONO, EMAIL, NIVEL_ESTUDIO, IND_ESTUDIA, IND_ESTUDIA_HORARIO,'+
-    //   'IND_MOVILIDAD_PROPIA, IND_TIPO_MOVILIDAD, IND_TRABAJA, IND_MOTIVO_SALIDA,' +
-    //   'IND_HORARIO_ROTATIVO, IND_VACANCIA_INTERES, EXPERIENCIA_LABORAL, '+
-    //   'IND_EX_FUNCIONARIO, IND_EX_FUNCIONARIO_MOT_SAL, MEDIO_CON_OFERTA_LABORAL,'+
-    //   'PRETENCION_SALARIAL, APTITUDES, SUCURSAL, ESTADO')
-     
+        
   }
 
  

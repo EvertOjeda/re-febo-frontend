@@ -1,0 +1,35 @@
+.file input{
+    display     :contents;
+    cursor      : pointer;
+    padding-left: 20px;
+    cursor: pointer;   
+    
+}
+.textosimple {
+    font-style: italic;
+    
+}
+
+.botoninfo{
+    background-color: #3b4c5c;
+    color: aliceblue
+}
+#site-content[data-theme="light"] .botoninfo {
+    background: #cccccc;
+    color: rgba(0, 0, 0, 0.85);
+} 
+
+.DevExtremeDetostul th, td{
+    padding-bottom: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+
+.noseve{
+    visibility:collapse;
+}
+
+.blancotext{
+    color: aliceblue !important;
+}

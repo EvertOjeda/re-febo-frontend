@@ -1,8 +1,8 @@
 import React                        from 'react';
-import Main                         from '../../../../../components/utils/Main';
+import Main                         from '../../../../components/utils/Main';
 import _                            from "underscore";
 import { Typography, Tabs }         from 'antd';
-import { Menu, DireccionMenu }      from '../../../../../components/utils/FocusDelMenu';
+import { Menu, DireccionMenu }      from '../../../../components/utils/FocusDelMenu';
 
 
 import LISTAENTREVISTA from './RHPOSTUL/LISTAENTREVISTA';
@@ -10,7 +10,7 @@ import LISTACONTRATADO from './RHPOSTUL/LISTACONTRATADO';
 import LISTAPOSTULANTE from './RHPOSTUL/LISTAPOSTULANTE';
 import RHFORMEXP       from './RHPOSTUL/RHFORMEXP';
 
-import '../../../../../assets/css/DevExtreme.css';
+import '../../../../assets/css/DevExtreme.css';
 
 
 const title                 = "Lista de postulantes";

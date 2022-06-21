@@ -1050,6 +1050,7 @@ const CMPROVEC = memo((props) => {
         } catch (error) {
             console.log(error)
         }
+        console.log('data.ID ==> ',data.ID)
         
         if(content.data.rows.length == 0){
             let newKey = uuidID();
@@ -1078,6 +1079,8 @@ const CMPROVEC = memo((props) => {
             banSwitch = false
             gridCont.current.instance.option('dataSource', dataSource_det);
             cancelar_Cont = JSON.stringify(content)
+
+            console.log('content es esto ==> ', content)
         // }else{
         //     banSwitch = false
         //     gridDet.current.instance.option('dataSource', dataSource_det);
