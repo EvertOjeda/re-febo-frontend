@@ -403,7 +403,6 @@ const STENVIO = memo(() => {
       }
 			return await Main.Request(url_cabecera, "POST", data).then((resp) => {
         let response = resp.data.response.rows;
-        console.log(response)
 				if (response.length > 0) {
           document.getElementById("total_registro").textContent = response.length;
           setData(response);
@@ -431,8 +430,6 @@ const STENVIO = memo(() => {
 		} 
   }
   const getDataDet = async(data) => {
-    console.log('nro comprobante ==> ',nroComprobante)
-    console.log('data ==> ',data)
     const info = await Main.Request(url_detalle,'POST',{
       cod_empresa: sessionStorage.getItem("cod_empresa"),
       tip_comprobante: data.TIP_COMPROBANTE,
@@ -440,10 +437,8 @@ const STENVIO = memo(() => {
       nro_comprobante: data.NRO_COMPROBANTE
     });
     const { rows } = info.data.response;
-    console.log('info ==> ',info)
     var newKey = uuidID();
     var content = rows;
-    console.log('content ==> ', content)
     if(content.length == 0){
       content = [{
         ID	            : newKey,

@@ -630,7 +630,7 @@ const LISTAPOSTULANTE = memo((props) => {
                 } catch (error) {
                     console.log(error);
                 }
-            }
+        }
     
     }
             //FILA QUE QUEDA EN FOCUS
